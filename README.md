@@ -126,7 +126,7 @@ Replace existing connection logic with a ThreadLocal object.
 
 #### 4.3.11 Performance Challenge with Gatling
 Now is the time to start evaluating your global application performance with a stress-test campain.
-Using Gatling, you have one day to stress-test your web application (gatling test and directions present in the folder gatling-test). See the relevant README file for more explanations. For now, choose the simulation without Spring Security.
+Using Gatling, you have one day to stress-test your web application (gatling test and directions present in the folder gatling-test) and use tools like VisualVM to improve the performances. See the relevant README file for more explanations. For now, choose the simulation without Spring Security.
 
 
 ####4.3.9. Code review (t0 + 12 days)
