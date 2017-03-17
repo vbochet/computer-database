@@ -9,7 +9,7 @@ Here is the macro-planning and timeline of all milestones:
  * t0+8  - Web UI, Maven, Unit Tests, jQuery Validation, Backend Validation
  * t0+11 - Search, OrderBy, Transactions, Connection-Pool 
  * t0+12 - Threadlocal, Java Performance contest
- * t0+18 - Continuous delivery (Jenkins, Docker, Dockerhub, Glazer)
+ * t0+18 - Continuous delivery (Jenkins, Docker, Dockerhub)
  * t0+20 - Spring integration
  * t0+23 - Spring MVC integration, JDBC Template, i18n
  * t0+29 - Maven Multi-modules, Spring Security, Hibernate ORM (JPA, Criteria, QueryDSL, Spring Data JPA)
