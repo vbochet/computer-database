@@ -159,7 +159,7 @@ Create four Docker images: one for jenkins, one for compilation and tests, one f
 
 
 ####4.4.4. Point overview: Continuous Integration (t0 + 18 days)
-Jenkins + DinD: which service actually starts the containers ?   
+Jenkins + DooD: which service actually starts the containers ?   
 Container communication ?   
 DockerHub: automated builds limitations ?
 
