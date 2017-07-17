@@ -10,13 +10,12 @@ Here is the macro-planning and timeline of all milestones:
 * t0+2  - Base Architecture, CLI (Add / Edit features), Logging
 * t0+8  - Web UI, Maven, Unit Tests, jQuery Validation, Backend Validation
 * t0+11 - Search, OrderBy, Transactions, Connection-Pool
-* t0+12 - Threadlocal, Java Performance contest
-* t0+18 - Continuous delivery (Jenkins, Docker, Dockerhub)
-* t0+20 - Spring integration
-* t0+23 - Spring MVC integration, JDBC Template, i18n
-* t0+29 - Maven Multi-modules, Spring Security, Hibernate ORM (JPA, Criteria, QueryDSL, Spring Data JPA)
-* t0+31 - Web Services, end of project
-* t0+34 - Project presentation to sales & tech audience
+* t0+12 - Threadlocal
+* t0+14 - Spring integration
+* t0+17 - Spring MVC integration, JDBC Template, i18n
+* t0+23 - Maven Multi-modules, Spring Security, Hibernate ORM (JPA, Criteria, QueryDSL, Spring Data JPA)
+* t0+27 - Web Services, AJAX
+* t0+29 - Project presentation to sales & tech audience
 
 ## Installation
 
@@ -173,7 +172,7 @@ Which problems did you encounter? Study and note all the possible ways of solvin
 
 Warning: Do not replace your Servlets by another class. Your controllers should still extend HttpServlet.
 
-##### 4.4.2. Point overview: Spring integration (t0 + 20 days)
+##### 4.4.2. *Point overview: Spring integration (t0 + 14 days)*
 
 How a webapp is started, how spring initializes itself.
 
@@ -197,7 +196,7 @@ Add custom error pages.
 
 Implement spring multilingual features (French/English).
 
-##### 4.4.6. *Code Review (t0 + 23 days)*
+##### 4.4.6. *Code Review (t0 + 17 days)*
 
 Important Points: How did you split your Spring / Spring MVC contexts? How to switch from a language to another? How about javascript translation? Did you use spring-mvc annotations, forms and models?
 
@@ -223,7 +222,7 @@ Add Spring Security to your project. Choose a stateless approach, and use an ext
 
 Use Digest HTTP Auth.
 
-##### 4.5.4. *Code Review (t0 + 29 days)*
+##### 4.5.4. *Code Review (t0 + 23 days)*
 
 Important points: Which API was the most efficient for your queries? Limitations of those APIs.
 Maven and Spring contexts evaluation, unit tests evaluation.
@@ -244,7 +243,11 @@ To allow the creation of AngularJS, Mobile (Android/iOS) or third party clients,
 
 Refactor your CLI client to act as a remote client to your webapp, using either Jax-RS or Jax-WS libraries.
 
-##### 4.6.4. *Final Code Review (t0 + 31 days)*
+##### 4.6.4. AJAX
+
+Add a jsp page from where you can delete a company using the WS you used with the CLI. This call should be done with AJAX in javascript. You can add another button to add a company (still with javascript).
+
+##### 4.6.5. *Final Code Review (t0 + 27 days)*
 
 Steps to fix before final release, code quality overview and possible improvements. Point about UX
 
@@ -256,7 +259,7 @@ The final stage is your production release.
 
 This is where you will think UX first, challenge the technical choices of the base page template, and customize it to your standards.
 
-#### 4.7.2. Final Presentation (t0 + 34 days)
+#### 4.7.2. *Final Presentation (t0 + 29 days)*
 
 The presentation will be made with the whole group, on one project of their choice.
 
