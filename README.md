@@ -26,26 +26,20 @@ Create a local **MySQL** server.
 
 Execute scripts **1-SCHEMA.sql**, **2-PRIVILEGES.sql** and **3-ENTRIES.sql** in config/db.
 
-Schema created: **computer-database-db**
-Tables created: **company, computer**
+``` text
+Schema created: computer-database-db
+Tables created: company, computer
 
-User created: `admincdb`
-with password: `qwerty1234`
+User created: admincdb
+with password: qwerty1234
+```
 
-### 2. IDE
-
-#### 2.1. Eclipse
+### 2. Eclipse
 
 * Add your project to the current workspace: **File** -> **Import** -> **Existing projects into workspace**
 * Create a new Tomcat 8.0 Server: Follow steps **[HERE](http://www.eclipse.org/webtools/jst/components/ws/M4/tutorials/InstallTomcat.html)**
 * In your project properties, select **Project facets**, convert your project to faceted form, and tick **Dynamic Web Module** (3.0) and **Java** (1.8)
 * Select **Runtime** tab (in the previous **project facets** menu)  and check the Tomcat 8.0 Server created above as your project runtime
-
-#### 2.2. IntelliJ IDEA
-
-* Add your project to the current workspace: **Import Project**, select **Create project from existing sources**
-* Create a new Tomcat 8.0 Server: **Run** -> **Edit Configurations** and point it to your local Tomcat directory (button **Configure...**)
-* Set project structure: In **File** -> **Project Structure**, add an Artifact with default options (Artifact tab)
 
 ### 3. Git repository
 
@@ -88,7 +82,7 @@ Please use Singleton patterns where it makes sense, and implement your own Persi
 
 Now that your app's main features work, implement the pageable feature. We recommend the use of a Page class, containing your entities and the page information.
 
-##### 4.2.3. Code review, logging (t0 + 2 days)
+##### 4.2.3. *Code review, logging (t0 + 2 days)*
 
 Important Points: Architecture (daos, mappers, services, models, exceptions etc...)? Singleton, IOC patterns? Validation (dirty checking?)? Date API? Secure inputs?
 
@@ -126,7 +120,7 @@ Warning: All features will be implemented and tested using Selenium automated wi
 
 Implement both frontend (jQuery) and backend validation in the web-ui.
 
-##### 4.3.4. Code review (t0 + 8 days)
+##### 4.3.4. *Code review (t0 + 8 days)*
 
 Important Points: Maven structure? Library scopes? Architecture (daos, mappers, services, models, dtos, controllers, exceptions, validators)? Validation? Unit test coverage? What about selenium integration into maven?  JSTL Tags and HTML documents structure.
 
@@ -152,7 +146,7 @@ Search box can look for either computer or company objects.
 
 In the command line interface, add a feature which deletes a company, and all computers related to this company. Warning: Using SQL CASCADE is forbidden. This implies the use of a transaction.
 
-##### 4.3.9. Code review (t0 + 11 days)
+##### 4.3.9. *Code review (t0 + 11 days)*
 
 Important Points: Maven structure? Library scopes? Architecture (daos, mappers, services, models, dtos, controllers, exceptions, validators)? Validation? Unit test coverage? Search and order by design choices? JSTL Tags and HTML documents structure.
 
@@ -162,13 +156,13 @@ Point about Threading (Connections, concurrency), and Transactions.
 
 Replace existing connection logic with a ThreadLocal object.
 
-##### 4.3.9. Code review (t0 + 12 days)
+##### 4.3.11. *Code review (t0 + 12 days)*
 
 Important Points: What were the bottlenecks, what optimizations were done, for how much performance gain, which scores were reached.
 
-#### 4.5. Embracing Spring Framework
+#### 4.4. Embracing Spring Framework
 
-##### 4.5.1. Spring
+##### 4.4.1. Spring
 
 Enable the use of Spring to manage your objects's lifecycle, and transactions.  
 Important: Be careful to use slf4j bridges to display spring logs. Do not forget to setup your logback configuration.
@@ -179,7 +173,7 @@ Which problems did you encounter? Study and note all the possible ways of solvin
 
 Warning: Do not replace your Servlets by another class. Your controllers should still extend HttpServlet.
 
-##### 4.5.2. Point overview: Spring integration (t0 + 20 days)
+##### 4.4.2. Point overview: Spring integration (t0 + 20 days)
 
 How a webapp is started, how spring initializes itself.
 
@@ -187,11 +181,11 @@ Explanation of the common problems encountered with the different contexts.
 
 Roundtable of the solutions found, best practices.
 
-##### 4.5.3. JDBCTemplate
+##### 4.4.3. JDBCTemplate
 
 Change your DAO Implementation and use the JDBCTemplate from spring-jdbc to make your requests
 
-##### 4.5.4. Spring MVC
+##### 4.4.4. Spring MVC
 
 You can now forget about Servlets and use Spring MVC as Controller for your webapp.
 
@@ -199,21 +193,21 @@ Use Spring MVC validation annotations to validate your DTOs.
 
 Add custom error pages.
 
-##### 4.5.5. i18n
+##### 4.4.5. i18n
 
 Implement spring multilingual features (French/English).
 
-##### 4.5.6. Code Review (t0 + 23 days)
+##### 4.4.6. *Code Review (t0 + 23 days)*
 
 Important Points: How did you split your Spring / Spring MVC contexts? How to switch from a language to another? How about javascript translation? Did you use spring-mvc annotations, forms and models?
 
-#### 4.6. Multi module, ORM, and Security
+#### 4.5. Multi module, ORM, and Security
 
-##### 4.6.1. Hibernate
+##### 4.5.1. Hibernate
 
 Add the Hibernate ORM to your project (managed by spring). You can choose the following APIs to implement it. HQL, JPA/Criteria, QueryDSL, Spring data JPA.
 
-##### 4.6.2. Maven multi-module
+##### 4.5.2. Maven multi-module
 
 Now that your app is getting dense, it makes sense to split it into modules.
 
@@ -223,46 +217,46 @@ Warning: you need to also split your applicationContext files: indeed, each modu
 
 Following modules can be created: core, persistence, service, binding, webapp, console.
 
-##### 4.6.3. Security
+##### 4.5.3. Security
 
 Add Spring Security to your project. Choose a stateless approach, and use an extra UserDAO and related SQL table to store and retrieve user login info.
 
 Use Digest HTTP Auth.
 
-##### 4.6.4. Code Review (t0 + 29 days)
+##### 4.5.4. *Code Review (t0 + 29 days)*
 
 Important points: Which API was the most efficient for your queries? Limitations of those APIs.
 Maven and Spring contexts evaluation, unit tests evaluation.
 
-#### 4.7. Web Services, REST API
+#### 4.6. Web Services, REST API
 
-##### 4.7.1 Performance review with Gatling
+##### 4.6.1 Performance review with Gatling
 
 Now that you have enabled Spring Security, you can use the second Gatling Simulation with Spring Security. See the README present in the gatling-test folder for more details.
 
-##### 4.7.2. Jackson
+##### 4.6.2. Jackson
 
 Now, we want your webapp to also produce APIs so that clients could access the resources remotely.
 
 To allow the creation of AngularJS, Mobile (Android/iOS) or third party clients, you should expose all features using Jackson and Spring RestController.
 
-##### 4.7.3. Jax WS / Jax RS
+##### 4.6.3. Jax WS / Jax RS
 
 Refactor your CLI client to act as a remote client to your webapp, using either Jax-RS or Jax-WS libraries.
 
-##### 4.7.4. Final Code Review (t0 + 31 days)
+##### 4.6.4. *Final Code Review (t0 + 31 days)*
 
 Steps to fix before final release, code quality overview and possible improvements. Point about UX
 
-#### 4.8. Final refactoring, UX, and project presentation
+#### 4.7. Final refactoring, UX, and project presentation
 
 The final stage is your production release.
 
-##### 4.8.1. UX
+##### 4.7.1. UX
 
 This is where you will think UX first, challenge the technical choices of the base page template, and customize it to your standards.
 
-#### 4.8.2. Final Presentation (t0 + 34 days)
+#### 4.7.2. Final Presentation (t0 + 34 days)
 
 The presentation will be made with the whole group, on one project of their choice.
 
