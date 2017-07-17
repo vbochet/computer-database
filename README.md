@@ -120,15 +120,6 @@ Use DTOs (Data Transfer Object) to transport only relevant data to the JSPs.
 
 Implement Computer listing (paginated), and add features.
 
-Create two tags (In your own Taglib): one for the pagination module, one for links.
-
-Example:
-
-``` xml
-<mylib:link target="dashboard" page="${requestScope.page.current + 1}" limit="${requestScope.page.limit}" ... />
-<mylib:pagination page="${requestScope.page.current}" page-count="${requestScope.page.count}" ... />
-```
-
 Warning: All features will be implemented and tested using Selenium automated with maven.
 
 ##### 4.3.3. Secure through validation
@@ -171,47 +162,9 @@ Point about Threading (Connections, concurrency), and Transactions.
 
 Replace existing connection logic with a ThreadLocal object.
 
-##### 4.3.11 Performance Challenge with Gatling
-
-Now is the time to start evaluating your global application performance with a stress-test campain.
-Using Gatling, you have one day to stress-test your web application (gatling test and directions present in the folder gatling-test) and use tools like VisualVM to improve the performances. See the relevant README file for more explanations. For now, choose the simulation without Spring Security.
-
-
 ##### 4.3.9. Code review (t0 + 12 days)
 
 Important Points: What were the bottlenecks, what optimizations were done, for how much performance gain, which scores were reached.
-
-#### 4.4 Continuous Integration / Continuous Delivery
-
-We want to setup a continuous integration/delivery  system for our webapp with [Jenkins](https://jenkins-ci.org/) and [Docker](https://www.docker.com). Each time we push on master we want Jenkins to retrieve the changes, compile, test on a specific environment, build and push the new image to a registry, then automatically deploy the new image on the Cloud.
-
-##### 4.4.1 Jenkins & Docker
-
-Create Docker images that contain a test environment: one with jdk8 + maven and another with a MySQL database. Use the [docker network](https://docs.docker.com/engine/userguide/networking/work-with-networks/) command to enable communication between your containers. Do not use [links](https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/) since the feature will be deprecated.
-Setup a Jenkins to start your test containers each time a push on master is performed, then display the JUnits results.
-
-##### 4.4.2 Docker in Docker?
-
-We now want to put our Jenkins in a Docker container. Create a Docker container with your previous Jenkins configuration. Jenkins must be able to run your test containers. As Jenkins is already working inside a container, you need to find a way for it to run another one. Multiple solutions exist. Find the most relevant for your use case, and let us know what choices you made.
-
-##### 4.4.3 Continuous Delivery
-
-Create four Docker images: one for jenkins, one for compilation and tests, one for production (tomcat) and one for the mysql. Push them to DockerHub.
-
-* Connect with your login to [Docker Cloud](https://cloud.docker.com/) 
-* Create a [free account](https://aws.amazon.com/fr/free/) on Amazon Web Services.
-* [Link](https://docs.docker.com/docker-cloud/getting-started/link-aws/) your Amazon Web Services account to deploy node clusters and nodes using Docker Cloud’s dashboard. Be careful when choosing the type of node on Docker Cloud, select 't2.micro' under the conditions of free AWS account.
-* Observe the diagram below to properly configure the architecture of Docker containers to set up the continuous delivery: ![image](http://s32.postimg.org/iio0ls66t/Continuous_delivery.png)
-* Below the activity diagram to figure out all the process: ![image](http://s32.postimg.org/ijyeykoyd/CDProcess_Diagram.png)
-
-
-##### 4.4.4. Point overview: Continuous Integration (t0 + 18 days)
-
-Jenkins + DooD: which service actually starts the containers ?
-
-Container communication ?
-
-DockerHub: automated builds limitations ?
 
 #### 4.5. Embracing Spring Framework
 
