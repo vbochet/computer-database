@@ -8,13 +8,12 @@ Here is the macro-planning and timeline of all milestones:
  * t0+2  - Base Architecture, CLI (Add / Edit features), Logging
  * t0+8  - Web UI, Maven, Unit Tests, jQuery Validation, Backend Validation
  * t0+11 - Search, OrderBy, Transactions, Connection-Pool 
- * t0+12 - Threadlocal, Java Performance contest
- * t0+18 - Continuous delivery (Jenkins, Docker, Dockerhub)
- * t0+20 - Spring integration
- * t0+23 - Spring MVC integration, JDBC Template, i18n
- * t0+29 - Maven Multi-modules, Spring Security, Hibernate ORM (JPA, Criteria, QueryDSL, Spring Data JPA)
- * t0+31 - Web Services, end of project
- * t0+34 - Project presentation to sales & tech audience
+ * t0+13 - Spring integration
+ * t0+16 - Spring MVC integration, JDBC Template, i18n
+ * t0+22 - Maven Multi-modules, Spring Security, Hibernate ORM (JPA, Criteria, QueryDSL, Spring Data JPA)
+ * t0+27 - Front (Angular JS, Angular or React)
+ * t0+29 - Web Services, end of project
+ * t0+32 - Project presentation to sales & tech audience
 
 # Installation
 
@@ -121,48 +120,6 @@ In the command line interface, add a feature which deletes a company, and all co
 Important Points: Maven structure? Library scopes? Architecture (daos, mappers, services, models, dtos, controllers, exceptions, validators)? Validation? Unit test coverage? Search and order by design choices? JSTL Tags and HTML documents structure.  
 Point about Threading (Connections, concurrency), and Transactions.
 
-#### 4.3.10. Threadlocal
-Replace existing connection logic with a ThreadLocal object. 
-
-#### 4.3.11 Performance Challenge with Gatling
-Now is the time to start evaluating your global application performance with a stress-test campain.
-Using Gatling, you have one day to stress-test your web application (gatling test and directions present in the folder gatling-test) and use tools like VisualVM to improve the performances. See the relevant README file for more explanations. For now, choose the simulation without Spring Security.
-
-
-#### 4.3.9. Code review (t0 + 12 days)
-Important Points: What were the bottlenecks, what optimizations were done, for how much performance gain, which scores were reached.
-
-### 4.4 Continuous Integration / Continuous Delivery
-We want to setup a continuous integration/delivery  system for our webapp with [Jenkins](https://jenkins-ci.org/) and [Docker](https://www.docker.com). Each time we push on master we want Jenkins to retrieve the changes, compile, test on a specific environment, build and push the new image to a registry, then automatically deploy the new image on the Cloud.
-
-#### 4.4.1 Jenkins & Docker
-Create Docker images that contain a test environment: one with jdk8 + maven and another with a MySQL database. Use the [docker network](https://docs.docker.com/engine/userguide/networking/work-with-networks/) command to enable communication between your containers. Do not use [links](https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/) since the feature will be deprecated.
-Setup a Jenkins to start your test containers each time a push on master is performed, then display the JUnits results.
-
-#### 4.4.2 Docker in Docker?
-We now want to put our Jenkins in a Docker container. Create a Docker container with your previous Jenkins configuration. Jenkins must be able to run your test containers. As Jenkins is already working inside a container, you need to find a way for it to run another one. Multiple solutions exist. Find the most relevant for your use case, and let us know what choices you made.
-
-#### 4.4.3 Continuous Delivery
-Create four Docker images: one for jenkins, one for compilation and tests, one for production (tomcat) and one for the mysql. Push them to DockerHub.
-
-- Connect with your login to [Docker Cloud](https://cloud.docker.com/) 
-
-- Create a [free account](https://aws.amazon.com/fr/free/) on Amazon Web Services.
-
-- [Link](https://docs.docker.com/docker-cloud/getting-started/link-aws/) your Amazon Web Services account to deploy node clusters and nodes using Docker Cloud’s dashboard. Be careful when choosing the type of node on Docker Cloud, select 't2.micro' under the conditions of free AWS account.
-
-- Observe the diagram below to properly configure the architecture of Docker containers to set up the continuous delivery:
-![image](http://s32.postimg.org/iio0ls66t/Continuous_delivery.png)
-
-- Below the activity diagram to figure out all the process:
-![image](http://s32.postimg.org/ijyeykoyd/CDProcess_Diagram.png)
-
-
-#### 4.4.4. Point overview: Continuous Integration (t0 + 18 days)
-Jenkins + DooD: which service actually starts the containers ?   
-Container communication ?   
-DockerHub: automated builds limitations ?
-
 ### 4.5. Embracing Spring Framework
 
 #### 4.5.1. Spring
@@ -172,7 +129,7 @@ Replace your connection pool by a real datasource configured in the spring conte
 Which problems did you encounter? Study and note all the possible ways of solving the dependency injection issue in servlets.  
 Warning: Do not replace your Servlets by another class. Your controllers should still extend HttpServlet.
 
-#### 4.5.2. Point overview: Spring integration (t0 + 20 days)
+#### 4.5.2. Point overview: Spring integration (t0 + 13 days)
 How a webapp is started, how spring initializes itself.  
 Explanation of the common problems encountered with the different contexts.  
 Roundtable of the solutions found, best practices.
@@ -188,7 +145,7 @@ Add custom error pages.
 #### 4.5.5. i18n
 Implement spring multilingual features (French/English).
 
-#### 4.5.6. Code Review (t0 + 23 days)
+#### 4.5.6. Code Review (t0 + 16 days)
 Important Points: How did you split your Spring / Spring MVC contexts? How to switch from a language to another? How about javascript translation? Did you use spring-mvc annotations, forms and models?
 
 ### 4.6. Multi module, ORM, and Security
@@ -206,32 +163,34 @@ Following modules can be created: core, persistence, service, binding, webapp, c
 Add Spring Security to your project. Choose a stateless approach, and use an extra UserDAO and related SQL table to store and retrieve user login info.  
 Use Digest HTTP Auth.
 
-#### 4.6.4. Code Review (t0 + 29 days)
+#### 4.6.4. Code Review (t0 + 22 days)
 Important points: Which API was the most efficient for your queries? Limitations of those APIs.
 Maven and Spring contexts evaluation, unit tests evaluation.
 
-### 4.7. Web Services, REST API
+### 4.7. Front End
 
-#### 4.7.1 Performance review with Gatling
+### 4.8. Web Services, REST API
+
+#### 4.8.1 Performance review with Gatling
 Now that you have enabled Spring Security, you can use the second Gatling Simulation with Spring Security. See the README present in the gatling-test folder for more details.
 
-#### 4.7.2. Jackson
+#### 4.8.2. Jackson
 Now, we want your webapp to also produce APIs so that clients could access the resources remotely.  
 To allow the creation of AngularJS, Mobile (Android/iOS) or third party clients, you should expose all features using Jackson and Spring RestController.
 
-#### 4.7.3. Jax WS / Jax RS
+#### 4.8.3. Jax WS / Jax RS
 Refactor your CLI client to act as a remote client to your webapp, using either Jax-RS or Jax-WS libraries.
 
-#### 4.7.4. Final Code Review (t0 + 31 days)
+#### 4.8.4. Final Code Review (t0 + 29 days)
 Steps to fix before final release, code quality overview and possible improvements. Point about UX
 
-### 4.8. Final refactoring, UX, and project presentation
+### 4.9. Final refactoring, UX, and project presentation
 The final stage is your production release.  
 
-#### 4.8.1. UX
+#### 4.9.1. UX
 This is where you will think UX first, challenge the technical choices of the base page template, and customize it to your standards.
 
-### 4.8.2. Final Presentation (t0 + 34 days)
+### 4.9.2. Final Presentation (t0 + 32 days)
 The presentation will be made with the whole group, on one project of their choice.  
 It consists of 3 parts:  
 The product-presentation, from a user-centered perspective (non-technical). 
