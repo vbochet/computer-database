@@ -180,15 +180,29 @@ Refactor your CLI client to act as a remote client to your webapp, using either 
 Steps to fix before final release, code quality overview and possible improvements. Point about UX
 
 ### 4.8. Front End
-Add a Single Page Application (SPA) that enables the listing, creation, deletion and modification of compagnies for an admin user.
+Create another project on your Github : **cdb-front**.
+
+**cdb-front** is a Single Page Application (SPA) that enables the listing, creation, deletion and modification of compagnies for an admin user.
+
 You must choose one of the 3 following frameworks (choose wisely) :
 * AngularJs
 * Angular
 * React
+
 This SPA must use the webservices you just created.
+
 This SPA must be responsive. You can use any css library or create your own CSS.
 
+Don't forget that this project is not on your tomcat, and that the address of your webservices may change from an environment to another.
+
 #### 4.8.1 AngularJs
+You must use a generator from either Yeoman or Npm, but you'll have to justify your choice.
+
+Don't forget to split your logic between controlers and services.
+
+You can test your SPA with karma/jasmine.
+
+If you can, respect the [style guide of John Papa](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md)
 
 #### 4.8.2 Angular
 
