@@ -167,28 +167,25 @@ Use Digest HTTP Auth.
 Important points: Which API was the most efficient for your queries? Limitations of those APIs.
 Maven and Spring contexts evaluation, unit tests evaluation.
 
-### 4.7. Front End (One of you choice
+### 4.7. Web Services, REST API
 
-#### 4.7.1. Angular JS
-
-#### 4.7.2. Angular
-
-#### 4.7.3 . React
-
-### 4.8. Web Services, REST API
-
-#### 4.8.1 Performance review with Gatling
-Now that you have enabled Spring Security, you can use the second Gatling Simulation with Spring Security. See the README present in the gatling-test folder for more details.
-
-#### 4.8.2. Jackson
+#### 4.7.1. Jackson
 Now, we want your webapp to also produce APIs so that clients could access the resources remotely.  
 To allow the creation of AngularJS, Mobile (Android/iOS) or third party clients, you should expose all features using Jackson and Spring RestController.
 
-#### 4.8.3. Jax WS / Jax RS
+#### 4.7.2. Jax WS / Jax RS
 Refactor your CLI client to act as a remote client to your webapp, using either Jax-RS or Jax-WS libraries.
 
-#### 4.8.4. Final Code Review (t0 + 29 days)
+#### 4.7.3. Final Code Review (t0 + 29 days)
 Steps to fix before final release, code quality overview and possible improvements. Point about UX
+
+### 4.8. Front End (One of you choice
+
+#### 4.8.1. Angular JS
+
+#### 4.8.2. Angular
+
+#### 4.8.3 . React
 
 ### 4.9. Final refactoring, UX, and project presentation
 The final stage is your production release.  
