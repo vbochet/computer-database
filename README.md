@@ -176,19 +176,100 @@ To allow the creation of AngularJS, Mobile (Android/iOS) or third party clients,
 #### 4.7.2. Jax WS / Jax RS
 Refactor your CLI client to act as a remote client to your webapp, using either Jax-RS or Jax-WS libraries.
 
-#### 4.7.3. Final Code Review (t0 + 29 days)
-Steps to fix before final release, code quality overview and possible improvements. Point about UX
+#### 4.7.3. Code Review (t0 + 29 days)
+Steps to fix before final release, code quality overview and possible improvements. AngularJs formation.
 
-### 4.8. Front End (One of you choice
+### 4.8. Front End
+Create another project on your Github : **cdb-front**.
 
-#### 4.8.1. Angular JS
+**cdb-front** is a Single Page Application (SPA) that enables the listing, creation, deletion and modification of compagnies for an admin user.
 
-#### 4.8.2. Angular
+You must choose one of the 3 following frameworks (choose wisely) :
+* AngularJs
+* Angular
+* React
 
-#### 4.8.3 . React
+This SPA must use the webservices you just created.
+
+This SPA must be responsive. You can use any css library or create your own CSS.
+
+Don't forget that this project is not on your tomcat, and that the address of your webservices may change from an environment to another.
+
+#### 4.8.1 [AngularJs](https://angularjs.org/)
+
+You must use a generator from either Yeoman or Npm, but you'll have to justify your choice.
+
+Don't forget to split your logic between controllers and services.
+
+You can test your SPA with karma + jasmine.
+
+If you can, respect the [style guide of John Papa](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md).
+
+#### 4.8.2 [Angular](https://angular.io/)
+
+Angular is the rework of AngularJS framework. It's a brand new framework that is component oriented.
+
+It is recommended to write code using [Typescript](https://www.typescriptlang.org/), a typed and object oriented Javascript. But you can still use latest Javascript.
+
+##### [Angular-CLI](https://github.com/angular/angular-cli)
+You can bootstrap your Angular project with Angular-CLI tools.
+
+Angular-CLI provides you a pre-configured boilerplate project with all the tools generally used like Karma, Protractor and Jasmine for your tests, the compiler for Typescript and Sass and a first sample component.
+
+For the use of Angular-CLI, we invite you to read the manual on the Angular-CLI github page.
+
+##### Base architecture
+
+In Angular, almost everything is a component, you must think your application like a house (which is a component, basically, your app.component) composed of walls (components too) which are themselves composed of bricks , etc ...
+Each room of your house could be a module (see [documentation](https://angular.io/guide/architecture) for more informations)
+
+We recommend you to follow the [style guide of John Papa](https://github.com/johnpapa/angular-styleguide/blob/master/a2/README.md) (same person than AngularJS style guide)
+
+##### Usefull links
+- [Angular Tower of Heroes Tutorial](https://angular.io/tutorial)
+- [Angular Docs](https://angular.io/guide/architecture)
+- [Angular Style guide](https://github.com/johnpapa/angular-styleguide/blob/master/a2/README.md)
+
+#### 4.8.3 [React](https://reactjs.org/)
+
+With React you will introduce yourself to functional programming, latest JS features, and highly scalable single page apps.
+
+##### Components
+
+React is the view layer of your SPA.
+
+As with angular [create-react-app](https://github.com/facebookincubator/create-react-app) will allow you to bootstrap a React app with (almost) no pain.
+
+Drop some [react-bootstrap](http://react-bootstrap.github.io/) or [material UI](http://www.material-ui.com/#/) in it, and you'll be good to go.
+
+Then, you will have to look at the UI you want to build, and separate it in components. You can look at the concepts of smart/dumb containers/components.
+
+Here's my advice :
+- Make small, reusable and logic-free components. Put them in "components" directory. (Your UI library will already provide you a lot of them)
+- Make business-aware and complex components. Put them in "containers" directory.
+- Make layout components which organizes the components in page. Put them in "page" directory.
+
+Maybe [this](http://havesome-react.surge.sh) will help.
+
+API calls: axios
+Tests: Jest, enzyme, look at snapshot tests. [cheatsheet](https://gist.github.com/yoavniran/1e3b0162e1545055429e)
+
+##### [Redux](http://redux.js.org/)
+
+Redux concept is not bound to React, but you'll hardly make an interesting application without a simple way to manage the data you display. I said simple. Not easy...
+
+Consider spending some time to understand redux before continuing. Maybe [this](http://havesome-redux.surge.sh/) will help.
+
+When you got it, you can use [ducks](https://github.com/erikras/ducks-modular-redux) architecture (like re-ducks with English accent) to organize your files.
+And follow the [Flux Standard Action](https://github.com/acdlite/flux-standard-action) convention for creating your actions.
+
+Use react-redux to connect your components to redux.
+Use redux-thunk to make asynchronous action dispatch.
+
+NB: Page's role can also be extended to make the call to the API to hydrate the page on load. For example, you want to display edit page. You need the current data, so you'll want to load it in the first place. You can dispatch an action hydrate your store (copy a portion of the db) in the componentDidMount lifecycle hook.
 
 ### 4.9. Final refactoring, UX, and project presentation
-The final stage is your production release.  
+The final stage is your production release.
 
 #### 4.9.1. UX
 This is where you will think UX first, challenge the technical choices of the base page template, and customize it to your standards.
