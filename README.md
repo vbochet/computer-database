@@ -176,8 +176,8 @@ To allow the creation of AngularJS, Mobile (Android/iOS) or third party clients,
 #### 4.7.2. Jax WS / Jax RS
 Refactor your CLI client to act as a remote client to your webapp, using either Jax-RS or Jax-WS libraries.
 
-#### 4.7.3. Final Code Review (t0 + 29 days)
-Steps to fix before final release, code quality overview and possible improvements. Point about UX
+#### 4.7.3. Code Review (t0 + 29 days)
+Steps to fix before final release, code quality overview and possible improvements. AngularJs formation.
 
 ### 4.8. Front End
 Create another project on your Github : **cdb-front**.
@@ -269,7 +269,7 @@ Use redux-thunk to make asynchronous action dispatch.
 NB: Page's role can also be extended to make the call to the API to hydrate the page on load. For example, you want to display edit page. You need the current data, so you'll want to load it in the first place. You can dispatch an action hydrate your store (copy a portion of the db) in the componentDidMount lifecycle hook.
 
 ### 4.9. Final refactoring, UX, and project presentation
-The final stage is your production release.  
+The final stage is your production release.
 
 #### 4.9.1. UX
 This is where you will think UX first, challenge the technical choices of the base page template, and customize it to your standards.
