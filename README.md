@@ -196,17 +196,54 @@ This SPA must be responsive. You can use any css library or create your own CSS.
 Don't forget that this project is not on your tomcat, and that the address of your webservices may change from an environment to another.
 
 #### 4.8.1 AngularJs
+
 You must use a generator from either Yeoman or Npm, but you'll have to justify your choice.
 
-Don't forget to split your logic between controlers and services.
+Don't forget to split your logic between controllers and services.
 
-You can test your SPA with karma/jasmine.
+You can test your SPA with karma + jasmine.
 
-If you can, respect the [style guide of John Papa](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md)
+If you can, respect the [style guide of John Papa](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md).
 
 #### 4.8.2 Angular
 
-#### 4.8.3 React
+#### 4.8.3 [React](https://reactjs.org/)
+
+With React you will introduce yourself to functional programming, latest JS features, and highly scalable single page apps.
+
+##### Components
+
+React is the view layer of your SPA.
+
+As with angular [create-react-app](https://github.com/facebookincubator/create-react-app) will allow you to bootstrap a React app with (almost) no pain.
+
+Drop some [react-bootstrap](http://react-bootstrap.github.io/) or [material UI](http://www.material-ui.com/#/) in it, and you'll be good to go.
+
+Then, you will have to look at the UI you want to build, and separate it in components. You can look at the concepts of smart/dumb containers/components.
+
+Here's my advice :
+- Make small, reusable and logic-free components. Put them in "components" directory. (Your UI library will already provide you a lot of them)
+- Make business-aware and complex components. Put them in "containers" directory.
+- Make layout components which organizes the components in page. Put them in "page" directory.
+
+Maybe [this](http://havesome-react.surge.sh) will help.
+
+API calls: axios
+Tests: Jest, enzyme, look at snapshot tests. [cheatsheet](https://gist.github.com/yoavniran/1e3b0162e1545055429e)
+
+##### [Redux](http://redux.js.org/)
+
+Redux concept is not bound to React, but you'll hardly make an interesting application without a simple way to manage the data you display. I said simple. Not easy...
+
+Consider spending some time to understand redux before continuing. Maybe [this](http://havesome-redux.surge.sh/) will help.
+
+When you got it, you can use [ducks](https://github.com/erikras/ducks-modular-redux) architecture (like re-ducks with English accent) to organize your files.
+And follow the [Flux Standard Action](https://github.com/acdlite/flux-standard-action) convention for creating your actions.
+
+Use react-redux to connect your components to redux.
+Use redux-thunk to make asynchronous action dispatch.
+
+NB: Page's role can also be extended to make the call to the API to hydrate the page on load. For example, you want to display edit page. You need the current data, so you'll want to load it in the first place. You can dispatch an action hydrate your store (copy a portion of the db) in the componentDidMount lifecycle hook.
 
 ### 4.9. Final refactoring, UX, and project presentation
 The final stage is your production release.  
