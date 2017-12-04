@@ -286,14 +286,14 @@ A technical review: you will reassure your client on what he paid for. Give him 
 
 # 5. Optional modules
 
-## 5.1. Threadlocal
+## 5.1. Threadlocal (2 days)
 Replace existing connection logic with a ThreadLocal object. 
 
-## 5.2. Performance Challenge with Gatling
+## 5.2. Performance Challenge with Gatling (3 days)
 Now is the time to start evaluating your global application performance with a stress-test campain.
 Using Gatling, you have one day to stress-test your web application (gatling test and directions present in the folder gatling-test) and use tools like VisualVM to improve the performances. See the relevant README file for more explanations. For now, choose the simulation without Spring Security.
 
-## 5.3. Continuous Integration / Continuous Delivery
+## 5.3. Continuous Integration / Continuous Delivery (6 days)
 We want to setup a continuous integration/delivery  system for our webapp with [Jenkins](https://jenkins-ci.org/) and [Docker](https://www.docker.com). Each time we push on master we want Jenkins to retrieve the changes, compile, test on a specific environment, build and push the new image to a registry, then automatically deploy the new image on the Cloud.
 
 ### 5.3.1 Jenkins & Docker
