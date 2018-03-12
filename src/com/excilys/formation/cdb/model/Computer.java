@@ -68,5 +68,22 @@ public class Computer {
 	public void setCompany_id(int company_id) {
 		this.company_id = company_id;
 	}
+	
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("COMPUTER\n");
+		sb.append("  id: ");
+		sb.append(this.getId());
+		sb.append("\n  name: ");
+		sb.append(this.getName());
+		sb.append("\n  introduced: ");
+		sb.append(this.getIntroduced());
+		sb.append("\n  discontinued: ");
+		sb.append(this.getDiscontinued());
+		sb.append("\n  company id: ");
+		sb.append(this.getCompany_id());
+		return sb.toString();
+	}
 
 }
