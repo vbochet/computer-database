@@ -33,4 +33,14 @@ public class Company {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("COMPANY\n");
+		sb.append("  id: ");
+		sb.append(this.getId());
+		sb.append("\n  name: ");
+		sb.append(this.getName());
+		return sb.toString();
+	}
 }
