@@ -25,7 +25,7 @@ public enum ConnectionManager {
 		props = new Properties();
 		
 		try {
-			file = new FileInputStream("/config/db/db.properties");
+			file = new FileInputStream("config/db/db.properties");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
