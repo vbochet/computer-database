@@ -19,7 +19,6 @@ public class ComputerDaoImpl implements ComputerDao {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		Computer res = null;
 
 
 		if(c.getName().isEmpty()) {
@@ -36,7 +35,7 @@ public class ComputerDaoImpl implements ComputerDao {
 		
 		try {
 			ps = conn.prepareStatement("INSERT INTO computer (name, introduced, discontinued, company_id)"
-													+ "VALUES(?, ?, ?, ?, ?)", 
+													+ "VALUES(?, ?, ?, ?)", 
 									   Statement.RETURN_GENERATED_KEYS);
 			
 			ps.setString(1, c.getName());
@@ -48,7 +47,7 @@ public class ComputerDaoImpl implements ComputerDao {
 			
 			rs = ps.getGeneratedKeys();
 			if(rs.first()) {
-				res = ComputerMapper.createComputer(rs);
+				c.setId(rs.getLong(1));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -57,7 +56,7 @@ public class ComputerDaoImpl implements ComputerDao {
 			ConnectionManager.INSTANCE.closeElements(null, ps, rs);
 		}
 		
-	    return res;
+	    return c;
 	}
 
 	@Override
