@@ -20,6 +20,19 @@ public class ComputerDaoImpl implements ComputerDao {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Computer res = null;
+
+
+		if(c.getName().isEmpty()) {
+			System.err.println("A computer must have a name!");
+			return null;
+		}
+		
+		if(c.getDiscontinued() == null) {}
+		else if((c.getIntroduced() == null) ||
+			(c.getIntroduced().compareTo(c.getDiscontinued()) > 0)) {
+			System.err.println("The discontinuation date must be greater than the introduction date!");
+			return null;
+		}
 		
 		try {
 			ps = conn.prepareStatement("INSERT INTO computer (name, introduced, discontinued, company_id)"
