@@ -125,17 +125,20 @@ public class ComputerDaoImpl implements ComputerDao {
 			ConnectionManager.INSTANCE.closeElements(null, ps, null);
 		}
 	}
-	
+
 
 	@Override
-	public List<Computer> list() {
+	public List<Computer> list(int id_first, int nb_to_print) {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Computer> computersList = new ArrayList<>();
 
 		try {
-			rs = conn.createStatement().executeQuery("SELECT * FROM computer");
+			ps = conn.prepareStatement("SELECT * FROM computer WHERE id >= ? LIMIT ?");
+			ps.setInt(1, id_first);
+			ps.setInt(2, nb_to_print);
+			rs = ps.executeQuery();
 			
 			while(rs.next()) {
 				computersList.add(ComputerMapper.createComputer(rs));
@@ -148,6 +151,16 @@ public class ComputerDaoImpl implements ComputerDao {
 		}
 		
 		return computersList;
+	}
+
+	@Override
+	public List<Computer> list(int id_first) {
+		return this.list(id_first, 10);
+	}
+
+	@Override
+	public List<Computer> list() {
+		return this.list(0, 10);
 	}
 
 }

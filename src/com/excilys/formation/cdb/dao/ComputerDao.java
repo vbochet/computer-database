@@ -13,7 +13,9 @@ public interface ComputerDao {
 	public Computer update(Computer c);
 	
 	public void delete(int id);
-	
+
 	public List<Computer> list();
+	public List<Computer> list(int id_first);
+	public List<Computer> list(int id_first, int nb_to_print);
 	
 }
