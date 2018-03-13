@@ -11,10 +11,17 @@ import java.util.List;
 import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.persistence.ConnectionManager;
+import com.excilys.formation.cdb.validator.ComputerValidator;
 
 public enum ComputerDaoImpl implements ComputerDao {
 
 	INSTANCE;
+	
+	private String createRequest = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);",
+				   readRequest   = "SELECT * FROM computer WHERE id = ?;",
+				   updateRequest = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;",
+				   deleteRequest = "DELETE FROM computer WHERE id = ?;",
+				   listRequest   = "SELECT * FROM computer WHERE id >= ? LIMIT ?;";
 	
 	@Override
 	public Computer create(Computer c) {
@@ -22,35 +29,12 @@ public enum ComputerDaoImpl implements ComputerDao {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
-
-		if(c.getName().isEmpty()) {
-			System.err.println("A computer must have a name!");
-			return null;
-		}
-		
-		if((c.getDiscontinued() != null) && 
-				((c.getIntroduced() == null) ||
-					(c.getIntroduced().compareTo(c.getDiscontinued()) > 0))) {
-			System.err.println("The discontinuation date must be greater than the introduction date!");
+		if(!ComputerValidator.INSTANCE.validateComputer(c)) {
 			return null;
 		}
 		
 		try {
-			ps = conn.prepareStatement("INSERT INTO computer (name, introduced, discontinued, company_id)"
-													+ "VALUES(?, ?, ?, ?)", 
-									   Statement.RETURN_GENERATED_KEYS);
-			
-			ps.setString(1, c.getName());
-			ps.setTimestamp(2, c.getIntroduced());
-			ps.setTimestamp(3, c.getDiscontinued());
-			ps.setLong(4, c.getCompany_id());
-			
-			ps.executeUpdate();
-			
-			rs = ps.getGeneratedKeys();
-			if(rs.first()) {
-				c.setId(rs.getLong(1));
-			}
+			c = executeCreateRequest(conn, ps, rs, c);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -59,6 +43,24 @@ public enum ComputerDaoImpl implements ComputerDao {
 		}
 		
 	    return c;
+	}
+	
+	private Computer executeCreateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
+		ps = conn.prepareStatement(createRequest, Statement.RETURN_GENERATED_KEYS);
+		
+		ps.setString(1, c.getName());
+		ps.setTimestamp(2, c.getIntroduced());
+		ps.setTimestamp(3, c.getDiscontinued());
+		ps.setLong(4, c.getCompany_id());
+		
+		ps.executeUpdate();
+		
+		rs = ps.getGeneratedKeys();
+		if(rs.first()) {
+			c.setId(rs.getLong(1));
+		}
+		
+		return c;
 	}
 
 	@Override
@@ -69,13 +71,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 		Computer res = null;
 
 		try {
-			ps = conn.prepareStatement("SELECT * FROM computer WHERE id = ?");
-			ps.setLong(1, id);
-			rs = ps.executeQuery();
-			
-			if(rs.first()) {
-				res = ComputerMapper.INSTANCE.createComputer(rs);
-			}
+			res = executeReadRequest(conn, ps, rs, id);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -84,6 +80,20 @@ public enum ComputerDaoImpl implements ComputerDao {
 		}
 		
 		return res;
+	}
+	
+	private Computer executeReadRequest(Connection conn, PreparedStatement ps, ResultSet rs, long id) throws SQLException {
+		Computer c = null;
+		
+		ps = conn.prepareStatement(readRequest);
+		ps.setLong(1, id);
+		rs = ps.executeQuery();
+		
+		if(rs.first()) {
+			c = ComputerMapper.INSTANCE.createComputer(rs);
+		}
+		
+		return c;
 	}
 
 	@Override
@@ -93,23 +103,8 @@ public enum ComputerDaoImpl implements ComputerDao {
 		ResultSet rs = null;
 		Computer res = null;
 		
-		String sql = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
 		try {
-			ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-		    
-			ps.setString(1, c.getName());
-		    ps.setTimestamp(2, c.getIntroduced());
-		    ps.setTimestamp(3, c.getDiscontinued());
-		    ps.setLong(4, c.getCompany_id());
-		    ps.setLong(5, c.getId());
-		    
-		    ps.executeUpdate();
-			
-			rs = ps.getGeneratedKeys();
-			
-			if(rs.first()) {
-				res = ComputerMapper.INSTANCE.createComputer(rs);
-			}
+			res = executeUpdateRequest(conn, ps, rs, c);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -119,19 +114,33 @@ public enum ComputerDaoImpl implements ComputerDao {
 		
 		return res;
 	}
+	
+	private Computer executeUpdateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
+		ps = conn.prepareStatement(updateRequest, Statement.RETURN_GENERATED_KEYS);
+	    
+		ps.setString(1, c.getName());
+	    ps.setTimestamp(2, c.getIntroduced());
+	    ps.setTimestamp(3, c.getDiscontinued());
+	    ps.setLong(4, c.getCompany_id());
+	    ps.setLong(5, c.getId());
+	    
+	    ps.executeUpdate();
+		
+		rs = ps.getGeneratedKeys();
+		
+		if(rs.first()) {
+			c = ComputerMapper.INSTANCE.createComputer(rs);
+		}
+		return c;
+	}
 
 	@Override
 	public void delete(long id) {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		
-		String sql = "DELETE FROM computer WHERE id = ?;";
-		
 		try {
-			ps = conn.prepareStatement(sql);
-		    ps.setLong(1, id);
-		    
-			ps.executeUpdate();
+			executeDeleteRequest(conn, ps, id);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -139,7 +148,12 @@ public enum ComputerDaoImpl implements ComputerDao {
 			ConnectionManager.INSTANCE.closeElements(conn, ps, null);
 		}
 	}
-
+	
+	private void executeDeleteRequest(Connection conn, PreparedStatement ps, Long id) throws SQLException {
+		ps = conn.prepareStatement(deleteRequest);
+	    ps.setLong(1, id);
+		ps.executeUpdate();
+	}
 
 	@Override
 	public List<Computer> list(long id_first, int nb_to_print) {
@@ -149,14 +163,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 		List<Computer> computersList = new ArrayList<>();
 
 		try {
-			ps = conn.prepareStatement("SELECT * FROM computer WHERE id >= ? LIMIT ?");
-			ps.setLong(1, id_first);
-			ps.setInt(2, nb_to_print);
-			rs = ps.executeQuery();
-			
-			while(rs.next()) {
-				computersList.add(ComputerMapper.INSTANCE.createComputer(rs));
-			}
+			computersList = executeListRequest(conn, ps, rs, id_first, nb_to_print);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -166,6 +173,22 @@ public enum ComputerDaoImpl implements ComputerDao {
 		
 		return computersList;
 	}
+	
+	private List<Computer> executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs,long id_first, int nb_to_print) throws SQLException {
+		List<Computer> computersList = new ArrayList<>();
+		
+		ps = conn.prepareStatement(listRequest);
+		ps.setLong(1, id_first);
+		ps.setInt(2, nb_to_print);
+		rs = ps.executeQuery();
+		
+		while(rs.next()) {
+			computersList.add(ComputerMapper.INSTANCE.createComputer(rs));
+		}
+		
+		return computersList;
+	}
+		
 
 	@Override
 	public List<Computer> list(long id_first) {
