@@ -56,15 +56,15 @@ public enum ConnectionManager {
 		url = props.getProperty("jdbc.url");
 		username = props.getProperty("jdbc.username");
 		password = props.getProperty("jdbc.password");
+	}
 
+	public Connection getConnection() {
 		try {
 			conn = DriverManager.getConnection(url, username, password);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public Connection getConnection() {
+		
 		return conn;
 	}
 

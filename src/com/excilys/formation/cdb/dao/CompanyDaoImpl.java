@@ -35,7 +35,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 			e.printStackTrace();
 		}
 		finally {
-			ConnectionManager.INSTANCE.closeElements(null, ps, rs);
+			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
 		}
 		
 		return companiesList;

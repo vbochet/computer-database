@@ -55,7 +55,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 			e.printStackTrace();
 		}
 		finally {
-			ConnectionManager.INSTANCE.closeElements(null, ps, rs);
+			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
 		}
 		
 	    return c;
@@ -80,7 +80,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 			e.printStackTrace();
 		}
 		finally {
-			ConnectionManager.INSTANCE.closeElements(null, ps, rs);
+			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
 		}
 		
 		return res;
@@ -114,7 +114,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 			e.printStackTrace();
 		}
 		finally {
-			ConnectionManager.INSTANCE.closeElements(null, ps, rs);
+			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
 		}
 		
 		return res;
@@ -136,7 +136,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 			e.printStackTrace();
 		}
 		finally {
-			ConnectionManager.INSTANCE.closeElements(null, ps, null);
+			ConnectionManager.INSTANCE.closeElements(conn, ps, null);
 		}
 	}
 
@@ -161,7 +161,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 			e.printStackTrace();
 		}
 		finally {
-			ConnectionManager.INSTANCE.closeElements(null, ps, rs);
+			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
 		}
 		
 		return computersList;
