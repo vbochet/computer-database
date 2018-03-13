@@ -42,7 +42,7 @@ public class ComputerDaoImpl implements ComputerDao {
 			ps.setString(1, c.getName());
 			ps.setTimestamp(2, c.getIntroduced());
 			ps.setTimestamp(3, c.getDiscontinued());
-			ps.setInt(4, c.getCompany_id());
+			ps.setLong(4, c.getCompany_id());
 			
 			ps.executeUpdate();
 			
@@ -61,7 +61,7 @@ public class ComputerDaoImpl implements ComputerDao {
 	}
 
 	@Override
-	public Computer read(int id) {
+	public Computer read(long id) {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -69,7 +69,7 @@ public class ComputerDaoImpl implements ComputerDao {
 
 		try {
 			ps = conn.prepareStatement("SELECT * FROM computer WHERE id = ?");
-			ps.setInt(1, id);
+			ps.setLong(1, id);
 			rs = ps.executeQuery();
 			
 			if(rs.first()) {
@@ -99,8 +99,8 @@ public class ComputerDaoImpl implements ComputerDao {
 			ps.setString(1, c.getName());
 		    ps.setTimestamp(2, c.getIntroduced());
 		    ps.setTimestamp(3, c.getDiscontinued());
-		    ps.setInt(4, c.getCompany_id());
-		    ps.setInt(5, c.getId());
+		    ps.setLong(4, c.getCompany_id());
+		    ps.setLong(5, c.getId());
 		    
 		    ps.executeUpdate();
 			
@@ -120,7 +120,7 @@ public class ComputerDaoImpl implements ComputerDao {
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(long id) {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		
@@ -128,7 +128,7 @@ public class ComputerDaoImpl implements ComputerDao {
 		
 		try {
 			ps = conn.prepareStatement(sql);
-		    ps.setObject(1, id);
+		    ps.setLong(1, id);
 		    
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -141,7 +141,7 @@ public class ComputerDaoImpl implements ComputerDao {
 
 
 	@Override
-	public List<Computer> list(int id_first, int nb_to_print) {
+	public List<Computer> list(long id_first, int nb_to_print) {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -149,7 +149,7 @@ public class ComputerDaoImpl implements ComputerDao {
 
 		try {
 			ps = conn.prepareStatement("SELECT * FROM computer WHERE id >= ? LIMIT ?");
-			ps.setInt(1, id_first);
+			ps.setLong(1, id_first);
 			ps.setInt(2, nb_to_print);
 			rs = ps.executeQuery();
 			
@@ -167,7 +167,7 @@ public class ComputerDaoImpl implements ComputerDao {
 	}
 
 	@Override
-	public List<Computer> list(int id_first) {
+	public List<Computer> list(long id_first) {
 		return this.list(id_first, 10);
 	}
 

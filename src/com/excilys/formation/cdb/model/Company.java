@@ -2,7 +2,7 @@ package com.excilys.formation.cdb.model;
 
 public class Company {
 	
-	private int id;
+	private long id;
 	private String name;
 
 	
@@ -17,7 +17,7 @@ public class Company {
 	}
 	
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 	
@@ -26,7 +26,7 @@ public class Company {
 	}
 	
 	
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

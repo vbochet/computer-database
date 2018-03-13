@@ -8,14 +8,14 @@ public interface ComputerDao {
 	
 	public Computer create(Computer c);
 	
-	public Computer read(int id);
+	public Computer read(long id);
 	
 	public Computer update(Computer c);
 	
-	public void delete(int id);
+	public void delete(long id);
 
 	public List<Computer> list();
-	public List<Computer> list(int id_first);
-	public List<Computer> list(int id_first, int nb_to_print);
+	public List<Computer> list(long id_first);
+	public List<Computer> list(long id_first, int nb_to_print);
 	
 }
