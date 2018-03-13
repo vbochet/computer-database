@@ -15,6 +15,8 @@ public enum CompanyDaoImpl implements CompanyDao {
 
 	INSTANCE;
 	
+	String listRequest = "SELECT * FROM company WHERE id >= ? LIMIT ?;";
+	
 	@Override
 	public List<Company> list(long id_first, int nb_to_print) {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
@@ -23,14 +25,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 		List<Company> companiesList = new ArrayList<>();
 		
 		try {
-			ps = conn.prepareStatement("SELECT * FROM company WHERE id >= ? LIMIT ?");
-			ps.setLong(1, id_first);
-			ps.setInt(2, nb_to_print);
-			rs = ps.executeQuery();
-			
-			while(rs.next()) {
-				companiesList.add(CompanyMapper.INSTANCE.createCompany(rs));
-			}
+			companiesList = executeListRequest(conn, ps, rs, id_first, nb_to_print);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -41,6 +36,21 @@ public enum CompanyDaoImpl implements CompanyDao {
 		return companiesList;
 	}
 
+	private List<Company> executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs,long id_first, int nb_to_print) throws SQLException {
+		List<Company> companiesList = new ArrayList<>();
+		
+		ps = conn.prepareStatement(listRequest);
+		ps.setLong(1, id_first);
+		ps.setInt(2, nb_to_print);
+		rs = ps.executeQuery();
+		
+		while(rs.next()) {
+			companiesList.add(CompanyMapper.INSTANCE.createCompany(rs));
+		}
+		
+		return companiesList;
+	}
+	
 	@Override
 	public List<Company> list(long id_first) {
 		return this.list(id_first, 10);
