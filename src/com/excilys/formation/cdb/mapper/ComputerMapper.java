@@ -5,13 +5,18 @@ import java.sql.SQLException;
 
 import com.excilys.formation.cdb.model.Computer;
 
-public class ComputerMapper {
+public enum ComputerMapper {
 
-	public static Computer createComputer(ResultSet result) throws SQLException {
-		return new Computer(result.getInt("id"), 
-							result.getString("name"), 
-							result.getTimestamp("introduced"), 
-							result.getTimestamp("discontinued"), 
-							result.getInt("company_id"));
+	INSTANCE; 
+	
+	public Computer createComputer(ResultSet result) throws SQLException {
+		Computer c = new Computer();
+		c.setId(result.getLong("id"));
+		c.setName(result.getString("name"));
+		c.setIntroduced(result.getTimestamp("introduced"));
+		c.setDiscontinued(result.getTimestamp("discontinued"));
+		c.setCompany_id(result.getInt("company_id"));
+		
+		return c;
 	}
 }
