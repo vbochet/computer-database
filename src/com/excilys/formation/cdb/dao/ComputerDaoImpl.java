@@ -12,8 +12,10 @@ import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.persistence.ConnectionManager;
 
-public class ComputerDaoImpl implements ComputerDao {
+public enum ComputerDaoImpl implements ComputerDao {
 
+	INSTANCE;
+	
 	@Override
 	public Computer create(Computer c) {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
@@ -26,9 +28,9 @@ public class ComputerDaoImpl implements ComputerDao {
 			return null;
 		}
 		
-		if(c.getDiscontinued() == null) {}
-		else if((c.getIntroduced() == null) ||
-			(c.getIntroduced().compareTo(c.getDiscontinued()) > 0)) {
+		if((c.getDiscontinued() != null) && 
+				((c.getIntroduced() == null) ||
+					(c.getIntroduced().compareTo(c.getDiscontinued()) > 0))) {
 			System.err.println("The discontinuation date must be greater than the introduction date!");
 			return null;
 		}
@@ -72,7 +74,7 @@ public class ComputerDaoImpl implements ComputerDao {
 			rs = ps.executeQuery();
 			
 			if(rs.first()) {
-				res = ComputerMapper.createComputer(rs);
+				res = ComputerMapper.INSTANCE.createComputer(rs);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -106,7 +108,7 @@ public class ComputerDaoImpl implements ComputerDao {
 			rs = ps.getGeneratedKeys();
 			
 			if(rs.first()) {
-				res = ComputerMapper.createComputer(rs);
+				res = ComputerMapper.INSTANCE.createComputer(rs);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -153,7 +155,7 @@ public class ComputerDaoImpl implements ComputerDao {
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				computersList.add(ComputerMapper.createComputer(rs));
+				computersList.add(ComputerMapper.INSTANCE.createComputer(rs));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

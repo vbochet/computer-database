@@ -11,8 +11,10 @@ import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.persistence.ConnectionManager;
 
-public class CompanyDaoImpl implements CompanyDao {
+public enum CompanyDaoImpl implements CompanyDao {
 
+	INSTANCE;
+	
 	@Override
 	public List<Company> list(long id_first, int nb_to_print) {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
@@ -27,7 +29,7 @@ public class CompanyDaoImpl implements CompanyDao {
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				companiesList.add(CompanyMapper.createCompany(rs));
+				companiesList.add(CompanyMapper.INSTANCE.createCompany(rs));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
