@@ -83,6 +83,7 @@ public class Computer {
 		sb.append(this.getDiscontinued());
 		sb.append("\n  company id: ");
 		sb.append(this.getCompany_id());
+		sb.append("\n");
 		return sb.toString();
 	}
 

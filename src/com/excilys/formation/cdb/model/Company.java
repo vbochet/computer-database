@@ -41,6 +41,7 @@ public class Company {
 		sb.append(this.getId());
 		sb.append("\n  name: ");
 		sb.append(this.getName());
+		sb.append("\n");
 		return sb.toString();
 	}
 }
