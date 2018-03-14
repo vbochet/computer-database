@@ -21,12 +21,12 @@ public class Computer {
 		this.company = null;
 	}
 	
-	public Computer(long id, String name, Timestamp introduced, Timestamp discontinued, long companyId) {
+	public Computer(long id, String name, Timestamp introduced, Timestamp discontinued, Company company) {
 		this.id = id;
 		this.name = name;
 		this.introduced = introduced;
 		this.discontinued = discontinued;
-		this.company = CompanyService.INSTANCE.getById(companyId);
+		this.company = company;
 	}
 	
 	
@@ -67,8 +67,8 @@ public class Computer {
 		this.discontinued = discontinued;
 	}
 	
-	public void setCompany(long companyId) {
-		this.company = CompanyService.INSTANCE.getById(companyId);
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 	
 	

@@ -19,10 +19,10 @@ public enum ComputerDaoImpl implements ComputerDao {
 	INSTANCE;
 	
 	private String createRequest = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);",
-				   readRequest   = "SELECT * FROM computer WHERE id = ?;",
+				   readRequest   = "SELECT computer.*, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id = ?;",
 				   updateRequest = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;",
 				   deleteRequest = "DELETE FROM computer WHERE id = ?;",
-				   listRequest   = "SELECT * FROM computer WHERE id >= ? LIMIT ?;";
+				   listRequest   = "SELECT computer.*, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id >= ? LIMIT ?;";
 	
 	@Override
 	public Computer create(Computer c) {
