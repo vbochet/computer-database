@@ -25,7 +25,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 		List<Company> companiesList = new ArrayList<>();
 		
 		try {
-			companiesList = executeListRequest(conn, ps, rs, idFirst, nbToPrint);
+			executeListRequest(conn, ps, rs, idFirst, nbToPrint, companiesList);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -36,9 +36,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 		return companiesList;
 	}
 
-	private List<Company> executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs,long idFirst, int nbToPrint) throws SQLException {
-		List<Company> companiesList = new ArrayList<>();
-		
+	private void executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs,long idFirst, int nbToPrint, List<Company> companiesList) throws SQLException {
 		ps = conn.prepareStatement(listRequest);
 		ps.setLong(1, idFirst);
 		ps.setInt(2, nbToPrint);
@@ -47,8 +45,6 @@ public enum CompanyDaoImpl implements CompanyDao {
 		while(rs.next()) {
 			companiesList.add(CompanyMapper.INSTANCE.createCompany(rs));
 		}
-		
-		return companiesList;
 	}
 	
 	@Override

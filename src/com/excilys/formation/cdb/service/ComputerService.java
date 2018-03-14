@@ -37,15 +37,13 @@ public enum ComputerService {
 		return false;
 	}
 
-	public Computer setName(String name, Computer c) {
+	public void setName(String name, Computer c) {
 		if(name.isEmpty()) {
 			System.err.println("Name is mandatory, aborting creation");
 		}
 		else {
 			c.setName(name);
 		}
-		
-		return c;
 	}
 
 	public boolean setIntroDate(String intro, DateFormat dateFormat, Computer c) {

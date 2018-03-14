@@ -35,7 +35,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 		}
 		
 		try {
-			c = executeCreateRequest(conn, ps, rs, c);
+			executeCreateRequest(conn, ps, rs, c);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -46,7 +46,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 	    return c;
 	}
 	
-	private Computer executeCreateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
+	private void executeCreateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
 		Company company = c.getCompany();
 		long companyId = company == null ? 0 : company.getId();
 		
@@ -63,8 +63,6 @@ public enum ComputerDaoImpl implements ComputerDao {
 		if(rs.first()) {
 			c.setId(rs.getLong(1));
 		}
-		
-		return c;
 	}
 
 	@Override
@@ -170,7 +168,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 		List<Computer> computersList = new ArrayList<>();
 
 		try {
-			computersList = executeListRequest(conn, ps, rs, idFirst, nbToPrint);
+			executeListRequest(conn, ps, rs, idFirst, nbToPrint, computersList);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -181,9 +179,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 		return computersList;
 	}
 	
-	private List<Computer> executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs,long idFirst, int nbToPrint) throws SQLException {
-		List<Computer> computersList = new ArrayList<>();
-		
+	private void executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs,long idFirst, int nbToPrint, List<Computer> computersList) throws SQLException {
 		ps = conn.prepareStatement(listRequest);
 		ps.setLong(1, idFirst);
 		ps.setInt(2, nbToPrint);
@@ -192,8 +188,6 @@ public enum ComputerDaoImpl implements ComputerDao {
 		while(rs.next()) {
 			computersList.add(ComputerMapper.INSTANCE.createComputer(rs));
 		}
-		
-		return computersList;
 	}
 		
 

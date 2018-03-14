@@ -128,7 +128,7 @@ public class Cli {
 			
 		
 		name = getName(sc);
-		computer = ComputerService.INSTANCE.setName(name, computer);
+		ComputerService.INSTANCE.setName(name, computer);
 		
 		intro = getIntroDate(sc);
 		while(! ComputerService.INSTANCE.setIntroDate(intro, dateFormat, computer)) {
@@ -166,7 +166,7 @@ public class Cli {
 		computer.setId(id);
 
 		name = getName(sc);
-		computer = ComputerService.INSTANCE.setName(name, computer);
+		ComputerService.INSTANCE.setName(name, computer);
 		
 		intro = getIntroDate(sc);
 		while(! ComputerService.INSTANCE.setIntroDate(intro, dateFormat, computer)) {
