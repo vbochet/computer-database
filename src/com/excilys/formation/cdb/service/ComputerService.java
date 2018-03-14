@@ -47,36 +47,44 @@ public enum ComputerService {
 	}
 
 	public boolean setIntroDate(String intro, DateFormat dateFormat, Computer c) {
-		Date date;
-		long time;
 		if(!intro.equals("_")) {
 			try {
-				date = dateFormat.parse(intro);
-				time = date.getTime();
-				Timestamp introduced = new Timestamp(time);
+				Timestamp introduced = convertStringToTimestamp(intro, dateFormat);
 				c.setIntroduced(introduced);
 			} catch (ParseException e) {
 				return false;
 			}
+		}
+		else {
+			c.setIntroduced(null);
 		}
 		
 		return true;
 	}
 
 	public boolean setDiscontDate(String discont, DateFormat dateFormat, Computer c) {
-		Date date;
-		long time;
 		if(!discont.equals("_")) {
 			try {
-				date = dateFormat.parse(discont);
-				time = date.getTime();
-				Timestamp discontinued = new Timestamp(time);
-				c.setIntroduced(discontinued);
+				Timestamp discontinued = convertStringToTimestamp(discont, dateFormat);
+				c.setDiscontinued(discontinued);
 			} catch (ParseException e) {
 				return false;
 			}
 		}
+		else {
+			c.setDiscontinued(null);
+		}
 		
 		return true;
+	}
+
+	private Timestamp convertStringToTimestamp(String dateString, DateFormat dateFormat) throws ParseException {
+		Date date;
+		long time;
+		
+		date = dateFormat.parse(dateString);
+		time = date.getTime();
+		
+		return new Timestamp(time);
 	}
 }

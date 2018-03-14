@@ -158,42 +158,96 @@ public class Cli {
 	}
 
 	private static void caseUpdateComputer(Scanner sc) throws ParseException {
-		String name, intro, discont;
-		long id, companyId;
-		Computer computer = new Computer();
+		long id;
+		Computer computer;
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		id = getId(sc);
-		computer.setId(id);
+		computer = ComputerService.INSTANCE.getById(id);
+		if(null == computer) {
+			System.out.println("No computer matching this id");
+			return;
+		}
 
-		name = getName(sc);
-		ComputerService.INSTANCE.setName(name, computer);
-		
-		intro = getIntroDate(sc);
-		while(! ComputerService.INSTANCE.setIntroDate(intro, dateFormat, computer)) {
-			intro = getIntroDate(sc);
-		}
-		
-		discont = getDiscontDate(sc);
-		while(! ComputerService.INSTANCE.setDiscontDate(discont, dateFormat, computer)) {
-			discont = getDiscontDate(sc);
-		}
-		
-		System.out.print("Company's id (enter \"_\" if none): ");
-		try {
-			companyId = sc.nextLong();
-			Company company = CompanyService.INSTANCE.getById(companyId);
-			computer.setCompany(company);
-		}
-		catch(InputMismatchException e) {
-			String s = sc.next();
-			if(!s.equals("_")) {
-				System.err.println("Input error: Unexpected value \""+s+"\" received");
-			}
-		}
+		updateComputerName(sc, computer);
+		updateComputerIntroduced(sc, computer, dateFormat);
+		updateComputerDiscontinued(sc, computer, dateFormat);
+		updateComputerCompany(sc, computer);
 		
 		computer = ComputerDaoImpl.INSTANCE.update(computer);
 		System.out.println(computer);
+	}
+
+	private static void updateComputerName(Scanner sc, Computer computer) {
+		String answer = "", name;
+		System.out.println("Current name: ["+computer.getName()+"].");
+		
+		answer = chooseUpdate(sc, "name");
+		
+		if(answer.equals("y")) {
+			name = getName(sc);
+			ComputerService.INSTANCE.setName(name, computer);
+		}
+	}
+
+	private static void updateComputerIntroduced(Scanner sc, Computer computer, DateFormat dateFormat) {
+		String answer = "", intro;
+		System.out.println("Current introduction date: ["+computer.getIntroduced()+"].");
+		
+		answer = chooseUpdate(sc, "introduction date");
+		
+		if(answer.equals("y")) {
+			intro = getIntroDate(sc);
+			while(! ComputerService.INSTANCE.setIntroDate(intro, dateFormat, computer)) {
+				intro = getIntroDate(sc);
+			}
+		}
+	}
+
+	private static void updateComputerDiscontinued(Scanner sc, Computer computer, DateFormat dateFormat) {
+		String answer = "", discont;
+		System.out.println("Current discontinuation date: ["+computer.getDiscontinued()+"].");
+		
+		answer = chooseUpdate(sc, "discontinuation date");
+		
+		if(answer.equals("y")) {
+			discont = getDiscontDate(sc);
+			while(! ComputerService.INSTANCE.setDiscontDate(discont, dateFormat, computer)) {
+				discont = getDiscontDate(sc);
+			}
+		}
+	}
+
+	private static void updateComputerCompany(Scanner sc, Computer computer) {
+		String answer = "";
+		long companyId;
+		System.out.println("Current company: ["+computer.getCompany()+"].");
+		
+		answer = chooseUpdate(sc, "company");
+		
+		if(answer.equals("y")) {
+			System.out.print("Company's id (enter \"_\" if none): ");
+			try {
+				companyId = sc.nextLong();
+				Company company = CompanyService.INSTANCE.getById(companyId);
+				computer.setCompany(company);
+			}
+			catch(InputMismatchException e) {
+				String s = sc.next();
+				if(!s.equals("_")) {
+					System.err.println("Input error: Unexpected value \""+s+"\" received");
+				}
+			}
+		}
+	}
+	
+	private static String chooseUpdate(Scanner sc, String s) {
+		String answer = "";
+		while(!(answer.equals("y") || answer.equals("n"))) {
+			System.out.print("Update "+s+" (y/n)? ");
+			answer = sc.next();
+		}
+		return answer;
 	}
 
 	private static void caseDeleteComputer(Scanner sc) {
