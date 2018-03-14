@@ -13,7 +13,7 @@ public enum ComputerService {
 	INSTANCE;
 	
 	public List<Computer> getList(long idFirst, int nbToPrint) {
-		if(idFirst > 0 && nbToPrint >= 1) {
+		if(nbToPrint >= 1) {
 			return ComputerDaoImpl.INSTANCE.list(idFirst, nbToPrint);
 		}
 		
