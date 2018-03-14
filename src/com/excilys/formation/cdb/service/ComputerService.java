@@ -12,9 +12,9 @@ import com.excilys.formation.cdb.model.Computer;
 public enum ComputerService {
 	INSTANCE;
 	
-	public List<Computer> getList(long idFirst, int nbToPrint) {
+	public List<Computer> getList(int offset, int nbToPrint) {
 		if(nbToPrint >= 1) {
-			return ComputerDaoImpl.INSTANCE.list(idFirst, nbToPrint);
+			return ComputerDaoImpl.INSTANCE.list(offset, nbToPrint);
 		}
 		
 		return null;

@@ -15,17 +15,18 @@ public enum CompanyDaoImpl implements CompanyDao {
 
 	INSTANCE;
 	
-	String listRequest = "SELECT * FROM company WHERE id >= ? LIMIT ?;";
+	String listRequest = "SELECT * FROM company LIMIT ? OFFSET ?;",
+		   readRequest = "SELECT * FROM company WHERE id = ?;";
 	
 	@Override
-	public List<Company> list(long idFirst, int nbToPrint) {
+	public List<Company> list(int offset, int nbToPrint) {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Company> companiesList = new ArrayList<>();
 		
 		try {
-			executeListRequest(conn, ps, rs, idFirst, nbToPrint, companiesList);
+			executeListRequest(conn, ps, rs, offset, nbToPrint, companiesList);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -36,10 +37,10 @@ public enum CompanyDaoImpl implements CompanyDao {
 		return companiesList;
 	}
 
-	private void executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs,long idFirst, int nbToPrint, List<Company> companiesList) throws SQLException {
+	private void executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs,int offset, int nbToPrint, List<Company> companiesList) throws SQLException {
 		ps = conn.prepareStatement(listRequest);
-		ps.setLong(1, idFirst);
-		ps.setInt(2, nbToPrint);
+		ps.setInt(1, nbToPrint);
+		ps.setInt(2, offset);
 		rs = ps.executeQuery();
 		
 		while(rs.next()) {
@@ -48,13 +49,44 @@ public enum CompanyDaoImpl implements CompanyDao {
 	}
 	
 	@Override
-	public List<Company> list(long idFirst) {
-		return this.list(idFirst, 10);
+	public List<Company> list(int offset) {
+		return this.list(offset, 10);
 	}
 
 	@Override
 	public List<Company> list() {
 		return this.list(0, 10);
+	}
+
+	@Override
+	public Company read(long companyId) {
+		Connection conn = ConnectionManager.INSTANCE.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Company company = null;
+		
+		try {
+			executeReadRequest(conn, ps, rs, companyId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
+		}
+		
+		return company;
 	};
+
+	private Company executeReadRequest(Connection conn, PreparedStatement ps, ResultSet rs, long id) throws SQLException {
+		ps = conn.prepareStatement(readRequest);
+		ps.setLong(1, id);
+		rs = ps.executeQuery();
+		
+		if(rs.first()) {
+			return CompanyMapper.INSTANCE.createCompany(rs);
+		}
+		
+		return null;
+	}
 	
 }

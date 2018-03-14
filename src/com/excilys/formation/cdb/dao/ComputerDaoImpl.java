@@ -22,7 +22,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 				   readRequest   = "SELECT computer.*, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id = ?;",
 				   updateRequest = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;",
 				   deleteRequest = "DELETE FROM computer WHERE id = ?;",
-				   listRequest   = "SELECT computer.*, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id >= ? LIMIT ?;";
+				   listRequest   = "SELECT computer.*, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id LIMIT ? OFFSET ?;";
 	
 	@Override
 	public Computer create(Computer c) {
@@ -161,14 +161,14 @@ public enum ComputerDaoImpl implements ComputerDao {
 	}
 
 	@Override
-	public List<Computer> list(long idFirst, int nbToPrint) {
+	public List<Computer> list(int offset, int nbToPrint) {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Computer> computersList = new ArrayList<>();
 
 		try {
-			executeListRequest(conn, ps, rs, idFirst, nbToPrint, computersList);
+			executeListRequest(conn, ps, rs, offset, nbToPrint, computersList);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -179,10 +179,10 @@ public enum ComputerDaoImpl implements ComputerDao {
 		return computersList;
 	}
 	
-	private void executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs,long idFirst, int nbToPrint, List<Computer> computersList) throws SQLException {
+	private void executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs, int offset, int nbToPrint, List<Computer> computersList) throws SQLException {
 		ps = conn.prepareStatement(listRequest);
-		ps.setLong(1, idFirst);
-		ps.setInt(2, nbToPrint);
+		ps.setInt(1, nbToPrint);
+		ps.setLong(2, offset);
 		rs = ps.executeQuery();
 		
 		while(rs.next()) {
@@ -192,8 +192,8 @@ public enum ComputerDaoImpl implements ComputerDao {
 		
 
 	@Override
-	public List<Computer> list(long idFirst) {
-		return this.list(idFirst, 10);
+	public List<Computer> list(int offset) {
+		return this.list(offset, 10);
 	}
 
 	@Override

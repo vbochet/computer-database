@@ -11,6 +11,9 @@ import java.util.Scanner;
 import com.excilys.formation.cdb.dao.ComputerDaoImpl;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
+import com.excilys.formation.cdb.paginator.CompanyPage;
+import com.excilys.formation.cdb.paginator.ComputerPage;
+import com.excilys.formation.cdb.paginator.Page;
 import com.excilys.formation.cdb.service.CompanyService;
 import com.excilys.formation.cdb.service.ComputerService;
 
@@ -87,27 +90,69 @@ public class Cli {
 	}
 
 	private static void caseListComputer(Scanner sc) {
-		long idFirst;
-		int nbToPrint;
-		List<Computer> listComputer = new ArrayList<>();
+		ComputerPage page = new ComputerPage();
+		int nbToPrint = getNbToPrint(sc);
+		page.setNbPerPage(nbToPrint);
+
+		System.out.println(page.getContent());
+		System.out.println("\n");
 		
-		idFirst = getBeginId(sc);
-		nbToPrint = getNbToPrint(sc);
-		
-		listComputer = ComputerService.INSTANCE.getList(idFirst, nbToPrint);
-		System.out.println(listComputer);
+		while(getAction(sc, page)) {
+			System.out.println(page.getContent());
+			System.out.println("\n");
+		}
 	}
 
 	private static void caseListCompany(Scanner sc) {
-		long idFirst;
-		int nbToPrint;
-		List<Company> listCompany = new ArrayList<>();
+		CompanyPage page = new CompanyPage();
+		int nbToPrint = getNbToPrint(sc);
+		page.setNbPerPage(nbToPrint);
+
+		System.out.println(page.getContent());
+		System.out.println("\n");
 		
-		idFirst = getBeginId(sc);
-		nbToPrint = getNbToPrint(sc);
+		while(getAction(sc, page)) {
+			System.out.println(page.getContent());
+			System.out.println("\n");
+		}
+	}
+
+	private static boolean getAction(Scanner sc, Page page) {
+		System.out.println("Type 'n' to go to next page, 'p' to go to previous page, 'g 42' to go to page 42, and 'q' to quit.");
+		boolean loop = true, ret = true;
+		String action;
+		while(loop) {
+			action = sc.next();
+			switch(action) {
+				case "n":
+					page.next();
+					loop = false;
+					break;
+				case "p":
+					page.prev();
+					loop = false;
+					break;
+				case "g":
+					String nbInput = sc.next();
+					try {
+						int nb = Integer.parseInt(nbInput);
+						page.goToPage(nb);
+						loop = false;
+					}
+					catch(NumberFormatException e) {
+						sc.nextLine();
+					}
+					break;
+				case "q":
+					loop = false;
+					ret = false;
+					break;
+				default:
+					sc.nextLine();
+			}
+		}
 		
-		listCompany = CompanyService.INSTANCE.getList(idFirst, nbToPrint);
-		System.out.println(listCompany);
+		return ret;
 	}
 
 	private static void caseShowComputer(Scanner sc) {
@@ -287,7 +332,7 @@ public class Cli {
 		
 		while(!stop) {
 			try {
-				System.out.print("How many elements to print: ");
+				System.out.print("How many elements a page should contain: ");
 				nbToPrint = sc.nextInt();
 				stop = true;
 			}
