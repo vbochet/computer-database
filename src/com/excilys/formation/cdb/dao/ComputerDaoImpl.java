@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.excilys.formation.cdb.mapper.ComputerMapper;
+import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.persistence.ConnectionManager;
 import com.excilys.formation.cdb.validator.ComputerValidator;
@@ -46,12 +47,15 @@ public enum ComputerDaoImpl implements ComputerDao {
 	}
 	
 	private Computer executeCreateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
+		Company company = c.getCompany();
+		long companyId = company == null ? 0 : company.getId();
+		
 		ps = conn.prepareStatement(createRequest, Statement.RETURN_GENERATED_KEYS);
 		
 		ps.setString(1, c.getName());
 		ps.setTimestamp(2, c.getIntroduced());
 		ps.setTimestamp(3, c.getDiscontinued());
-		ps.setLong(4, c.getCompany_id());
+		ps.setLong(4, companyId);
 		
 		ps.executeUpdate();
 		
@@ -116,12 +120,15 @@ public enum ComputerDaoImpl implements ComputerDao {
 	}
 	
 	private Computer executeUpdateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
+		Company company = c.getCompany();
+		long companyId = company == null ? 0 : company.getId();
+		
 		ps = conn.prepareStatement(updateRequest, Statement.RETURN_GENERATED_KEYS);
 	    
 		ps.setString(1, c.getName());
 	    ps.setTimestamp(2, c.getIntroduced());
 	    ps.setTimestamp(3, c.getDiscontinued());
-	    ps.setLong(4, c.getCompany_id());
+	    ps.setLong(4, companyId);
 	    ps.setLong(5, c.getId());
 	    
 	    ps.executeUpdate();

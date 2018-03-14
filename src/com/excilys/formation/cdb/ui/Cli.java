@@ -143,7 +143,7 @@ public class Cli {
 		System.out.print("Company's id (enter \"_\" if none): ");
 		try {
 			companyId = sc.nextLong();
-			computer.setCompany_id(companyId);
+			computer.setCompany(companyId);
 		}
 		catch(InputMismatchException e) {
 			String s = sc.next();
@@ -181,7 +181,7 @@ public class Cli {
 		System.out.print("Company's id (enter \"_\" if none): ");
 		try {
 			companyId = sc.nextLong();
-			computer.setCompany_id(companyId);
+			computer.setCompany(companyId);
 		}
 		catch(InputMismatchException e) {
 			String s = sc.next();

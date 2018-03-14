@@ -2,13 +2,15 @@ package com.excilys.formation.cdb.model;
 
 import java.sql.Timestamp;
 
+import com.excilys.formation.cdb.service.CompanyService;
+
 public class Computer {
 
 	private long id;
 	private String name;
 	private Timestamp introduced;
 	private Timestamp discontinued;
-	private long company_id;
+	private Company company;
 	
 
 	public Computer() {
@@ -16,15 +18,15 @@ public class Computer {
 		this.name = null;
 		this.introduced = null;
 		this.discontinued = null;
-		this.company_id = 0;
+		this.company = null;
 	}
 	
-	public Computer(long id, String name, Timestamp introduced, Timestamp discontinued, long company_id) {
+	public Computer(long id, String name, Timestamp introduced, Timestamp discontinued, long companyId) {
 		this.id = id;
 		this.name = name;
 		this.introduced = introduced;
 		this.discontinued = discontinued;
-		this.company_id = company_id;
+		this.company = CompanyService.INSTANCE.getById(companyId);
 	}
 	
 	
@@ -44,8 +46,8 @@ public class Computer {
 		return discontinued;
 	}
 	
-	public long getCompany_id() {
-		return company_id;
+	public Company getCompany() {
+		return company;
 	}
 	
 	
@@ -65,8 +67,8 @@ public class Computer {
 		this.discontinued = discontinued;
 	}
 	
-	public void setCompany_id(long company_id) {
-		this.company_id = company_id;
+	public void setCompany(long companyId) {
+		this.company = CompanyService.INSTANCE.getById(companyId);
 	}
 	
 	
@@ -81,8 +83,8 @@ public class Computer {
 		sb.append(this.getIntroduced());
 		sb.append("\n  discontinued: ");
 		sb.append(this.getDiscontinued());
-		sb.append("\n  company id: ");
-		sb.append(this.getCompany_id());
+		sb.append("\n  company: ");
+		sb.append(this.getCompany());
 		sb.append("\n");
 		return sb.toString();
 	}
