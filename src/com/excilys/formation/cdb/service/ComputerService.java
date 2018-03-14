@@ -47,7 +47,7 @@ public enum ComputerService {
 	}
 
 	public boolean setIntroDate(String intro, DateFormat dateFormat, Computer c) {
-		if(!intro.equals("_")) {
+		if(!intro.isEmpty()) {
 			try {
 				Timestamp introduced = convertStringToTimestamp(intro, dateFormat);
 				c.setIntroduced(introduced);
@@ -63,7 +63,7 @@ public enum ComputerService {
 	}
 
 	public boolean setDiscontDate(String discont, DateFormat dateFormat, Computer c) {
-		if(!discont.equals("_")) {
+		if(!discont.isEmpty()) {
 			try {
 				Timestamp discontinued = convertStringToTimestamp(discont, dateFormat);
 				c.setDiscontinued(discontinued);

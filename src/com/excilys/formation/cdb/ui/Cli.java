@@ -140,15 +140,15 @@ public class Cli {
 			discont = getDiscontDate(sc);
 		}
 		
-		System.out.print("Company's id (enter \"_\" if none): ");
+		System.out.print("Company's id (if none, leave empty): ");
 		try {
 			companyId = sc.nextLong();
 			Company company = CompanyService.INSTANCE.getById(companyId);
 			computer.setCompany(company);
 		}
 		catch(InputMismatchException e) {
-			String s = sc.next();
-			if(!s.equals("_")) {
+			String s = sc.nextLine();
+			if(!s.isEmpty()) {
 				System.err.println("Input error: Unexpected value \""+s+"\" received");
 			}
 		}
@@ -226,15 +226,15 @@ public class Cli {
 		answer = chooseUpdate(sc, "company");
 		
 		if(answer.equals("y")) {
-			System.out.print("Company's id (enter \"_\" if none): ");
+			System.out.print("Company's id (if none, leave empty): ");
 			try {
 				companyId = sc.nextLong();
 				Company company = CompanyService.INSTANCE.getById(companyId);
 				computer.setCompany(company);
 			}
 			catch(InputMismatchException e) {
-				String s = sc.next();
-				if(!s.equals("_")) {
+				String s = sc.nextLine();
+				if(!s.isEmpty()) {
 					System.err.println("Input error: Unexpected value \""+s+"\" received");
 				}
 			}
@@ -245,7 +245,7 @@ public class Cli {
 		String answer = "";
 		while(!(answer.equals("y") || answer.equals("n"))) {
 			System.out.print("Update "+s+" (y/n)? ");
-			answer = sc.next();
+			answer = sc.nextLine();
 		}
 		return answer;
 	}
@@ -308,6 +308,7 @@ public class Cli {
 				System.out.print("Id: ");
 				inputId = sc.nextLong();
 				stop = true;
+				sc.nextLine();
 			}
 			catch(InputMismatchException e) {
 				sc.nextLine();
@@ -318,43 +319,23 @@ public class Cli {
 	}
 	
 	private static String getName(Scanner sc) {
-		String name;
-		System.out.print("Computer's name (mandatory): ");
-		name = sc.next();
+		String name = "";
+		
+		while(name.isEmpty()) {
+			System.out.print("Computer's name (mandatory): ");
+			name = sc.nextLine();
+		}
+		
 		return name;
 	}
 
 	private static String getIntroDate(Scanner sc) {
-		String introDate = null;
-		boolean stop = false;
-		
-		while(!stop) {
-			try {
-				System.out.print("Company's introduction date, with yyyy-MM-dd formatting (enter \"_\" if none): ");
-				introDate = sc.next();
-				stop = true;
-			}
-			catch(InputMismatchException e) {
-				sc.nextLine();
-			}
-		}
-		return introDate;
+		System.out.print("Company's introduction date, with yyyy-MM-dd formatting (if none, leave empty): ");
+		return sc.nextLine();
 	}
 	
 	private static String getDiscontDate(Scanner sc) {
-		String discontDate = null;
-		boolean stop = false;
-		
-		while(!stop) {
-			try {
-				System.out.print("Company's discontinuation date, with yyyy-MM-dd formatting (enter \"_\" if none): ");
-				discontDate = sc.next();
-				stop = true;
-			}
-			catch(InputMismatchException e) {
-				sc.nextLine();
-			}
-		}
-		return discontDate;
+		System.out.print("Company's discontinuation date, with yyyy-MM-dd formatting (if none, leave empty): ");
+		return sc.nextLine();
 	}
 }
