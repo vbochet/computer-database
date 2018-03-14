@@ -156,14 +156,14 @@ public enum ComputerDaoImpl implements ComputerDao {
 	}
 
 	@Override
-	public List<Computer> list(long id_first, int nb_to_print) {
+	public List<Computer> list(long idFirst, int nbToPrint) {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Computer> computersList = new ArrayList<>();
 
 		try {
-			computersList = executeListRequest(conn, ps, rs, id_first, nb_to_print);
+			computersList = executeListRequest(conn, ps, rs, idFirst, nbToPrint);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -174,12 +174,12 @@ public enum ComputerDaoImpl implements ComputerDao {
 		return computersList;
 	}
 	
-	private List<Computer> executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs,long id_first, int nb_to_print) throws SQLException {
+	private List<Computer> executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs,long idFirst, int nbToPrint) throws SQLException {
 		List<Computer> computersList = new ArrayList<>();
 		
 		ps = conn.prepareStatement(listRequest);
-		ps.setLong(1, id_first);
-		ps.setInt(2, nb_to_print);
+		ps.setLong(1, idFirst);
+		ps.setInt(2, nbToPrint);
 		rs = ps.executeQuery();
 		
 		while(rs.next()) {
@@ -191,8 +191,8 @@ public enum ComputerDaoImpl implements ComputerDao {
 		
 
 	@Override
-	public List<Computer> list(long id_first) {
-		return this.list(id_first, 10);
+	public List<Computer> list(long idFirst) {
+		return this.list(idFirst, 10);
 	}
 
 	@Override

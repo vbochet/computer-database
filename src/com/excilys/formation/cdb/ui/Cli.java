@@ -87,27 +87,27 @@ public class Cli {
 	}
 
 	private static void caseListComputer(Scanner sc) {
-		long id_first;
-		int nb_to_print;
-		List<Computer> list_computer = new ArrayList<>();
+		long idFirst;
+		int nbToPrint;
+		List<Computer> listComputer = new ArrayList<>();
 		
-		id_first = getBeginId(sc);
-		nb_to_print = getNbToPrint(sc);
+		idFirst = getBeginId(sc);
+		nbToPrint = getNbToPrint(sc);
 		
-		list_computer = ComputerService.INSTANCE.getList(id_first, nb_to_print);
-		System.out.println(list_computer);
+		listComputer = ComputerService.INSTANCE.getList(idFirst, nbToPrint);
+		System.out.println(listComputer);
 	}
 
 	private static void caseListCompany(Scanner sc) {
-		long id_first;
-		int nb_to_print;
-		List<Company> list_company = new ArrayList<>();
+		long idFirst;
+		int nbToPrint;
+		List<Company> listCompany = new ArrayList<>();
 		
-		id_first = getBeginId(sc);
-		nb_to_print = getNbToPrint(sc);
+		idFirst = getBeginId(sc);
+		nbToPrint = getNbToPrint(sc);
 		
-		list_company = CompanyService.INSTANCE.getList(id_first, nb_to_print);
-		System.out.println(list_company);
+		listCompany = CompanyService.INSTANCE.getList(idFirst, nbToPrint);
+		System.out.println(listCompany);
 	}
 
 	private static void caseShowComputer(Scanner sc) {
@@ -122,7 +122,7 @@ public class Cli {
 
 	private static void caseCreateComputer(Scanner sc) throws ParseException {
 		String name, intro, discont;
-		long company_id;
+		long companyId;
 		Computer computer = new Computer();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			
@@ -142,8 +142,8 @@ public class Cli {
 		
 		System.out.print("Company's id (enter \"_\" if none): ");
 		try {
-			company_id = sc.nextLong();
-			computer.setCompany_id(company_id);
+			companyId = sc.nextLong();
+			computer.setCompany_id(companyId);
 		}
 		catch(InputMismatchException e) {
 			String s = sc.next();
@@ -158,7 +158,7 @@ public class Cli {
 
 	private static void caseUpdateComputer(Scanner sc) throws ParseException {
 		String name, intro, discont;
-		long id, company_id;
+		long id, companyId;
 		Computer computer = new Computer();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
@@ -180,8 +180,8 @@ public class Cli {
 		
 		System.out.print("Company's id (enter \"_\" if none): ");
 		try {
-			company_id = sc.nextLong();
-			computer.setCompany_id(company_id);
+			companyId = sc.nextLong();
+			computer.setCompany_id(companyId);
 		}
 		catch(InputMismatchException e) {
 			String s = sc.next();

@@ -7,7 +7,7 @@ import com.excilys.formation.cdb.model.Company;
 public interface CompanyDao {
 
 	public List<Company> list();
-	public List<Company> list(long id_first);
-	public List<Company> list(long id_first, int nb_to_print);
+	public List<Company> list(long idFirst);
+	public List<Company> list(long idFirst, int nbToPrint);
 	
 }
