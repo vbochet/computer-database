@@ -2,8 +2,6 @@ package com.excilys.formation.cdb.model;
 
 import java.sql.Timestamp;
 
-import com.excilys.formation.cdb.service.CompanyService;
-
 public class Computer {
 
 	private long id;
