@@ -104,6 +104,10 @@ public enum ComputerDaoImpl implements ComputerDao {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Computer res = null;
+
+		if(!ComputerValidator.INSTANCE.validateComputer(c)) {
+			return null;
+		}
 		
 		try {
 			res = executeUpdateRequest(conn, ps, rs, c);
