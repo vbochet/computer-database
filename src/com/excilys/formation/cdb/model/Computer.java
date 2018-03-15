@@ -11,13 +11,7 @@ public class Computer {
 	private Company company;
 	
 
-	public Computer() {
-		this.id = 0;
-		this.name = null;
-		this.introduced = null;
-		this.discontinued = null;
-		this.company = null;
-	}
+	public Computer() { }
 	
 	public Computer(long id, String name, Timestamp introduced, Timestamp discontinued, Company company) {
 		this.id = id;
