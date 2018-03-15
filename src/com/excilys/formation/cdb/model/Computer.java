@@ -80,5 +80,39 @@ public class Computer {
 		sb.append("\n");
 		return sb.toString();
 	}
+	
+	
+	public boolean equals(Computer other) {
+		if(other == null) {
+			return false;
+		}
+		
+		if(this == other) {
+			return true;
+		}
+		
+		if(this.getId() == other.getId()) {
+			if(this.getName() == other.getName()) {
+				if((this.getIntroduced() == null && other.getIntroduced() == null)
+					|| (this.getIntroduced() != null && this.getIntroduced().equals(other.getIntroduced()))) {
+
+					if((this.getDiscontinued() == null && other.getDiscontinued() == null)
+						|| (this.getDiscontinued() != null && this.getDiscontinued().equals(other.getDiscontinued()))) {
+
+						if((this.getCompany() == null && other.getCompany() == null)
+							|| (this.getCompany() != null && this.getCompany().equals(other.getCompany()))) {
+							
+							return true;
+						}
+						return false;
+					}
+					return false;
+				}
+				return false;
+			}
+			return false;
+		}
+		return false;
+	}
 
 }
