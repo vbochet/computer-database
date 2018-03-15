@@ -14,8 +14,6 @@ public interface ComputerDao {
 	
 	public void delete(long id);
 
-	public List<Computer> list();
-	public List<Computer> list(int offset);
 	public List<Computer> list(int offset, int nbToPrint);
 	
 }

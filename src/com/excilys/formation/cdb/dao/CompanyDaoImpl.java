@@ -47,16 +47,6 @@ public enum CompanyDaoImpl implements CompanyDao {
 			companiesList.add(CompanyMapper.INSTANCE.createCompany(rs));
 		}
 	}
-	
-	@Override
-	public List<Company> list(int offset) {
-		return this.list(offset, 10);
-	}
-
-	@Override
-	public List<Company> list() {
-		return this.list(0, 10);
-	}
 
 	@Override
 	public Company read(long companyId) {

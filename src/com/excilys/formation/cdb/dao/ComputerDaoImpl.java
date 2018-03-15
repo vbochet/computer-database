@@ -228,16 +228,5 @@ public enum ComputerDaoImpl implements ComputerDao {
 			computersList.add(ComputerMapper.INSTANCE.createComputer(rs));
 		}
 	}
-		
-
-	@Override
-	public List<Computer> list(int offset) {
-		return this.list(offset, 10);
-	}
-
-	@Override
-	public List<Computer> list() {
-		return this.list(0, 10);
-	}
 
 }
