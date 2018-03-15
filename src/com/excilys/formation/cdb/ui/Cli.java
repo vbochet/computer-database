@@ -3,9 +3,7 @@ package com.excilys.formation.cdb.ui;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.Scanner;
 
 import com.excilys.formation.cdb.dao.ComputerDaoImpl;
@@ -306,24 +304,6 @@ public class Cli {
 		else {
 			System.out.println("A problem occured. Computer n°"+id+" couldn't be deleted");
 		}
-	}
-
-	private static long getBeginId(Scanner sc) {
-		long beginId = 0;
-		boolean stop = false;
-		
-		while(!stop) {
-			try {
-				System.out.print("Begin at id: ");
-				beginId = sc.nextLong();
-				stop = true;
-			}
-			catch(InputMismatchException e) {
-				sc.nextLine();
-			}
-		}
-		
-		return beginId;
 	}
 
 	private static int getNbToPrint(Scanner sc) {
