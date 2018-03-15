@@ -1,0 +1,12 @@
+.idea/
+*.svn
+.DS_Store
+.project
+.settings
+.classpath
+*.factorypath
+Thumbs.db
+bin
+target
+*~
+/build/
