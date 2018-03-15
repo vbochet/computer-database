@@ -28,6 +28,9 @@ public abstract class Page<T> {
 	
 	public void next() {
 		this.setOffset(offset + nbPerPage);
+		if(content.isEmpty()) {
+			this.setOffset(offset - nbPerPage);
+		}
 	}
 
 	public void prev() {
@@ -44,7 +47,12 @@ public abstract class Page<T> {
 	}
 
 	public void goToPage(int npage) {
+		int oldOffset = offset;
 		setOffset((npage-1) * nbPerPage);
+		if(content.isEmpty()) {
+			this.setOffset(oldOffset);
+			System.err.println("Page number is too big");
+		}
 	}
 	
 	public List<T> getContent() {
