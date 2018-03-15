@@ -20,11 +20,11 @@ public enum ComputerDaoImpl implements ComputerDao {
 
 	INSTANCE;
 	
-	private String createRequest = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);",
-				   readRequest   = "SELECT computer.*, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id = ?;",
-				   updateRequest = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;",
-				   deleteRequest = "DELETE FROM computer WHERE id = ?;",
-				   listRequest   = "SELECT computer.*, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id LIMIT ? OFFSET ?;";
+	private final String CREATE_REQUEST = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
+	private final String READ_REQUEST   = "SELECT computer.*, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id = ?;";
+	private final String UPDATE_REQUEST = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
+	private final String DELETE_REQUEST = "DELETE FROM computer WHERE id = ?;";
+	private final String LIST_REQUEST   = "SELECT computer.*, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id LIMIT ? OFFSET ?;";
 	
 	@Override
 	public Computer create(Computer c) {
@@ -52,7 +52,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 		Company company = c.getCompany();
 		LocalDate intro, discont;
 		
-		ps = conn.prepareStatement(createRequest, Statement.RETURN_GENERATED_KEYS);
+		ps = conn.prepareStatement(CREATE_REQUEST, Statement.RETURN_GENERATED_KEYS);
 		
 		ps.setString(1, c.getName());
 		
@@ -109,7 +109,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 	private Computer executeReadRequest(Connection conn, PreparedStatement ps, ResultSet rs, long id) throws SQLException {
 		Computer c = null;
 		
-		ps = conn.prepareStatement(readRequest);
+		ps = conn.prepareStatement(READ_REQUEST);
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
 		
@@ -146,7 +146,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 		Company company = c.getCompany();
 		LocalDate intro, discont;
 		
-		ps = conn.prepareStatement(updateRequest);
+		ps = conn.prepareStatement(UPDATE_REQUEST);
 	    
 		ps.setString(1, c.getName());
 		
@@ -194,7 +194,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 	}
 	
 	private void executeDeleteRequest(Connection conn, PreparedStatement ps, Long id) throws SQLException {
-		ps = conn.prepareStatement(deleteRequest);
+		ps = conn.prepareStatement(DELETE_REQUEST);
 	    ps.setLong(1, id);
 		ps.executeUpdate();
 	}
@@ -219,7 +219,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 	}
 	
 	private void executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs, int offset, int nbToPrint, List<Computer> computersList) throws SQLException {
-		ps = conn.prepareStatement(listRequest);
+		ps = conn.prepareStatement(LIST_REQUEST);
 		ps.setInt(1, nbToPrint);
 		ps.setLong(2, offset);
 		rs = ps.executeQuery();
