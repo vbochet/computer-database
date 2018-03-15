@@ -1,9 +1,8 @@
 package com.excilys.formation.cdb.service;
 
-import java.sql.Timestamp;
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import com.excilys.formation.cdb.dao.ComputerDaoImpl;
@@ -49,9 +48,8 @@ public enum ComputerService {
 	public boolean setIntroDate(String intro, DateFormat dateFormat, Computer c) {
 		if(!intro.isEmpty()) {
 			try {
-				Timestamp introduced = convertStringToTimestamp(intro, dateFormat);
-				c.setIntroduced(introduced);
-			} catch (ParseException e) {
+				c.setIntroduced(LocalDate.parse(intro));
+			} catch (DateTimeParseException e) {
 				return false;
 			}
 		}
@@ -65,9 +63,8 @@ public enum ComputerService {
 	public boolean setDiscontDate(String discont, DateFormat dateFormat, Computer c) {
 		if(!discont.isEmpty()) {
 			try {
-				Timestamp discontinued = convertStringToTimestamp(discont, dateFormat);
-				c.setDiscontinued(discontinued);
-			} catch (ParseException e) {
+				c.setDiscontinued(LocalDate.parse(discont));
+			} catch (DateTimeParseException e) {
 				return false;
 			}
 		}
@@ -76,15 +73,5 @@ public enum ComputerService {
 		}
 		
 		return true;
-	}
-
-	private Timestamp convertStringToTimestamp(String dateString, DateFormat dateFormat) throws ParseException {
-		Date date;
-		long time;
-		
-		date = dateFormat.parse(dateString);
-		time = date.getTime();
-		
-		return new Timestamp(time);
 	}
 }

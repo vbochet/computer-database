@@ -1,10 +1,12 @@
 package com.excilys.formation.cdb.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,14 +50,34 @@ public enum ComputerDaoImpl implements ComputerDao {
 	
 	private void executeCreateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
 		Company company = c.getCompany();
-		long companyId = company == null ? 0 : company.getId();
+		LocalDate intro, discont;
 		
 		ps = conn.prepareStatement(createRequest, Statement.RETURN_GENERATED_KEYS);
 		
 		ps.setString(1, c.getName());
-		ps.setTimestamp(2, c.getIntroduced());
-		ps.setTimestamp(3, c.getDiscontinued());
-		ps.setLong(4, companyId);
+		
+		intro = c.getIntroduced();
+		if(intro == null) {
+			ps.setNull(2, java.sql.Types.DATE);
+		}
+		else {
+			ps.setDate(2, Date.valueOf(intro));
+		}
+		
+		discont = c.getDiscontinued();
+		if(discont == null) {
+			ps.setNull(3, java.sql.Types.DATE);
+		}
+		else {
+			ps.setDate(3, Date.valueOf(discont));
+		}
+
+		if(company == null) {
+			ps.setNull(4, java.sql.Types.BIGINT);
+		}
+		else {
+			ps.setLong(4, company.getId());
+		}
 		
 		ps.executeUpdate();
 		
@@ -103,14 +125,13 @@ public enum ComputerDaoImpl implements ComputerDao {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		Computer res = null;
 
 		if(!ComputerValidator.INSTANCE.validateComputer(c)) {
 			return null;
 		}
 		
 		try {
-			res = executeUpdateRequest(conn, ps, rs, c);
+			executeUpdateRequest(conn, ps, rs, c);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -118,29 +139,43 @@ public enum ComputerDaoImpl implements ComputerDao {
 			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
 		}
 		
-		return res;
+		return c;
 	}
 	
-	private Computer executeUpdateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
+	private int executeUpdateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
 		Company company = c.getCompany();
-		long companyId = company == null ? 0 : company.getId();
+		LocalDate intro, discont;
 		
-		ps = conn.prepareStatement(updateRequest, Statement.RETURN_GENERATED_KEYS);
+		ps = conn.prepareStatement(updateRequest);
 	    
 		ps.setString(1, c.getName());
-	    ps.setTimestamp(2, c.getIntroduced());
-	    ps.setTimestamp(3, c.getDiscontinued());
-	    ps.setLong(4, companyId);
+		
+		intro = c.getIntroduced();
+		if(intro == null) {
+			ps.setNull(2, java.sql.Types.DATE);
+		}
+		else {
+			ps.setDate(2, Date.valueOf(intro));
+		}
+		
+		discont = c.getDiscontinued();
+		if(discont == null) {
+			ps.setNull(3, java.sql.Types.DATE);
+		}
+		else {
+			ps.setDate(3, Date.valueOf(discont));
+		}
+
+		if(company == null) {
+			ps.setNull(4, java.sql.Types.BIGINT);
+		}
+		else {
+			ps.setLong(4, company.getId());
+		}
+		
 	    ps.setLong(5, c.getId());
 	    
-	    ps.executeUpdate();
-		
-		rs = ps.getGeneratedKeys();
-		
-		if(rs.first()) {
-			c = ComputerMapper.INSTANCE.createComputer(rs);
-		}
-		return c;
+	    return ps.executeUpdate();
 	}
 
 	@Override
