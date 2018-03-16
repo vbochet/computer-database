@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.excilys.formation.cdb.dao.ComputerDaoImpl;
 import com.excilys.formation.cdb.model.Computer;
+import com.excilys.formation.cdb.validator.ComputerValidator;
 
 public enum ComputerService {
 	INSTANCE;
@@ -73,5 +74,21 @@ public enum ComputerService {
 		}
 		
 		return true;
+	}
+	
+	public Computer createComputer(Computer computer) {
+		if(!ComputerValidator.INSTANCE.validateComputer(computer)) {
+			return null;
+		}
+		
+		return ComputerDaoImpl.INSTANCE.create(computer);
+	}
+	
+	public Computer updateComputer(Computer computer) {
+		if(!ComputerValidator.INSTANCE.validateComputer(computer)) {
+			return null;
+		}
+		
+		return ComputerDaoImpl.INSTANCE.update(computer);
 	}
 }

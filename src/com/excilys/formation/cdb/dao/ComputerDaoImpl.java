@@ -14,7 +14,6 @@ import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.persistence.ConnectionManager;
-import com.excilys.formation.cdb.validator.ComputerValidator;
 
 public enum ComputerDaoImpl implements ComputerDao {
 
@@ -31,10 +30,6 @@ public enum ComputerDaoImpl implements ComputerDao {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-
-		if(!ComputerValidator.INSTANCE.validateComputer(c)) {
-			return null;
-		}
 		
 		try {
 			executeCreateRequest(conn, ps, rs, c);
@@ -125,10 +120,6 @@ public enum ComputerDaoImpl implements ComputerDao {
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-
-		if(!ComputerValidator.INSTANCE.validateComputer(c)) {
-			return null;
-		}
 		
 		try {
 			executeUpdateRequest(conn, ps, rs, c);

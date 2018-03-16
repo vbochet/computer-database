@@ -56,7 +56,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 		Company company = null;
 		
 		try {
-			executeReadRequest(conn, ps, rs, companyId);
+			company = executeReadRequest(conn, ps, rs, companyId);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
