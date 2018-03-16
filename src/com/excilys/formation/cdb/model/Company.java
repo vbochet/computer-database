@@ -44,4 +44,23 @@ public class Company {
 		sb.append("\n");
 		return sb.toString();
 	}
+	
+	
+	public boolean equals(Company other) {
+		if(other == null) {
+			return false;
+		}
+		
+		if(this == other) {
+			return true;
+		}
+		
+		if(this.getId() == other.getId()) {
+			if(this.getName() == other.getName()) {
+				return true;
+			}
+			return false;
+		}
+		return false;
+	}
 }

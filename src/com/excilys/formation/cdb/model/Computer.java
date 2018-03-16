@@ -1,25 +1,19 @@
 package com.excilys.formation.cdb.model;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 
 public class Computer {
 
 	private long id;
 	private String name;
-	private Timestamp introduced;
-	private Timestamp discontinued;
+	private LocalDate introduced;
+	private LocalDate discontinued;
 	private Company company;
 	
 
-	public Computer() {
-		this.id = 0;
-		this.name = null;
-		this.introduced = null;
-		this.discontinued = null;
-		this.company = null;
-	}
+	public Computer() { }
 	
-	public Computer(long id, String name, Timestamp introduced, Timestamp discontinued, Company company) {
+	public Computer(long id, String name, LocalDate introduced, LocalDate discontinued, Company company) {
 		this.id = id;
 		this.name = name;
 		this.introduced = introduced;
@@ -36,11 +30,11 @@ public class Computer {
 		return name;
 	}
 	
-	public Timestamp getIntroduced() {
+	public LocalDate getIntroduced() {
 		return introduced;
 	}
 	
-	public Timestamp getDiscontinued() {
+	public LocalDate getDiscontinued() {
 		return discontinued;
 	}
 	
@@ -57,11 +51,11 @@ public class Computer {
 		this.name = name;
 	}
 	
-	public void setIntroduced(Timestamp introduced) {
+	public void setIntroduced(LocalDate introduced) {
 		this.introduced = introduced;
 	}
 	
-	public void setDiscontinued(Timestamp discontinued) {
+	public void setDiscontinued(LocalDate discontinued) {
 		this.discontinued = discontinued;
 	}
 	
@@ -85,6 +79,40 @@ public class Computer {
 		sb.append(this.getCompany());
 		sb.append("\n");
 		return sb.toString();
+	}
+	
+	
+	public boolean equals(Computer other) {
+		if(other == null) {
+			return false;
+		}
+		
+		if(this == other) {
+			return true;
+		}
+		
+		if(this.getId() == other.getId()) {
+			if(this.getName() == other.getName()) {
+				if((this.getIntroduced() == null && other.getIntroduced() == null)
+					|| (this.getIntroduced() != null && this.getIntroduced().equals(other.getIntroduced()))) {
+
+					if((this.getDiscontinued() == null && other.getDiscontinued() == null)
+						|| (this.getDiscontinued() != null && this.getDiscontinued().equals(other.getDiscontinued()))) {
+
+						if((this.getCompany() == null && other.getCompany() == null)
+							|| (this.getCompany() != null && this.getCompany().equals(other.getCompany()))) {
+							
+							return true;
+						}
+						return false;
+					}
+					return false;
+				}
+				return false;
+			}
+			return false;
+		}
+		return false;
 	}
 
 }

@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import com.excilys.formation.cdb.dao.ComputerDaoImpl;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.paginator.CompanyPage;
@@ -196,7 +195,7 @@ public class Cli {
 			}
 		}
 		
-		computer = ComputerDaoImpl.INSTANCE.create(computer);
+		computer = ComputerService.INSTANCE.createComputer(computer);
 		System.out.println(computer);
 	}
 
@@ -217,7 +216,7 @@ public class Cli {
 		updateComputerDiscontinued(sc, computer, dateFormat);
 		updateComputerCompany(sc, computer);
 		
-		computer = ComputerDaoImpl.INSTANCE.update(computer);
+		computer = ComputerService.INSTANCE.updateComputer(computer);
 		System.out.println(computer);
 	}
 
@@ -264,23 +263,21 @@ public class Cli {
 	private static void updateComputerCompany(Scanner sc, Computer computer) {
 		String answer = "";
 		long companyId;
+		Company company = null;
 		System.out.println("Current company: ["+computer.getCompany()+"].");
 		
 		answer = chooseUpdate(sc, "company");
 		
 		if(answer.equals("y")) {
 			System.out.print("Company's id (if none, leave empty): ");
-			try {
-				companyId = sc.nextLong();
-				Company company = CompanyService.INSTANCE.getById(companyId);
-				computer.setCompany(company);
-			}
-			catch(InputMismatchException e) {
-				String s = sc.nextLine();
-				if(!s.isEmpty()) {
-					System.err.println("Input error: Unexpected value \""+s+"\" received");
+			String inputCompany = sc.nextLine();
+				try {
+					companyId = Long.parseLong(inputCompany);
+					company = CompanyService.INSTANCE.getById(companyId);
+				} 
+				finally {
+					computer.setCompany(company);
 				}
-			}
 		}
 	}
 	
