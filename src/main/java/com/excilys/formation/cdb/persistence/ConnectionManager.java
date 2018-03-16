@@ -16,7 +16,6 @@ public enum ConnectionManager {
 	
 	private Properties props;
 	private FileInputStream file;
-	private String driver;
 	private String url;
 	private String username;
 	private String password;
@@ -42,15 +41,6 @@ public enum ConnectionManager {
 			file.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-
-		driver = props.getProperty("jdbc.driver");
-		if (driver != null) {
-		    try {
-				Class.forName(driver) ;
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
 		}
 
 		url = props.getProperty("jdbc.url");
