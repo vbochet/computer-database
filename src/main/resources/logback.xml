@@ -5,8 +5,12 @@
     </encoder>
   </appender>
 
-  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-  	<file>/tmp/cdb.log</file>
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
+		<fileNamePattern>/tmp/cdb.%d{yyyy-MM-dd}.log</fileNamePattern>
+	    <minIndex>1</minIndex>
+	    <maxIndex>3</maxIndex>
+	</rollingPolicy>      
     <encoder>
       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>
@@ -15,7 +19,7 @@
   <logger name="deng" level="DEBUG"/>
 
   <root level="INFO">
-    <appender-ref ref="STDOUT" />
+    <!-- <appender-ref ref="STDOUT" /> -->
     <appender-ref ref="FILE" />
   </root>
 </configuration>
