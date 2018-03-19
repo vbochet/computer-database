@@ -179,8 +179,9 @@ public class Cli {
 	}
 
 	private static void caseCreateComputer(Scanner sc) throws ParseException {
-		String name, intro, discont;
+		String name, intro, discont, companyIdStr = null;
 		long companyId;
+		boolean loop = true;
 		Computer computer = new Computer();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			
@@ -198,19 +199,21 @@ public class Cli {
 			discont = getDiscontDate(sc);
 		}
 		
-		System.out.print("Company's id (if none, leave empty): ");
-		try {
-			companyId = sc.nextLong();
-			Company company = CompanyService.INSTANCE.getById(companyId);
-			computer.setCompany(company);
-		}
-		catch(InputMismatchException e) {
-			String s = sc.nextLine();
-			if(!s.isEmpty()) {
-				System.err.println("Input error: Unexpected value \""+s+"\" received");
+		while(loop) {
+			System.out.print("Company's id (if none, leave empty): ");
+			try {
+				companyIdStr = sc.nextLine();
+				if(! companyIdStr.isEmpty()) {
+					companyId = Integer.parseInt(companyIdStr);
+					Company company = CompanyService.INSTANCE.getById(companyId);
+					computer.setCompany(company);
+				}
+				loop = false;
+			}
+			catch(NumberFormatException e) {
+				System.err.println("Input error: Unexpected value \""+companyIdStr+"\" received");
 			}
 		}
-		
 		computer = ComputerService.INSTANCE.createComputer(computer);
 		System.out.println(computer);
 	}
@@ -277,7 +280,8 @@ public class Cli {
 	}
 
 	private static void updateComputerCompany(Scanner sc, Computer computer) {
-		String answer = "";
+		String answer = "", companyIdStr = null;
+		boolean loop = true;
 		long companyId;
 		Company company = null;
 		System.out.println("Current company: ["+computer.getCompany()+"].");
@@ -285,15 +289,24 @@ public class Cli {
 		answer = chooseUpdate(sc, "company");
 		
 		if(answer.equals("y")) {
-			System.out.print("Company's id (if none, leave empty): ");
-			String inputCompany = sc.nextLine();
+			while(loop) {
+				System.out.print("Company's id (if none, leave empty): ");
 				try {
-					companyId = Long.parseLong(inputCompany);
-					company = CompanyService.INSTANCE.getById(companyId);
-				} 
+					companyIdStr = sc.nextLine();
+					if(! companyIdStr.isEmpty()) {
+						companyId = Integer.parseInt(companyIdStr);
+						company = CompanyService.INSTANCE.getById(companyId);
+						computer.setCompany(company);
+					}
+					loop = false;
+				}
+				catch(InputMismatchException e) {
+					System.err.println("Input error: Unexpected value \""+companyIdStr+"\" received");
+				}
 				finally {
 					computer.setCompany(company);
 				}
+			}
 		}
 	}
 	
