@@ -6,9 +6,9 @@
 
     <groupId>com.excilys.formation.cdb</groupId>
     <artifactId>computer-database</artifactId>
-    <version>4.2.3</version>
+    <version>4.3.3</version>
 
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>computer-database</name>
     <url>https://github.com/vbochet/computer-database</url>
@@ -44,6 +44,15 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat8-maven-plugin</artifactId>
+				<version>3.0-r1756463</version>
+				<configuration>
+					<path>/computer-database-maven-2</path>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
     
