@@ -25,10 +25,10 @@ public enum ComputerDaoImpl implements ComputerDao {
     static Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
 	
 	private final String CREATE_REQUEST = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
-	private final String READ_REQUEST   = "SELECT computer.*, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id = ?;";
+	private final String READ_REQUEST   = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id = ?;";
 	private final String UPDATE_REQUEST = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
 	private final String DELETE_REQUEST = "DELETE FROM computer WHERE id = ?;";
-	private final String LIST_REQUEST   = "SELECT computer.*, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id LIMIT ? OFFSET ?;";
+	private final String LIST_REQUEST   = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id LIMIT ? OFFSET ?;";
 	
 	@Override
 	public Computer create(Computer c) {

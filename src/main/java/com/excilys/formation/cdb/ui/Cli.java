@@ -34,38 +34,42 @@ public class Cli {
 				printMenu();
 				System.out.print("Your choice: ");
 				i = sc.nextInt();
-				
-				switch(i) {
-				case(0):
-					System.out.println("Received exit signal");
-					stop = true;
-					break;
-					
-				case(1):
-					caseListComputer(sc);
-					break;
-					
-				case(2):
-					caseListCompany(sc);
-					break;
-					
-				case(3):
-					caseShowComputer(sc);
-					break;
-					
-				case(4):
-					caseCreateComputer(sc);
-					break;
-					
-				case(5):
-					caseUpdateComputer(sc);
-					break;
-					
-				case(6):
-					caseDeleteComputer(sc);
-					break;
-					
-				default:
+				if(i < CliMenuChoices.values().length) {
+					switch(CliMenuChoices.values()[i]) {
+					case QUIT:
+						System.out.println("Received exit signal");
+						stop = true;
+						break;
+						
+					case LIST_COMPUTERS:
+						caseListComputer(sc);
+						break;
+						
+					case LIST_COMPANIES:
+						caseListCompany(sc);
+						break;
+						
+					case READ_COMPUTER:
+						caseShowComputer(sc);
+						break;
+						
+					case CREATE_COMPUTER:
+						caseCreateComputer(sc);
+						break;
+						
+					case UPDATE_COMPUTER:
+						caseUpdateComputer(sc);
+						break;
+						
+					case DELETE_COMPUTER:
+						caseDeleteComputer(sc);
+						break;
+						
+					default:
+						System.out.println("Option "+i+" is unknown");
+					}
+				}
+				else {
 					System.out.println("Option "+i+" is unknown");
 					LOGGER.info("Invalid option in CLI menu: {}", i);
 				}
@@ -90,11 +94,23 @@ public class Cli {
 
 	private static void printMenu() {
 		System.out.println("Select the action you want to perform in the list below:");
-		System.out.println("1. List computers \t\t 2. List companies\n" + 
-						   "3. Show computer details \t 4. Create a computer\n" + 
-						   "5. Update a computer \t\t 6. Delete a computer\n" + 
-						   "0. Exit\n");
-		
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(CliMenuChoices.LIST_COMPUTERS.ordinal())
+			.append(". List computers \t\t ")
+			.append(CliMenuChoices.LIST_COMPANIES.ordinal())
+			.append(". List companies\n")
+			.append(CliMenuChoices.READ_COMPUTER.ordinal())
+			.append(". Show computer details \t ")
+			.append(CliMenuChoices.CREATE_COMPUTER.ordinal())
+			.append(". Create a computer\n")
+			.append(CliMenuChoices.UPDATE_COMPUTER.ordinal())
+			.append(". Update a computer \t\t ")
+			.append(CliMenuChoices.DELETE_COMPUTER.ordinal())
+			.append(". Delete a computer\n")
+			.append(CliMenuChoices.QUIT.ordinal())
+			.append(". Exit\n");
+		System.out.println(sb.toString());
 	}
 
 	private static void caseListComputer(Scanner sc) {
@@ -184,8 +200,9 @@ public class Cli {
 
 	private static void caseCreateComputer(Scanner sc) throws ParseException {
 		LOGGER.info("User choice: Create new computer");
-		String name, intro, discont;
+		String name, intro, discont, companyIdStr = null;
 		long companyId;
+		boolean loop = true;
 		Computer computer = new Computer();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			
@@ -206,24 +223,26 @@ public class Cli {
 		}
 		LOGGER.info("Discontinued: {}", discont);
 		
-		System.out.print("Company's id (if none, leave empty): ");
-		try {
-			companyId = sc.nextLong();
-			Company company = CompanyService.INSTANCE.getById(companyId);
-			LOGGER.info("Company id: {}", companyId);
-			computer.setCompany(company);
-		}
-		catch(InputMismatchException e) {
-			String s = sc.nextLine();
-			if(!s.isEmpty()) {
-				System.err.println("Input error: Unexpected value \""+s+"\" received");
+		while(loop) {
+			System.out.print("Company's id (if none, leave empty): ");
+			try {
+				companyIdStr = sc.nextLine();
+				if(! companyIdStr.isEmpty()) {
+					companyId = Integer.parseInt(companyIdStr);
+					Company company = CompanyService.INSTANCE.getById(companyId);
+			    LOGGER.info("Company id: {}", companyId);
+					computer.setCompany(company);
+				}
+        else {
+          LOGGER.info("Computer id: null");
+        }
+        loop = false;
+      }
+			catch(NumberFormatException e) {
+				System.err.println("Input error: Unexpected value \""+companyIdStr+"\" received");
 				LOGGER.error("Invalid user input: {}", s);
 			}
-			else {
-				LOGGER.info("Computer id: null");
-			}
 		}
-		
 		computer = ComputerService.INSTANCE.createComputer(computer);
 		System.out.println(computer);
 		LOGGER.info("End of computer creation");
@@ -295,7 +314,8 @@ public class Cli {
 	}
 
 	private static void updateComputerCompany(Scanner sc, Computer computer) {
-		String answer = "";
+		String answer = "", companyIdStr = null;
+		boolean loop = true;
 		long companyId;
 		Company company = null;
 		System.out.println("Current company: ["+computer.getCompany()+"].");
@@ -303,15 +323,24 @@ public class Cli {
 		answer = chooseUpdate(sc, "company");
 		
 		if(answer.equals("y")) {
-			System.out.print("Company's id (if none, leave empty): ");
-			String inputCompany = sc.nextLine();
+			while(loop) {
+				System.out.print("Company's id (if none, leave empty): ");
 				try {
-					companyId = Long.parseLong(inputCompany);
-					company = CompanyService.INSTANCE.getById(companyId);
-				} 
+					companyIdStr = sc.nextLine();
+					if(! companyIdStr.isEmpty()) {
+						companyId = Integer.parseInt(companyIdStr);
+						company = CompanyService.INSTANCE.getById(companyId);
+						computer.setCompany(company);
+					}
+					loop = false;
+				}
+				catch(InputMismatchException e) {
+					System.err.println("Input error: Unexpected value \""+companyIdStr+"\" received");
+				}
 				finally {
 					computer.setCompany(company);
 				}
+			}
 		}
 	}
 	
