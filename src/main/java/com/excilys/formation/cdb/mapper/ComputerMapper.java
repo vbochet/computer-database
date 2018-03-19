@@ -23,7 +23,7 @@ public enum ComputerMapper {
 		c.setName(result.getString("name"));
 		c.setIntroduced(ldIntro);
 		c.setDiscontinued(ldDiscont);
-		c.setCompany(new Company(result.getInt("company_id"), result.getString("company_name")));
+		c.setCompany(new Company(result.getLong("company_id"), result.getString("company_name")));
 		
 		return c;
 	}

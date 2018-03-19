@@ -49,7 +49,7 @@ public class ComputerMapperTest {
 		doReturn(NAME).when(rs).getString("name");
 		doReturn(null).when(rs).getDate("introduced");
 		doReturn(null).when(rs).getDate("discontinued");
-		doReturn(0).when(rs).getLong("company_id");
+		doReturn(0L).when(rs).getLong("company_id");
 		doReturn(null).when(rs).getString("company_name");
 		
 		//when

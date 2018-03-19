@@ -11,8 +11,8 @@ public class Company {
 		this.name = null;
 	}
 
-	public Company(int id, String name) {
-		this.id = id;
+	public Company(long l, String name) {
+		this.id = l;
 		this.name = name;
 	}
 	
