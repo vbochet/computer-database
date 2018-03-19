@@ -5,8 +5,8 @@ import com.excilys.formation.cdb.service.CompanyService;
 
 public class CompanyPage extends Page<Company> {
 
-	protected void refreshContent() {
-		setContent(CompanyService.INSTANCE.getList(offset, nbPerPage));
-	}
+    protected void refreshContent() {
+        setContent(CompanyService.INSTANCE.getList(getOffset(), getNbPerPage()));
+    }
 
 }

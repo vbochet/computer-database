@@ -7,9 +7,9 @@ import com.excilys.formation.cdb.model.Company;
 
 public enum CompanyMapper {
 
-	INSTANCE;
-	
-	public Company createCompany(ResultSet result) throws SQLException {
-		return new Company(result.getInt("id"), result.getString("name"));
-	}
+    INSTANCE;
+
+    public Company createCompany(ResultSet result) throws SQLException {
+        return new Company(result.getInt("id"), result.getString("name"));
+    }
 }

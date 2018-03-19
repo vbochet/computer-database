@@ -6,8 +6,6 @@ import com.excilys.formation.cdb.model.Company;
 
 public interface CompanyDao {
 
-	public List<Company> list(int offset, int nbToPrint);
-	
-	public Company read(long companyId);
-	
+    List<Company> list(int offset, int nbToPrint);
+    Company read(long companyId);
 }

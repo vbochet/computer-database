@@ -5,8 +5,8 @@ import com.excilys.formation.cdb.service.ComputerService;
 
 public class ComputerPage extends Page<Computer> {
 
-	protected void refreshContent() {
-		setContent(ComputerService.INSTANCE.getList(offset, nbPerPage));
-	}
+    protected void refreshContent() {
+        setContent(ComputerService.INSTANCE.getList(getOffset(), getNbPerPage()));
+    }
 
 }

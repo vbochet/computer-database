@@ -20,224 +20,212 @@ import com.excilys.formation.cdb.persistence.ConnectionManager;
 
 public enum ComputerDaoImpl implements ComputerDao {
 
-	INSTANCE;
+    INSTANCE;
 
-    static Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
-	
-	private final String CREATE_REQUEST = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
-	private final String READ_REQUEST   = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id = ?;";
-	private final String UPDATE_REQUEST = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
-	private final String DELETE_REQUEST = "DELETE FROM computer WHERE id = ?;";
-	private final String LIST_REQUEST   = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id LIMIT ? OFFSET ?;";
-	
-	@Override
-	public Computer create(Computer c) {
-		LOGGER.info("Creating computer "+c);
-		
-		Connection conn = ConnectionManager.INSTANCE.getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		
-		try {
-			executeCreateRequest(conn, ps, rs, c);
-		} catch (SQLException e) {
-			LOGGER.error("SQL error in computer creation");
-			LOGGER.error(e.getLocalizedMessage());
-		}
-		finally {
-			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
-		}
-		
-	    return c;
-	}
-	
-	private void executeCreateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
-		Company company = c.getCompany();
-		LocalDate intro, discont;
-		
-		ps = conn.prepareStatement(CREATE_REQUEST, Statement.RETURN_GENERATED_KEYS);
-		
-		ps.setString(1, c.getName());
-		
-		intro = c.getIntroduced();
-		if(intro == null) {
-			ps.setNull(2, java.sql.Types.DATE);
-		}
-		else {
-			ps.setDate(2, Date.valueOf(intro));
-		}
-		
-		discont = c.getDiscontinued();
-		if(discont == null) {
-			ps.setNull(3, java.sql.Types.DATE);
-		}
-		else {
-			ps.setDate(3, Date.valueOf(discont));
-		}
+    static final Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
 
-		if(company == null) {
-			ps.setNull(4, java.sql.Types.BIGINT);
-		}
-		else {
-			ps.setLong(4, company.getId());
-		}
-		
-		ps.executeUpdate();
-		
-		rs = ps.getGeneratedKeys();
-		if(rs.first()) {
-			c.setId(rs.getLong(1));
-		}
-	}
+    private final String CREATE_REQUEST = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
+    private final String READ_REQUEST   = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id = ?;";
+    private final String UPDATE_REQUEST = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
+    private final String DELETE_REQUEST = "DELETE FROM computer WHERE id = ?;";
+    private final String LIST_REQUEST   = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id LIMIT ? OFFSET ?;";
 
-	@Override
-	public Computer read(long id) {
-		LOGGER.info("Showing info from computer n°"+id);
-		
-		Connection conn = ConnectionManager.INSTANCE.getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		Computer res = null;
+    @Override
+    public Computer create(Computer c) {
+        LOGGER.info("Creating computer " + c);
 
-		try {
-			res = executeReadRequest(conn, ps, rs, id);
-		} catch (SQLException e) {
-			LOGGER.error("SQL error in computer reading");
-			LOGGER.error(e.getLocalizedMessage());
-		}
-		finally {
-			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
-		}
-		
-		return res;
-	}
-	
-	private Computer executeReadRequest(Connection conn, PreparedStatement ps, ResultSet rs, long id) throws SQLException {
-		Computer c = null;
-		
-		ps = conn.prepareStatement(READ_REQUEST);
-		ps.setLong(1, id);
-		rs = ps.executeQuery();
-		
-		if(rs.first()) {
-			c = ComputerMapper.INSTANCE.createComputer(rs);
-		}
-		
-		return c;
-	}
+        Connection conn = ConnectionManager.INSTANCE.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-	@Override
-	public Computer update(Computer c) {
-		LOGGER.info("Updating computer "+c);
-		
-		Connection conn = ConnectionManager.INSTANCE.getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		
-		try {
-			executeUpdateRequest(conn, ps, rs, c);
-		} catch (SQLException e) {
-			LOGGER.error("SQL error in computer update");
-			LOGGER.error(e.getLocalizedMessage());
-		}
-		finally {
-			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
-		}
-		
-		return c;
-	}
-	
-	private int executeUpdateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
-		Company company = c.getCompany();
-		LocalDate intro, discont;
-		
-		ps = conn.prepareStatement(UPDATE_REQUEST);
-	    
-		ps.setString(1, c.getName());
-		
-		intro = c.getIntroduced();
-		if(intro == null) {
-			ps.setNull(2, java.sql.Types.DATE);
-		}
-		else {
-			ps.setDate(2, Date.valueOf(intro));
-		}
-		
-		discont = c.getDiscontinued();
-		if(discont == null) {
-			ps.setNull(3, java.sql.Types.DATE);
-		}
-		else {
-			ps.setDate(3, Date.valueOf(discont));
-		}
+        try {
+            executeCreateRequest(conn, ps, rs, c);
+        } catch (SQLException e) {
+            LOGGER.error("SQL error in computer creation");
+            LOGGER.error(e.getLocalizedMessage());
+        } finally {
+            ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
+        }
 
-		if(company == null) {
-			ps.setNull(4, java.sql.Types.BIGINT);
-		}
-		else {
-			ps.setLong(4, company.getId());
-		}
-		
-	    ps.setLong(5, c.getId());
-	    
-	    return ps.executeUpdate();
-	}
+        return c;
+    }
 
-	@Override
-	public void delete(long id) {
-		LOGGER.info("Deleting computer n°"+id);
-		
-		Connection conn = ConnectionManager.INSTANCE.getConnection();
-		PreparedStatement ps = null;
-		
-		try {
-			executeDeleteRequest(conn, ps, id);
-		} catch (SQLException e) {
-			LOGGER.error("SQL error in computer deletion");
-			LOGGER.error(e.getLocalizedMessage());
-		}
-		finally {
-			ConnectionManager.INSTANCE.closeElements(conn, ps, null);
-		}
-	}
-	
-	private void executeDeleteRequest(Connection conn, PreparedStatement ps, Long id) throws SQLException {
-		ps = conn.prepareStatement(DELETE_REQUEST);
-	    ps.setLong(1, id);
-		ps.executeUpdate();
-	}
+    private void executeCreateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
+        Company company = c.getCompany();
+        LocalDate intro, discont;
 
-	@Override
-	public List<Computer> list(int offset, int nbToPrint) {
-		LOGGER.info("Listing computers from "+offset+" ("+nbToPrint+" per page)");
-		
-		Connection conn = ConnectionManager.INSTANCE.getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		List<Computer> computersList = new ArrayList<>();
+        ps = conn.prepareStatement(CREATE_REQUEST, Statement.RETURN_GENERATED_KEYS);
 
-		try {
-			executeListRequest(conn, ps, rs, offset, nbToPrint, computersList);
-		} catch (SQLException e) {
-			LOGGER.error("SQL error in computer listing");
-			LOGGER.error(e.getLocalizedMessage());
-		}
-		finally {
-			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
-		}
-		
-		return computersList;
-	}
-	
-	private void executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs, int offset, int nbToPrint, List<Computer> computersList) throws SQLException {
-		ps = conn.prepareStatement(LIST_REQUEST);
-		ps.setInt(1, nbToPrint);
-		ps.setLong(2, offset);
-		rs = ps.executeQuery();
-		
-		while(rs.next()) {
-			computersList.add(ComputerMapper.INSTANCE.createComputer(rs));
-		}
-	}
+        ps.setString(1, c.getName());
 
+        intro = c.getIntroduced();
+        if (intro == null) {
+            ps.setNull(2, java.sql.Types.DATE);
+        } else {
+            ps.setDate(2, Date.valueOf(intro));
+        }
+
+        discont = c.getDiscontinued();
+        if (discont == null) {
+            ps.setNull(3, java.sql.Types.DATE);
+        } else {
+            ps.setDate(3, Date.valueOf(discont));
+        }
+
+        if (company == null) {
+            ps.setNull(4, java.sql.Types.BIGINT);
+        } else {
+            ps.setLong(4, company.getId());
+        }
+
+        ps.executeUpdate();
+
+        rs = ps.getGeneratedKeys();
+        if (rs.first()) {
+            c.setId(rs.getLong(1));
+        }
+    }
+
+    @Override
+    public Computer read(long id) {
+        LOGGER.info("Showing info from computer n°" + id);
+
+        Connection conn = ConnectionManager.INSTANCE.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Computer res = null;
+
+        try {
+            res = executeReadRequest(conn, ps, rs, id);
+        } catch (SQLException e) {
+            LOGGER.error("SQL error in computer reading");
+            LOGGER.error(e.getLocalizedMessage());
+        } finally {
+            ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
+        }
+
+        return res;
+    }
+
+    private Computer executeReadRequest(Connection conn, PreparedStatement ps, ResultSet rs, long id) throws SQLException {
+        Computer c = null;
+
+        ps = conn.prepareStatement(READ_REQUEST);
+        ps.setLong(1, id);
+        rs = ps.executeQuery();
+
+        if (rs.first()) {
+            c = ComputerMapper.INSTANCE.createComputer(rs);
+        }
+
+        return c;
+    }
+
+    @Override
+    public Computer update(Computer c) {
+        LOGGER.info("Updating computer " + c);
+
+        Connection conn = ConnectionManager.INSTANCE.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            executeUpdateRequest(conn, ps, rs, c);
+        } catch (SQLException e) {
+            LOGGER.error("SQL error in computer update");
+            LOGGER.error(e.getLocalizedMessage());
+        } finally {
+            ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
+        }
+
+        return c;
+    }
+
+    private int executeUpdateRequest(Connection conn, PreparedStatement ps, ResultSet rs, Computer c) throws SQLException {
+        Company company = c.getCompany();
+        LocalDate intro, discont;
+
+        ps = conn.prepareStatement(UPDATE_REQUEST);
+
+        ps.setString(1, c.getName());
+
+        intro = c.getIntroduced();
+        if (intro == null) {
+            ps.setNull(2, java.sql.Types.DATE);
+        } else {
+            ps.setDate(2, Date.valueOf(intro));
+        }
+
+        discont = c.getDiscontinued();
+        if (discont == null) {
+            ps.setNull(3, java.sql.Types.DATE);
+        } else {
+            ps.setDate(3, Date.valueOf(discont));
+        }
+
+        if (company == null) {
+            ps.setNull(4, java.sql.Types.BIGINT);
+        } else {
+            ps.setLong(4, company.getId());
+        }
+
+        ps.setLong(5, c.getId());
+
+        return ps.executeUpdate();
+    }
+
+    @Override
+    public void delete(long id) {
+        LOGGER.info("Deleting computer n°" + id);
+
+        Connection conn = ConnectionManager.INSTANCE.getConnection();
+        PreparedStatement ps = null;
+
+        try {
+            executeDeleteRequest(conn, ps, id);
+        } catch (SQLException e) {
+            LOGGER.error("SQL error in computer deletion");
+            LOGGER.error(e.getLocalizedMessage());
+        } finally {
+            ConnectionManager.INSTANCE.closeElements(conn, ps, null);
+        }
+    }
+
+    private void executeDeleteRequest(Connection conn, PreparedStatement ps, Long id) throws SQLException {
+        ps = conn.prepareStatement(DELETE_REQUEST);
+        ps.setLong(1, id);
+        ps.executeUpdate();
+    }
+
+    @Override
+    public List<Computer> list(int offset, int nbToPrint) {
+        LOGGER.info("Listing computers from " + offset + " (" + nbToPrint + " per page)");
+
+        Connection conn = ConnectionManager.INSTANCE.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Computer> computersList = new ArrayList<>();
+
+        try {
+            executeListRequest(conn, ps, rs, offset, nbToPrint, computersList);
+        } catch (SQLException e) {
+            LOGGER.error("SQL error in computer listing");
+            LOGGER.error(e.getLocalizedMessage());
+        } finally {
+            ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
+        }
+
+        return computersList;
+    }
+
+    private void executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs, int offset, int nbToPrint, List<Computer> computersList) throws SQLException {
+        ps = conn.prepareStatement(LIST_REQUEST);
+        ps.setInt(1, nbToPrint);
+        ps.setLong(2, offset);
+        rs = ps.executeQuery();
+
+        while (rs.next()) {
+            computersList.add(ComputerMapper.INSTANCE.createComputer(rs));
+        }
+    }
 }
