@@ -15,8 +15,8 @@ public enum CompanyDaoImpl implements CompanyDao {
 
 	INSTANCE;
 	
-	private final String LIST_REQUEST = "SELECT * FROM company LIMIT ? OFFSET ?;";
-	private final String READ_REQUEST = "SELECT * FROM company WHERE id = ?;";
+	private final String LIST_REQUEST = "SELECT id, name FROM company LIMIT ? OFFSET ?;";
+	private final String READ_REQUEST = "SELECT id, name FROM company WHERE id = ?;";
 	
 	@Override
 	public List<Company> list(int offset, int nbToPrint) {
