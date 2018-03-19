@@ -1,6 +1,5 @@
 package com.excilys.formation.cdb.service;
 
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -37,37 +36,37 @@ public enum ComputerService {
         return false;
     }
 
-    public void setName(String name, Computer c) {
+    public void setName(String name, Computer computer) {
         if (name.isEmpty()) {
             System.err.println("Name is mandatory, aborting creation");
         } else {
-            c.setName(name);
+            computer.setName(name);
         }
     }
 
-    public boolean setIntroDate(String intro, DateFormat dateFormat, Computer c) {
+    public boolean setIntroDate(String intro, Computer computer) {
         if (!intro.isEmpty()) {
             try {
-                c.setIntroduced(LocalDate.parse(intro));
+                computer.setIntroduced(LocalDate.parse(intro));
             } catch (DateTimeParseException e) {
                 return false;
             }
         } else {
-            c.setIntroduced(null);
+            computer.setIntroduced(null);
         }
 
         return true;
     }
 
-    public boolean setDiscontDate(String discont, DateFormat dateFormat, Computer c) {
+    public boolean setDiscontDate(String discont, Computer computer) {
         if (!discont.isEmpty()) {
             try {
-                c.setDiscontinued(LocalDate.parse(discont));
+                computer.setDiscontinued(LocalDate.parse(discont));
             } catch (DateTimeParseException e) {
                 return false;
             }
         } else {
-            c.setDiscontinued(null);
+            computer.setDiscontinued(null);
         }
 
         return true;

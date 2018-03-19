@@ -27,31 +27,31 @@ public enum CompanyDaoImpl implements CompanyDao {
     public List<Company> list(int offset, int nbToPrint) {
         LOGGER.info("Listing companies from " + offset + " (" + nbToPrint + " per page)");
 
-        Connection conn = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
         List<Company> companiesList = new ArrayList<>();
 
         try {
-            executeListRequest(conn, ps, rs, offset, nbToPrint, companiesList);
+            executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, companiesList);
         } catch (SQLException e) {
             LOGGER.error("SQL error in companies listing");
             LOGGER.error(e.getLocalizedMessage());
         } finally {
-            ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
+            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
 
         return companiesList;
     }
 
-    private void executeListRequest(Connection conn, PreparedStatement ps, ResultSet rs, int offset, int nbToPrint, List<Company> companiesList) throws SQLException {
-        ps = conn.prepareStatement(LIST_REQUEST);
-        ps.setInt(1, nbToPrint);
-        ps.setInt(2, offset);
-        rs = ps.executeQuery();
+    private void executeListRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, List<Company> companiesList) throws SQLException {
+        preparedStatement = connection.prepareStatement(LIST_REQUEST);
+        preparedStatement.setInt(1, nbToPrint);
+        preparedStatement.setInt(2, offset);
+        resultSet = preparedStatement.executeQuery();
 
-        while (rs.next()) {
-            companiesList.add(CompanyMapper.INSTANCE.createCompany(rs));
+        while (resultSet.next()) {
+            companiesList.add(CompanyMapper.INSTANCE.createCompany(resultSet));
         }
     }
 
@@ -59,30 +59,30 @@ public enum CompanyDaoImpl implements CompanyDao {
     public Company read(long companyId) {
         LOGGER.info("Showing info from company n°" + companyId);
 
-        Connection conn = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
         Company company = null;
 
         try {
-            company = executeReadRequest(conn, ps, rs, companyId);
+            company = executeReadRequest(connection, preparedStatement, resultSet, companyId);
         } catch (SQLException e) {
             LOGGER.error("SQL error in company reading");
             LOGGER.error(e.getLocalizedMessage());
         } finally {
-            ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
+            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
 
         return company;
     };
 
-    private Company executeReadRequest(Connection conn, PreparedStatement ps, ResultSet rs, long id) throws SQLException {
-        ps = conn.prepareStatement(READ_REQUEST);
-        ps.setLong(1, id);
-        rs = ps.executeQuery();
+    private Company executeReadRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, long id) throws SQLException {
+        preparedStatement = connection.prepareStatement(READ_REQUEST);
+        preparedStatement.setLong(1, id);
+        resultSet = preparedStatement.executeQuery();
 
-        if (rs.first()) {
-            return CompanyMapper.INSTANCE.createCompany(rs);
+        if (resultSet.first()) {
+            return CompanyMapper.INSTANCE.createCompany(resultSet);
         }
 
         return null;

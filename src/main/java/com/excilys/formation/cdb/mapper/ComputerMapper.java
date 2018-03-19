@@ -13,18 +13,18 @@ public enum ComputerMapper {
     INSTANCE;
 
     public Computer createComputer(ResultSet result) throws SQLException {
-        Computer c = new Computer();
+        Computer computer = new Computer();
         Date intro = result.getDate("introduced");
         Date discont = result.getDate("discontinued");
         LocalDate ldIntro = intro == null ? null : intro.toLocalDate();
         LocalDate ldDiscont = discont == null ? null : discont.toLocalDate();
 
-        c.setId(result.getLong("id"));
-        c.setName(result.getString("name"));
-        c.setIntroduced(ldIntro);
-        c.setDiscontinued(ldDiscont);
-        c.setCompany(new Company(result.getLong("company_id"), result.getString("company_name")));
+        computer.setId(result.getLong("id"));
+        computer.setName(result.getString("name"));
+        computer.setIntroduced(ldIntro);
+        computer.setDiscontinued(ldDiscont);
+        computer.setCompany(new Company(result.getLong("company_id"), result.getString("company_name")));
 
-        return c;
+        return computer;
     }
 }

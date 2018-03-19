@@ -21,16 +21,16 @@ public enum ConnectionManager {
 
     private String CONFIG_FILE = "config/db/db.properties";
 
-    private Properties props;
+    private Properties properties;
     private FileInputStream file;
     private String url;
     private String username;
     private String password;
 
-    private Connection conn;
+    private Connection connection;
 
     ConnectionManager() {
-        props = new Properties();
+        properties = new Properties();
         LOGGER.info("Loading DB configuration from file " + CONFIG_FILE);
 
         try {
@@ -41,7 +41,7 @@ public enum ConnectionManager {
         }
 
         try {
-            props.load(file);
+            properties.load(file);
         } catch (IOException e) {
             LOGGER.error("Open/Read error on file " + CONFIG_FILE);
             LOGGER.error(e.getLocalizedMessage());
@@ -54,49 +54,49 @@ public enum ConnectionManager {
             LOGGER.error(e.getLocalizedMessage());
         }
 
-        url = props.getProperty("jdbc.url");
-        username = props.getProperty("jdbc.username");
-        password = props.getProperty("jdbc.password");
+        url = properties.getProperty("jdbc.url");
+        username = properties.getProperty("jdbc.username");
+        password = properties.getProperty("jdbc.password");
     }
 
     public Connection getConnection() {
         try {
-            conn = DriverManager.getConnection(url, username, password);
+            connection = DriverManager.getConnection(url, username, password);
             LOGGER.info("New connection created to DB " + url);
         } catch (SQLException e) {
             LOGGER.error("SQL error");
             LOGGER.error(e.getLocalizedMessage());
         }
 
-        return conn;
+        return connection;
     }
 
 
-    public void closeElements(Connection conn, Statement st, ResultSet rs) {
-        if (st != null) {
+    public void closeElements(Connection connection, Statement statement, ResultSet resultSet) {
+        if (statement != null) {
             try {
-                st.close();
-                LOGGER.info("Closed Statement " + st);
+                statement.close();
+                LOGGER.info("Closed Statement " + statement);
             } catch (SQLException e) {
                 LOGGER.error("SQL error");
                 LOGGER.error(e.getLocalizedMessage());
             }
         }
 
-        if (conn != null) {
+        if (connection != null) {
             try {
-                conn.close();
-                LOGGER.info("Closed Connection " + conn);
+                connection.close();
+                LOGGER.info("Closed Connection " + connection);
             } catch (SQLException e) {
                 LOGGER.error("SQL error");
                 LOGGER.error(e.getLocalizedMessage());
             }
         }
 
-        if (rs != null) {
+        if (resultSet != null) {
             try {
-                rs.close();
-                LOGGER.info("Closed ResultSet " + rs);
+                resultSet.close();
+                LOGGER.info("Closed ResultSet " + resultSet);
             } catch (SQLException e) {
                 LOGGER.error("SQL error");
                 LOGGER.error(e.getLocalizedMessage());

@@ -6,9 +6,9 @@ import com.excilys.formation.cdb.model.Computer;
 
 public interface ComputerDao {
 
-    Computer create(Computer c);
+    Computer create(Computer computer);
     Computer read(long id);
-    Computer update(Computer c);
+    Computer update(Computer computer);
     void delete(long id);
     List<Computer> list(int offset, int nbToPrint);
 
