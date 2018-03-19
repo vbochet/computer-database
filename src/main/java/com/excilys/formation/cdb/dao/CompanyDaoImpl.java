@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.persistence.ConnectionManager;
@@ -14,12 +17,16 @@ import com.excilys.formation.cdb.persistence.ConnectionManager;
 public enum CompanyDaoImpl implements CompanyDao {
 
 	INSTANCE;
+
+    static Logger LOGGER = LoggerFactory.getLogger(CompanyDaoImpl.class);
 	
 	private final String LIST_REQUEST = "SELECT * FROM company LIMIT ? OFFSET ?;";
 	private final String READ_REQUEST = "SELECT * FROM company WHERE id = ?;";
 	
 	@Override
 	public List<Company> list(int offset, int nbToPrint) {
+		LOGGER.info("Listing companies from "+offset+" ("+nbToPrint+" per page)");
+		
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -28,7 +35,8 @@ public enum CompanyDaoImpl implements CompanyDao {
 		try {
 			executeListRequest(conn, ps, rs, offset, nbToPrint, companiesList);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("SQL error in companies listing");
+			LOGGER.error(e.getLocalizedMessage());
 		}
 		finally {
 			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
@@ -50,6 +58,8 @@ public enum CompanyDaoImpl implements CompanyDao {
 
 	@Override
 	public Company read(long companyId) {
+		LOGGER.info("Showing info from company n°"+companyId);
+		
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -58,7 +68,8 @@ public enum CompanyDaoImpl implements CompanyDao {
 		try {
 			company = executeReadRequest(conn, ps, rs, companyId);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("SQL error in company reading");
+			LOGGER.error(e.getLocalizedMessage());
 		}
 		finally {
 			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
