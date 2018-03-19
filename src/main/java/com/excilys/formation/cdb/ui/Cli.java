@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
@@ -16,7 +18,11 @@ import com.excilys.formation.cdb.service.ComputerService;
 
 public class Cli {
 
+    static Logger LOGGER = LoggerFactory.getLogger(Cli.class);
+    
 	public static void main(String[] args) {
+		LOGGER.info("Starting Computer-Database command line interface");
+		
 		System.out.println("COMPUTER DATABASE\n-----------------\n");
 		
 		Boolean stop = false;
@@ -65,19 +71,24 @@ public class Cli {
 				}
 				else {
 					System.out.println("Option "+i+" is unknown");
+					LOGGER.info("Invalid option in CLI menu: {}", i);
 				}
 			}
 			catch(InputMismatchException e) {
-				System.err.println("Input error: Unexpected value \""+sc.nextLine()+"\" received");
+				String input = sc.nextLine();
+				System.err.println("Input error: Unexpected value \""+input+"\" received");
+				LOGGER.error("Invalid user input in CLI menu: {}", input);
 				stop = true;
 			} catch (ParseException e) {
 				e.printStackTrace();
 				System.err.println("Input error: Bad date format (expected yyyy-mm-dd)");
+				LOGGER.error("Invalid user input in CLI: bad date format");
 				stop = true;
 			}
 		}
 		
 		System.out.println("Terminating...");
+		LOGGER.info("Stopping Computer-Database command line interface");
 		sc.close();
 	}
 
@@ -103,9 +114,11 @@ public class Cli {
 	}
 
 	private static void caseListComputer(Scanner sc) {
+		LOGGER.info("User choice: List computers");
 		ComputerPage page = new ComputerPage();
 		int nbToPrint = getNbToPrint(sc);
 		page.setNbPerPage(nbToPrint);
+		LOGGER.info("(print {} computers per page)", nbToPrint);
 
 		System.out.println(page.getContent());
 		System.out.println("\n");
@@ -114,12 +127,15 @@ public class Cli {
 			System.out.println(page.getContent());
 			System.out.println("\n");
 		}
+		LOGGER.info("End of computer listing");
 	}
 
 	private static void caseListCompany(Scanner sc) {
+		LOGGER.info("User choice: List companies");
 		CompanyPage page = new CompanyPage();
 		int nbToPrint = getNbToPrint(sc);
 		page.setNbPerPage(nbToPrint);
+		LOGGER.info("(print {} companies per page)", nbToPrint);
 
 		System.out.println(page.getContent());
 		System.out.println("\n");
@@ -128,6 +144,7 @@ public class Cli {
 			System.out.println(page.getContent());
 			System.out.println("\n");
 		}
+		LOGGER.info("End of company listing");
 	}
 
 	private static boolean getAction(Scanner sc, Page page) {
@@ -169,16 +186,20 @@ public class Cli {
 	}
 
 	private static void caseShowComputer(Scanner sc) {
+		LOGGER.info("User choice: Show computer info");
 		long id;
 		Computer computer = null;
 		
 		id = getId(sc);
+		LOGGER.info("Computer's id: {}", id);
 		
 		computer = ComputerService.INSTANCE.getById(id);
 		System.out.println(computer);
+		LOGGER.info("End of computer info");
 	}
 
 	private static void caseCreateComputer(Scanner sc) throws ParseException {
+		LOGGER.info("User choice: Create new computer");
 		String name, intro, discont, companyIdStr = null;
 		long companyId;
 		boolean loop = true;
@@ -187,17 +208,20 @@ public class Cli {
 			
 		
 		name = getName(sc);
+		LOGGER.info("Name: {}", name);
 		ComputerService.INSTANCE.setName(name, computer);
 		
 		intro = getIntroDate(sc);
 		while(! ComputerService.INSTANCE.setIntroDate(intro, dateFormat, computer)) {
 			intro = getIntroDate(sc);
 		}
+		LOGGER.info("Introducted: {}", intro);
 		
 		discont = getDiscontDate(sc);
 		while(! ComputerService.INSTANCE.setDiscontDate(discont, dateFormat, computer)) {
 			discont = getDiscontDate(sc);
 		}
+		LOGGER.info("Discontinued: {}", discont);
 		
 		while(loop) {
 			System.out.print("Company's id (if none, leave empty): ");
@@ -206,27 +230,36 @@ public class Cli {
 				if(! companyIdStr.isEmpty()) {
 					companyId = Integer.parseInt(companyIdStr);
 					Company company = CompanyService.INSTANCE.getById(companyId);
+			    LOGGER.info("Company id: {}", companyId);
 					computer.setCompany(company);
 				}
-				loop = false;
-			}
+        else {
+          LOGGER.info("Computer id: null");
+        }
+        loop = false;
+      }
 			catch(NumberFormatException e) {
 				System.err.println("Input error: Unexpected value \""+companyIdStr+"\" received");
+				LOGGER.error("Invalid user input: {}", s);
 			}
 		}
 		computer = ComputerService.INSTANCE.createComputer(computer);
 		System.out.println(computer);
+		LOGGER.info("End of computer creation");
 	}
 
 	private static void caseUpdateComputer(Scanner sc) throws ParseException {
+		LOGGER.info("User choice: Update computer");
 		long id;
 		Computer computer;
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		id = getId(sc);
+		LOGGER.info("Computer's id: {}", id);
 		computer = ComputerService.INSTANCE.getById(id);
 		if(null == computer) {
 			System.out.println("No computer matching this id");
+			LOGGER.error("No computer matching id {}", id);
 			return;
 		}
 
@@ -237,6 +270,7 @@ public class Cli {
 		
 		computer = ComputerService.INSTANCE.updateComputer(computer);
 		System.out.println(computer);
+		LOGGER.info("End of computer update");
 	}
 
 	private static void updateComputerName(Scanner sc, Computer computer) {
@@ -320,16 +354,21 @@ public class Cli {
 	}
 
 	private static void caseDeleteComputer(Scanner sc) {
+		LOGGER.info("User choice: Update computer");
 		long id;
 		
 		id = getId(sc);
+		LOGGER.info("Computer's id: {}", id);
 		
 		if(ComputerService.INSTANCE.deleteById(id)) {
 			System.out.println("Computer n°"+id+" has been successfully deleted");
+			LOGGER.info("Computer {} has been deleted", id);
 		}
 		else {
 			System.out.println("A problem occured. Computer n°"+id+" couldn't be deleted");
+			LOGGER.error("Computer {} couldn't be deleted", id);
 		}
+		LOGGER.info("End of computer deletion");
 	}
 
 	private static int getNbToPrint(Scanner sc) {
