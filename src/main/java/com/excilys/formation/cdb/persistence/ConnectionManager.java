@@ -13,13 +13,11 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.excilys.formation.cdb.ui.Cli;
-
 public enum ConnectionManager {
 
 	INSTANCE;
 
-    private Logger LOGGER = LoggerFactory.getLogger(Cli.class);
+    private Logger LOGGER = LoggerFactory.getLogger(ConnectionManager.class);
     
     private String CONFIG_FILE = "config/db/db.properties";
 	
