@@ -10,13 +10,21 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.excilys.formation.cdb.ui.Cli;
+
 public enum ConnectionManager {
 
 	INSTANCE;
+
+    private Logger LOGGER = LoggerFactory.getLogger(Cli.class);
+    
+    private String CONFIG_FILE = "config/db/db.properties";
 	
 	private Properties props;
 	private FileInputStream file;
-	private String driver;
 	private String url;
 	private String username;
 	private String password;
@@ -25,32 +33,27 @@ public enum ConnectionManager {
 	
 	private ConnectionManager() {
 		props = new Properties();
+		LOGGER.info("Loading DB configuration from file "+CONFIG_FILE);
 		
 		try {
-			file = new FileInputStream("config/db/db.properties");
+			file = new FileInputStream(CONFIG_FILE);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			LOGGER.error("Error: couldn't find file "+CONFIG_FILE);
+			LOGGER.error(e.getLocalizedMessage());
 		}
 		
 		try {
 			props.load(file);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error("Open/Read error on file "+CONFIG_FILE);
+			LOGGER.error(e.getLocalizedMessage());
 		}
 		
 		try {
 			file.close();
 		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		driver = props.getProperty("jdbc.driver");
-		if (driver != null) {
-		    try {
-				Class.forName(driver) ;
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			LOGGER.error("Close error on file "+CONFIG_FILE);
+			LOGGER.error(e.getLocalizedMessage());
 		}
 
 		url = props.getProperty("jdbc.url");
@@ -61,8 +64,10 @@ public enum ConnectionManager {
 	public Connection getConnection() {
 		try {
 			conn = DriverManager.getConnection(url, username, password);
+			LOGGER.info("New connection created to DB "+url);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("SQL error");
+			LOGGER.error(e.getLocalizedMessage());
 		}
 		
 		return conn;
@@ -73,24 +78,30 @@ public enum ConnectionManager {
 		if(st != null) {
 			try {
 				st.close();
+				LOGGER.info("Closed Statement "+st);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				LOGGER.error("SQL error");
+				LOGGER.error(e.getLocalizedMessage());
 			}
 		}
 		
 		if(conn != null) {
 			try {
 				conn.close();
+				LOGGER.info("Closed Connection "+conn);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				LOGGER.error("SQL error");
+				LOGGER.error(e.getLocalizedMessage());
 			}
 		}
 		
 		if(rs != null) {
 			try {
 				rs.close();
+				LOGGER.info("Closed ResultSet "+rs);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				LOGGER.error("SQL error");
+				LOGGER.error(e.getLocalizedMessage());
 			}
 		}
 	}
