@@ -10,6 +10,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
@@ -18,6 +21,8 @@ import com.excilys.formation.cdb.persistence.ConnectionManager;
 public enum ComputerDaoImpl implements ComputerDao {
 
 	INSTANCE;
+
+    static Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
 	
 	private final String CREATE_REQUEST = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
 	private final String READ_REQUEST   = "SELECT computer.*, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id = ?;";
@@ -27,6 +32,8 @@ public enum ComputerDaoImpl implements ComputerDao {
 	
 	@Override
 	public Computer create(Computer c) {
+		LOGGER.info("Creating computer "+c);
+		
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -34,7 +41,8 @@ public enum ComputerDaoImpl implements ComputerDao {
 		try {
 			executeCreateRequest(conn, ps, rs, c);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("SQL error in computer creation");
+			LOGGER.error(e.getLocalizedMessage());
 		}
 		finally {
 			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
@@ -84,6 +92,8 @@ public enum ComputerDaoImpl implements ComputerDao {
 
 	@Override
 	public Computer read(long id) {
+		LOGGER.info("Showing info from computer n°"+id);
+		
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -92,7 +102,8 @@ public enum ComputerDaoImpl implements ComputerDao {
 		try {
 			res = executeReadRequest(conn, ps, rs, id);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("SQL error in computer reading");
+			LOGGER.error(e.getLocalizedMessage());
 		}
 		finally {
 			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
@@ -117,6 +128,8 @@ public enum ComputerDaoImpl implements ComputerDao {
 
 	@Override
 	public Computer update(Computer c) {
+		LOGGER.info("Updating computer "+c);
+		
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -124,7 +137,8 @@ public enum ComputerDaoImpl implements ComputerDao {
 		try {
 			executeUpdateRequest(conn, ps, rs, c);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("SQL error in computer update");
+			LOGGER.error(e.getLocalizedMessage());
 		}
 		finally {
 			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
@@ -171,13 +185,16 @@ public enum ComputerDaoImpl implements ComputerDao {
 
 	@Override
 	public void delete(long id) {
+		LOGGER.info("Deleting computer n°"+id);
+		
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		
 		try {
 			executeDeleteRequest(conn, ps, id);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("SQL error in computer deletion");
+			LOGGER.error(e.getLocalizedMessage());
 		}
 		finally {
 			ConnectionManager.INSTANCE.closeElements(conn, ps, null);
@@ -192,6 +209,8 @@ public enum ComputerDaoImpl implements ComputerDao {
 
 	@Override
 	public List<Computer> list(int offset, int nbToPrint) {
+		LOGGER.info("Listing computers from "+offset+" ("+nbToPrint+" per page)");
+		
 		Connection conn = ConnectionManager.INSTANCE.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -200,7 +219,8 @@ public enum ComputerDaoImpl implements ComputerDao {
 		try {
 			executeListRequest(conn, ps, rs, offset, nbToPrint, computersList);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("SQL error in computer listing");
+			LOGGER.error(e.getLocalizedMessage());
 		}
 		finally {
 			ConnectionManager.INSTANCE.closeElements(conn, ps, rs);
