@@ -240,7 +240,7 @@ public class Cli {
       }
 			catch(NumberFormatException e) {
 				System.err.println("Input error: Unexpected value \""+companyIdStr+"\" received");
-				LOGGER.error("Invalid user input: {}", s);
+				LOGGER.error("Invalid user input: {}", companyIdStr);
 			}
 		}
 		computer = ComputerService.INSTANCE.createComputer(computer);
