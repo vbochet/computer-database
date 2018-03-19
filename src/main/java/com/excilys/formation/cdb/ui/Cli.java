@@ -76,13 +76,11 @@ public class Cli {
 			}
 			catch(InputMismatchException e) {
 				String input = sc.nextLine();
-				System.err.println("Input error: Unexpected value \""+input+"\" received");
-				LOGGER.error("Invalid user input in CLI menu: {}", input);
+				LOGGER.error("Input error: Unexpected value \""+input+"\" received");
 				stop = true;
 			} catch (ParseException e) {
 				e.printStackTrace();
-				System.err.println("Input error: Bad date format (expected yyyy-mm-dd)");
-				LOGGER.error("Invalid user input in CLI: bad date format");
+				LOGGER.error("Input error: Bad date format (expected yyyy-mm-dd)");
 				stop = true;
 			}
 		}
