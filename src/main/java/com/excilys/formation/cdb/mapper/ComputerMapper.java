@@ -12,7 +12,7 @@ public enum ComputerMapper {
 
     INSTANCE;
 
-    public Computer createComputer(ResultSet result) throws SQLException {
+    public Computer resultSetToComputer(ResultSet result) throws SQLException {
         Computer computer = new Computer();
         Date intro = result.getDate("introduced");
         Date discont = result.getDate("discontinued");

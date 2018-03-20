@@ -34,7 +34,7 @@ public class ComputerMapperTest {
 		doReturn(COMPANY.getName()).when(rs).getString("company_name");
 		
 		//when
-		computer = ComputerMapper.INSTANCE.createComputer(rs);
+		computer = ComputerMapper.INSTANCE.resultSetToComputer(rs);
 		
 		//then
 		assertEquals(NAME, computer.getName());
@@ -53,7 +53,7 @@ public class ComputerMapperTest {
 		doReturn(null).when(rs).getString("company_name");
 		
 		//when
-		computer = ComputerMapper.INSTANCE.createComputer(rs);
+		computer = ComputerMapper.INSTANCE.resultSetToComputer(rs);
 		
 		//then
 		assertEquals(NAME, computer.getName());

@@ -115,7 +115,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         resultSet = preparedStatement.executeQuery();
 
         if (resultSet.first()) {
-            computer = ComputerMapper.INSTANCE.createComputer(resultSet);
+            computer = ComputerMapper.INSTANCE.resultSetToComputer(resultSet);
         }
 
         return computer;
@@ -225,7 +225,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-            computersList.add(ComputerMapper.INSTANCE.createComputer(resultSet));
+            computersList.add(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
         }
     }
 }
