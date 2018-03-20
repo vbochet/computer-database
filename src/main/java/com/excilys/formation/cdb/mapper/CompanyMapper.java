@@ -13,4 +13,22 @@ public enum CompanyMapper {
     public Company resultSetToCompany(ResultSet result) throws SQLException {
         return new Company(result.getInt("id"), result.getString("name"));
     }
+
+    public CompanyDto companyToCompanyDto(Company company) {
+        CompanyDto companyDto = new CompanyDto();
+        
+        companyDto.setCompanyId(company.getId());
+        companyDto.setCompanyName(company.getName());
+        
+        return companyDto;
+    }
+
+    public Company companyDtoToCompany(CompanyDto companyDto) {
+        Company company = new Company();
+        
+        company.setId(companyDto.getCompanyId());
+        company.setName(companyDto.getCompanyName());
+        
+        return company;
+    }
 }
