@@ -6,7 +6,7 @@ public class ComputerDto {
     private String computerName;
     private String computerIntroduced;
     private String computerDiscontinued;
-    private CompanyDto computerCompany;
+    private String computerCompanyName;
 
     public long getComputerId() {
         return computerId;
@@ -36,11 +36,11 @@ public class ComputerDto {
         this.computerDiscontinued = computerDiscontinued;
     }
     
-    public CompanyDto getComputerCompany() {
-        return computerCompany;
+    public String getComputerCompanyName() {
+        return computerCompanyName;
     }
-    public void setComputerCompany(CompanyDto computerCompany) {
-        this.computerCompany = computerCompany;
+    public void setComputerCompany(String computerCompanyName) {
+        this.computerCompanyName = computerCompanyName;
     }
 
 }

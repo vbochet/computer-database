@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import com.excilys.formation.cdb.dto.ComputerDto;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
+import com.excilys.formation.cdb.service.CompanyService;
 
 public enum ComputerMapper {
 
@@ -36,7 +37,7 @@ public enum ComputerMapper {
         computerDto.setComputerName(computer.getName());
         computerDto.setComputerIntroduced(computer.getIntroduced().toString());
         computerDto.setComputerDiscontinued(computer.getDiscontinued().toString());
-        computerDto.setComputerCompany(CompanyMapper.INSTANCE.companyToCompanyDto(computer.getCompany()));
+        computerDto.setComputerCompany(computer.getCompany().getName());
 
         return computerDto;
     }
@@ -53,7 +54,7 @@ public enum ComputerMapper {
         computer.setName(computerDto.getComputerName());
         computer.setIntroduced(ldIntro);
         computer.setDiscontinued(ldDiscont);
-        computer.setCompany(CompanyMapper.INSTANCE.companyDtoToCompany(computerDto.getComputerCompany()));
+        computer.setCompany(CompanyService.INSTANCE.getByName(computerDto.getComputerCompanyName()));
 
         return computer;
     }
