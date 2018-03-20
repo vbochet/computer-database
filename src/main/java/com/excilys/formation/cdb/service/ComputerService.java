@@ -27,6 +27,10 @@ public enum ComputerService {
         return null;
     }
 
+    public long getNbFound() {
+        return ComputerDaoImpl.INSTANCE.count();
+    }
+
     public boolean deleteById(long id) {
         if (id > 0) {
             ComputerDaoImpl.INSTANCE.delete(id);

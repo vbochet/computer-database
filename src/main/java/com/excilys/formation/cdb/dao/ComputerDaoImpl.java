@@ -29,6 +29,7 @@ public enum ComputerDaoImpl implements ComputerDao {
     private final String UPDATE_REQUEST = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
     private final String DELETE_REQUEST = "DELETE FROM computer WHERE id = ?;";
     private final String LIST_REQUEST   = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id LIMIT ? OFFSET ?;";
+    private final String COUNT_REQUEST  = "SELECT COUNT(computer.id) FROM computer;";
 
     @Override
     public Computer create(Computer computer) {
@@ -227,5 +228,29 @@ public enum ComputerDaoImpl implements ComputerDao {
         while (resultSet.next()) {
             computersList.add(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
         }
+    }
+
+    public long count() {
+        LOGGER.info("Counting computers");
+
+        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        Statement statement = null;
+        ResultSet resultSet = null;
+        long count = -1;
+
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(COUNT_REQUEST);
+            if(resultSet.first()) {
+                count = resultSet.getLong(1);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("SQL error in computer listing");
+            LOGGER.error(e.getLocalizedMessage());
+        } finally {
+            ConnectionManager.INSTANCE.closeElements(connection, statement, resultSet);
+        }
+
+        return count;
     }
 }
