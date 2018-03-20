@@ -51,6 +51,7 @@
 				<version>3.0-r1756463</version>
 				<configuration>
 					<path>/computer-database-maven-2</path>
+					<port>9090</port>
 				</configuration>
 			</plugin>
         </plugins>
@@ -109,5 +110,37 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${myqsl-jdbc.version}</version>
         </dependency>
+        
+        <dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>javax.servlet-api</artifactId>
+		    <version>3.0.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>javax.servlet.jsp.jstl</groupId>
+		    <artifactId>jstl-api</artifactId>
+		    <version>1.2</version>
+	        <scope>runtime</scope>
+		</dependency>
+	    <dependency>
+	        <groupId>org.apache.taglibs</groupId>
+	        <artifactId>taglibs-standard-impl</artifactId>
+	        <version>1.2.5</version>
+	        <scope>runtime</scope>
+	    </dependency>
+	    <dependency>
+	        <groupId>taglibs</groupId>
+	        <artifactId>c</artifactId>
+	        <version>1.1.2</version>
+	        <scope>runtime</scope>
+	        <type>tld</type>
+	    </dependency>
+	    <dependency>
+	        <groupId>taglibs</groupId>
+	        <artifactId>fmt</artifactId>
+	        <version>1.1.2</version>
+	        <scope>runtime</scope>
+	        <type>tld</type>
+	    </dependency>
     </dependencies>
 </project>
