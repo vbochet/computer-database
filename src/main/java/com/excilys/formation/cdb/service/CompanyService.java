@@ -24,4 +24,13 @@ public enum CompanyService {
 
         return ret;
     }
+
+    public Company getByName(String companyName) {
+        Company ret = null;
+        if (companyName != null && !companyName.isEmpty()) {
+            ret = CompanyDaoImpl.INSTANCE.findByName(companyName);
+        }
+
+        return ret;
+    }
 }
