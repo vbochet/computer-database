@@ -51,7 +51,7 @@ public enum CompanyDaoImpl implements CompanyDao {
         resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-            companiesList.add(CompanyMapper.INSTANCE.createCompany(resultSet));
+            companiesList.add(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
         }
     }
 
@@ -82,7 +82,7 @@ public enum CompanyDaoImpl implements CompanyDao {
         resultSet = preparedStatement.executeQuery();
 
         if (resultSet.first()) {
-            return CompanyMapper.INSTANCE.createCompany(resultSet);
+            return CompanyMapper.INSTANCE.resultSetToCompany(resultSet);
         }
 
         return null;

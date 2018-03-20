@@ -23,7 +23,7 @@ public class CompanyMapperTest {
 		doReturn(NAME).when(rs).getString("name");
 		
 		//when
-		Company company = CompanyMapper.INSTANCE.createCompany(rs);
+		Company company = CompanyMapper.INSTANCE.resultSetToCompany(rs);
 
 		//then
 		assertEquals(ID, company.getId());
