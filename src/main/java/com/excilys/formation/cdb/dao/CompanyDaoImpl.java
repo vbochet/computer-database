@@ -22,6 +22,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 
     private final String LIST_REQUEST = "SELECT id, name FROM company LIMIT ? OFFSET ?;";
     private final String READ_REQUEST = "SELECT id, name FROM company WHERE id = ?;";
+    private final String FIND_BY_NAME_REQUEST = "SELECT id, name FROM company WHERE name = ?;";
 
     @Override
     public List<Company> list(int offset, int nbToPrint) {
@@ -79,6 +80,39 @@ public enum CompanyDaoImpl implements CompanyDao {
     private Company executeReadRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, long id) throws SQLException {
         preparedStatement = connection.prepareStatement(READ_REQUEST);
         preparedStatement.setLong(1, id);
+        resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.first()) {
+            return CompanyMapper.INSTANCE.resultSetToCompany(resultSet);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Company findByName(String companyName) {
+        LOGGER.info("Showing info from company " + companyName);
+
+        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Company company = null;
+
+        try {
+            company = executeFindByNameRequest(connection, preparedStatement, resultSet, companyName);
+        } catch (SQLException e) {
+            LOGGER.error("SQL error in company reading");
+            LOGGER.error(e.getLocalizedMessage());
+        } finally {
+            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
+        }
+
+        return company;
+    }
+
+    private Company executeFindByNameRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, String name) throws SQLException {
+        preparedStatement = connection.prepareStatement(FIND_BY_NAME_REQUEST);
+        preparedStatement.setString(1, name);
         resultSet = preparedStatement.executeQuery();
 
         if (resultSet.first()) {

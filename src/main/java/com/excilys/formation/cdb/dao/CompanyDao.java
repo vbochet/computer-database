@@ -8,4 +8,5 @@ public interface CompanyDao {
 
     List<Company> list(int offset, int nbToPrint);
     Company read(long companyId);
+    Company findByName(String companyName);
 }
