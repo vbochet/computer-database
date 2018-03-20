@@ -23,6 +23,7 @@ public enum ConnectionManager {
 
     private Properties properties;
     private FileInputStream file;
+    private String driver;
     private String url;
     private String username;
     private String password;
@@ -52,6 +53,15 @@ public enum ConnectionManager {
         } catch (IOException e) {
             LOGGER.error("Close error on file " + CONFIG_FILE);
             LOGGER.error(e.getLocalizedMessage());
+        }
+
+        driver = properties.getProperty("jdbc.driver");
+        if (driver != null) {
+            try {
+                Class.forName(driver) ;
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
         url = properties.getProperty("jdbc.url");
