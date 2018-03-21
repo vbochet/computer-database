@@ -23,7 +23,7 @@ public class ComputerDto {
     }
 
     public String getComputerIntroduced() {
-        return computerIntroduced.toString();
+        return computerIntroduced;
     }
     public void setComputerIntroduced(String computerIntroduced) {
         this.computerIntroduced = computerIntroduced;
