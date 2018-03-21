@@ -10,7 +10,7 @@ public abstract class Page<T> {
 
     private List<T> content;
     private int offset = 0;
-    private int nbPerPage = 0;
+    private int nbPerPage = 10;
 
     public int getOffset() {
         return offset;
