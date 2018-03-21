@@ -40,15 +40,8 @@
     
     <li>
         
-    <c:if test="${currentPage < maxPage}">
-        <a href="?next" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-        </a>
-    </c:if>
-    <c:if test="${currentPage >= maxPage}">
-        <a aria-label="Next" class="disabled" style="color:grey;">
-            <span aria-hidden="true">&raquo;</span>
-        </a>
-    </c:if>
+    <a href="?next" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+    </a>
     </li>
 </ul>
