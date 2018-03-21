@@ -32,11 +32,19 @@ public enum ComputerMapper {
     
     public ComputerDto computerToComputerDto(Computer computer) {
         ComputerDto computerDto = new ComputerDto();
+        String intro = null, discont = null;
+        if (computer.getIntroduced() != null) {
+            intro = computer.getIntroduced().toString();
+        }
+        if (computer.getDiscontinued() != null) {
+            discont = computer.getDiscontinued().toString();
+        }
+        
 
         computerDto.setComputerId(computer.getId());
         computerDto.setComputerName(computer.getName());
-        computerDto.setComputerIntroduced(computer.getIntroduced().toString());
-        computerDto.setComputerDiscontinued(computer.getDiscontinued().toString());
+        computerDto.setComputerIntroduced(intro);
+        computerDto.setComputerDiscontinued(discont);
         computerDto.setComputerCompany(computer.getCompany().getName());
 
         return computerDto;
