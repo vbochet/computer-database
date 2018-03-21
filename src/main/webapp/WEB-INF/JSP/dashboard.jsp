@@ -8,9 +8,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
 <!-- Bootstrap -->
-<link href="<c:url value="/"/>static/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="<c:url value="/"/>static/css/font-awesome.css" rel="stylesheet" media="screen">
-<link href="<c:url value="/"/>static/css/main.css" rel="stylesheet" media="screen">
+<link href="<t:links target='css' append='bootstrap.min.css' />" rel="stylesheet" media="screen">
+<link href="<t:links target='css' append='font-awesome.css' />" rel="stylesheet" media="screen">
+<link href="<t:links target='css' append='main.css' />" rel="stylesheet" media="screen">
 </head>
 <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
@@ -107,9 +107,9 @@
             </div>
 		</div>
     </footer>
-<script src="<c:url value="/"/>static/js/jquery.min.js"></script>
-<script src="<c:url value="/"/>static/js/bootstrap.min.js"></script>
-<script src="<c:url value="/"/>static/js/dashboard.js"></script>
+<script src="<t:links target='js' append='jquery.min.js' />"></script>
+<script src="<t:links target='js' append='bootstrap.min.js' />"></script>
+<script src="<t:links target='js' append='dashboard.js' />"></script>
 
 </body>
 </html>
