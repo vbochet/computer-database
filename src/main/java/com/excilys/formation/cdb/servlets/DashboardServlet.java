@@ -43,6 +43,7 @@ public class DashboardServlet extends HttpServlet {
             page.setNbPerPage(nbPerPage);
         } catch (NumberFormatException e) { }
 
+
         if (request.getParameter("next") != null) {
             page.next();
         }
@@ -60,7 +61,7 @@ public class DashboardServlet extends HttpServlet {
         session.setAttribute("page", page);
 
         request.setAttribute("nbComputersFound", page.getNbTotal());
-        LOGGER.info("Number of computers found in database : {}", ComputerService.INSTANCE.getNbFound());
+        LOGGER.info("Number of computers found in database : {}", page.getNbTotal());
         
         request.setAttribute("computersList", page.getContent());
         LOGGER.info("Number of computers stored in computersList: {}", page.getContent().size());
