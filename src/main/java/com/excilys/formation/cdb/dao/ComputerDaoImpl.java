@@ -230,6 +230,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         }
     }
 
+    @Override
     public long count() {
         LOGGER.info("Counting computers");
 
@@ -245,7 +246,7 @@ public enum ComputerDaoImpl implements ComputerDao {
                 count = resultSet.getLong(1);
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer listing");
+            LOGGER.error("SQL error in computer counting");
             LOGGER.error(e.getLocalizedMessage());
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, statement, resultSet);

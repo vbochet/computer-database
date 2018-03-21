@@ -11,5 +11,6 @@ public interface ComputerDao {
     Computer update(Computer computer);
     void delete(long id);
     List<Computer> list(int offset, int nbToPrint);
+    public long count();
 
 }
