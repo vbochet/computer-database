@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public enum CompanyDaoImpl implements CompanyDao {
     private final String LIST_REQUEST = "SELECT id, name FROM company LIMIT ? OFFSET ?;";
     private final String READ_REQUEST = "SELECT id, name FROM company WHERE id = ?;";
     private final String FIND_BY_NAME_REQUEST = "SELECT id, name FROM company WHERE name = ?;";
+    private final String COUNT_REQUEST  = "SELECT COUNT(company.id) FROM company;";
 
     @Override
     public List<Company> list(int offset, int nbToPrint) {
@@ -120,5 +122,30 @@ public enum CompanyDaoImpl implements CompanyDao {
         }
 
         return null;
+    }
+
+    @Override
+    public long count() {
+        LOGGER.info("Counting companies");
+
+        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        Statement statement = null;
+        ResultSet resultSet = null;
+        long count = -1;
+
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(COUNT_REQUEST);
+            if(resultSet.first()) {
+                count = resultSet.getLong(1);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("SQL error in companies counting");
+            LOGGER.error(e.getLocalizedMessage());
+        } finally {
+            ConnectionManager.INSTANCE.closeElements(connection, statement, resultSet);
+        }
+
+        return count;
     }
 }
