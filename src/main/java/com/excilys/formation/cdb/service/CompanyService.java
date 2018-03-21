@@ -3,6 +3,7 @@ package com.excilys.formation.cdb.service;
 import java.util.List;
 
 import com.excilys.formation.cdb.dao.CompanyDaoImpl;
+import com.excilys.formation.cdb.dao.ComputerDaoImpl;
 import com.excilys.formation.cdb.model.Company;
 
 public enum CompanyService {
@@ -32,5 +33,9 @@ public enum CompanyService {
         }
 
         return ret;
+    }
+
+    public long getNbFound() {
+        return CompanyDaoImpl.INSTANCE.count();
     }
 }

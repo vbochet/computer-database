@@ -112,6 +112,7 @@ public class Cli {
     private static void caseListComputer(Scanner scanner) {
         LOGGER.info("User choice: List computers");
         ComputerPage page = new ComputerPage();
+        page.setNbTotal(CompanyService.INSTANCE.getNbFound());
         int nbToPrint = getNbToPrint(scanner);
         page.setNbPerPage(nbToPrint);
         LOGGER.info("(print {} computers per page)", nbToPrint);
@@ -129,6 +130,7 @@ public class Cli {
     private static void caseListCompany(Scanner scanner) {
         LOGGER.info("User choice: List companies");
         CompanyPage page = new CompanyPage();
+        page.setNbTotal(ComputerService.INSTANCE.getNbFound());
         int nbToPrint = getNbToPrint(scanner);
         page.setNbPerPage(nbToPrint);
         LOGGER.info("(print {} companies per page)", nbToPrint);
@@ -162,7 +164,7 @@ public class Cli {
                     String nbInput = scanner.next();
                     try {
                         int nb = Integer.parseInt(nbInput);
-                        page.goToPage(nb);
+                        page.setCurrentPage(nb);
                         loop = false;
                     } catch(NumberFormatException e) {
                         scanner.nextLine();

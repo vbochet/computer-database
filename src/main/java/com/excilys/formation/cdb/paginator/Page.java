@@ -9,15 +9,24 @@ public abstract class Page<T> {
     }
 
     private List<T> content;
-    private int offset = 0;
     private int nbPerPage = 10;
+    private long nbTotal;
+    private int currentPage = 1;
 
-    public int getOffset() {
-        return offset;
+    public List<T> getContent() {
+        return content;
     }
 
     public int getNbPerPage() {
         return nbPerPage;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public long getNbTotal() {
+        return nbTotal;
     }
 
     public void setContent(List<T> content) {
@@ -25,46 +34,42 @@ public abstract class Page<T> {
     }
 
     public void setNbPerPage(int nb) {
-        this.nbPerPage = nb;
-        this.refreshContent();
+        if (nb > 0) {
+            this.nbPerPage = nb;
+            this.refreshContent();
+        }
     }
 
-    public void setOffset(int offset) {
-        this.offset = offset;
-        this.refreshContent();
+    public void setNbTotal(long nb) {
+        if (nb > 0) {
+            this.nbTotal = nb;
+        }
+    }
+    
+    public void setCurrentPage(int newPage) {
+        if (newPage > 0 && (newPage - 1) * nbPerPage <= nbTotal) {
+            this.currentPage = newPage;
+            this.refreshContent();
+        }
     }
 
     public void next() {
-        this.setOffset(offset + nbPerPage);
+        this.setCurrentPage(currentPage + 1);
         if (content.isEmpty()) {
-            this.setOffset(offset - nbPerPage);
+            this.setCurrentPage(currentPage - 1);
         }
     }
 
     public void prev() {
-        int newoffset;
-        if (offset > 0) {
-            newoffset = offset - nbPerPage;
-
-            if (newoffset < 0) {
-                newoffset = 0; 
-            }
-
-            this.setOffset(newoffset);
+        if(currentPage > 1) {
+            this.setCurrentPage(currentPage - 1);
+        } else {
+            this.setCurrentPage(1);
         }
     }
 
-    public void goToPage(int npage) {
-        int oldOffset = offset;
-        setOffset((npage - 1) * nbPerPage);
-        if (content.isEmpty()) {
-            this.setOffset(oldOffset);
-            System.err.println("Page number is too big");
-        }
-    }
-
-    public List<T> getContent() {
-        return content;
+    public int getOffset() {
+        return nbPerPage * (currentPage - 1);
     }
 
     protected abstract void refreshContent();
