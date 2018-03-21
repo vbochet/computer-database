@@ -1,4 +1,5 @@
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
+<%@ taglib tagdir = "/WEB-INF/tags" prefix = "t" %>
 
 <!DOCTYPE html>
 <html>
@@ -97,40 +98,7 @@
 
     <footer class="navbar-fixed-bottom">
         <div class="container text-center">
-            <ul class="pagination">
-                <li>
-                    <a href="?prev" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                
-                <c:if test="${currentPage <= 3}">
-                	<c:forEach var="i" begin="1" end="5" step="1">
-	              		<c:if test="${i <= maxPage}">
-	               			<li><a href="?npage=${i}">
-	               			<c:if test="${i == currentPage}"><u>${i}</u></c:if>
-	               			<c:if test="${i != currentPage}">${i}</c:if>
-	               			</a></li>
-		                </c:if>
-					</c:forEach>
-                </c:if>
-                <c:if test="${currentPage > 3}">
-                	<c:forEach var="i" begin="${currentPage-2}" end="${currentPage+2}" step="1">
-	              		<c:if test="${i <= maxPage}">
-	               			<li><a href="?npage=${i}">
-	               			<c:if test="${i == currentPage}"><u>${i}</u></c:if>
-	               			<c:if test="${i != currentPage}">${i}</c:if>
-	               			</a></li>
-		                </c:if>
-					</c:forEach>
-                </c:if>
-                
-                <li>
-                    <a href="?next" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            </ul>
+            <t:pagination maxPage="${maxPage}" currentPage="${currentPage}"></t:pagination>
 
             <div class="btn-group btn-group-sm pull-right" role="group" >
                 <a href="?displayBy=10"><button type="button" class="btn btn-default">10</button></a>
@@ -139,9 +107,9 @@
             </div>
 		</div>
     </footer>
-<script src="<c:url value="/"/>/js/jquery.min.js"></script>
-<script src="<c:url value="/"/>/js/bootstrap.min.js"></script>
-<script src="<c:url value="/"/>/js/dashboard.js"></script>
+<script src="<c:url value="/"/>static/js/jquery.min.js"></script>
+<script src="<c:url value="/"/>static/js/bootstrap.min.js"></script>
+<script src="<c:url value="/"/>static/js/dashboard.js"></script>
 
 </body>
 </html>
