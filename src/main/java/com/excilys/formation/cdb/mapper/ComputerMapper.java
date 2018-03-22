@@ -56,16 +56,20 @@ public enum ComputerMapper {
     
     public Computer computerDtoToComputer(ComputerDto computerDto) {
         Computer computer = new Computer();
+        LocalDate intro = null, discont = null;
         
-        Date intro = Date.valueOf(computerDto.getComputerIntroduced());
-        Date discont = Date.valueOf(computerDto.getComputerDiscontinued());
-        LocalDate ldIntro = intro == null ? null : intro.toLocalDate();
-        LocalDate ldDiscont = discont == null ? null : discont.toLocalDate();
+        try {
+            intro = Date.valueOf(computerDto.getComputerIntroduced()).toLocalDate();
+        } catch (IllegalArgumentException e) { }
+        
+        try {
+            discont = Date.valueOf(computerDto.getComputerDiscontinued()).toLocalDate();
+        } catch (IllegalArgumentException e) { }
 
         computer.setId(computerDto.getComputerId());
         computer.setName(computerDto.getComputerName());
-        computer.setIntroduced(ldIntro);
-        computer.setDiscontinued(ldDiscont);
+        computer.setIntroduced(intro);
+        computer.setDiscontinued(discont);
         computer.setCompany(CompanyService.INSTANCE.getByName(computerDto.getComputerCompanyName()));
 
         return computer;
