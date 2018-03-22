@@ -22,7 +22,7 @@
     <section id="main">
         <div class="container">
             <h1 id="homeTitle">
-                ${nbComputersFound} Computers found
+                ${page.nbTotal} Computers found
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
@@ -76,7 +76,7 @@
                 <!-- Browse attribute computers -->
                 <tbody id="results">
                 
-                    <c:forEach var="computer" items="${computersList}">
+                    <c:forEach var="computer" items="${page.content}">
                     <tr>
                         <td class="editMode">
                             <input type="checkbox" name="cb" class="cb" value="${computer.computerId}">
@@ -98,12 +98,12 @@
 
     <footer class="navbar-fixed-bottom">
         <div class="container text-center">
-            <t:pagination maxPage="${maxPage}" currentPage="${currentPage}"></t:pagination>
+            <t:pagination maxPage="${page.maxPage}" currentPage="${page.currentPage}" displayBy="${page.nbPerPage}"></t:pagination>
 
             <div class="btn-group btn-group-sm pull-right" role="group" >
-                <a href="<t:links target='displayBy' displayBy='10' page='${currentPage}' />"><button type="button" class="btn btn-default">10</button></a>
-                <a href="<t:links target='displayBy' displayBy='50' page='${currentPage}' />"><button type="button" class="btn btn-default">50</button></a>
-                <a href="<t:links target='displayBy' displayBy='100' page='${currentPage}' />"><button type="button" class="btn btn-default">100</button></a>
+                <a href="<t:links target='displayBy' displayBy='10' page='${page.currentPage}' />"><button type="button" class="btn btn-default">10</button></a>
+                <a href="<t:links target='displayBy' displayBy='50' page='${page.currentPage}' />"><button type="button" class="btn btn-default">50</button></a>
+                <a href="<t:links target='displayBy' displayBy='100' page='${page.currentPage}' />"><button type="button" class="btn btn-default">100</button></a>
             </div>
 		</div>
     </footer>

@@ -48,23 +48,11 @@ public class DashboardServlet extends HttpServlet {
         }
 
 
-        request.setAttribute("nbComputersFound", page.getNbTotal());
+        request.setAttribute("page", page);
         LOGGER.info("Number of computers found in database : {}", page.getNbTotal());
-        
-        request.setAttribute("computersList", page.getContent());
         LOGGER.info("Number of computers stored in computersList: {}", page.getContent().size());
-        
-        long maxPage = page.getNbTotal() / page.getNbPerPage();
-        if (page.getNbTotal() % page.getNbPerPage() != 0) {
-            maxPage++;
-        }
-        request.setAttribute("maxPage", maxPage);
-        LOGGER.info("Maximum page number: {}", maxPage);
-
-        request.setAttribute("currentPage", page.getCurrentPage());
+        LOGGER.info("Maximum page number: {}", page.getMaxPage());
         LOGGER.info("Current page number: {}", page.getCurrentPage());
-
-        request.setAttribute("displayBy", page.getNbPerPage());
         LOGGER.info("Number of computers per page: {}", page.getNbPerPage());
 
         try {

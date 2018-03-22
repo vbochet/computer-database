@@ -3,6 +3,7 @@
 
 <%@ attribute name="currentPage" required="true" %>
 <%@ attribute name="maxPage" required="true" %>
+<%@ attribute name="displayBy" required="true" %>
 
 <ul class="pagination">
     <li>

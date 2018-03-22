@@ -12,6 +12,7 @@ public abstract class Page<T> {
     private int nbPerPage = 10;
     private long nbTotal;
     private int currentPage = 1;
+    private long maxPage;
 
     public List<T> getContent() {
         return content;
@@ -29,6 +30,10 @@ public abstract class Page<T> {
         return nbTotal;
     }
 
+    public long getMaxPage() {
+        return maxPage;
+    }
+
     public void setContent(List<T> content) {
         this.content = content;
     }
@@ -36,6 +41,13 @@ public abstract class Page<T> {
     public void setNbPerPage(int nb) {
         if (nb > 0) {
             this.nbPerPage = nb;
+
+            long newMaxPage = nbTotal / nbPerPage;
+            if (nbTotal % nbPerPage != 0) {
+                newMaxPage++;
+            }
+            this.maxPage = newMaxPage;
+
             this.refreshContent();
         }
     }
@@ -43,9 +55,15 @@ public abstract class Page<T> {
     public void setNbTotal(long nb) {
         if (nb > 0) {
             this.nbTotal = nb;
+
+            long newMaxPage = nbTotal / nbPerPage;
+            if (nbTotal % nbPerPage != 0) {
+                newMaxPage++;
+            }
+            this.maxPage = newMaxPage;
         }
     }
-    
+
     public void setCurrentPage(int newPage) {
         if (newPage > 0 && (newPage - 1) * nbPerPage <= nbTotal) {
             this.currentPage = newPage;
