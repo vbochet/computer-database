@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.excilys.formation.cdb.paginator.ComputerDtoPage;
 import com.excilys.formation.cdb.service.ComputerService;
 
+@WebServlet("/dashboard")
 public class DashboardServlet extends HttpServlet {
 
     static final Logger LOGGER = LoggerFactory.getLogger(DashboardServlet.class);
