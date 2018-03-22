@@ -8,7 +8,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,21 +27,16 @@ public class DashboardServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ComputerDtoPage page = null;
-        HttpSession session = request.getSession();
+        ComputerDtoPage page = new ComputerDtoPage();
 
-        if (session.getAttribute("page") != null) {
-            page = (ComputerDtoPage)session.getAttribute("page");
-            LOGGER.info("Found a page instance in session");
-        } else {
-            page = new ComputerDtoPage();
-            LOGGER.info("No page instance in session, created a new one");
-        }
         page.setNbTotal(ComputerService.INSTANCE.getNbFound());
 
         try {
-            int nbPerPage = Integer.parseInt(request.getParameter("displayBy"));
-            page.setNbPerPage(nbPerPage);
+            page.setNbPerPage(Integer.parseInt(request.getParameter("displayBy")));
+        } catch (NumberFormatException e) { }
+
+        try {
+            page.setCurrentPage(Integer.parseInt(request.getParameter("npage")));
         } catch (NumberFormatException e) { }
 
 
@@ -52,15 +46,7 @@ public class DashboardServlet extends HttpServlet {
         else if (request.getParameter("prev") != null) {
             page.prev();
         }
-        else {
-            try {
-                int pageNumber = Integer.parseInt(request.getParameter("npage"));
-                page.setCurrentPage(pageNumber);
-            } catch (NumberFormatException e) { }
-        }
-        
 
-        session.setAttribute("page", page);
 
         request.setAttribute("nbComputersFound", page.getNbTotal());
         LOGGER.info("Number of computers found in database : {}", page.getNbTotal());
@@ -77,6 +63,9 @@ public class DashboardServlet extends HttpServlet {
 
         request.setAttribute("currentPage", page.getCurrentPage());
         LOGGER.info("Current page number: {}", page.getCurrentPage());
+
+        request.setAttribute("displayBy", page.getNbPerPage());
+        LOGGER.info("Number of computers per page: {}", page.getNbPerPage());
 
         try {
             RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/dashboard.jsp");

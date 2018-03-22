@@ -101,9 +101,9 @@
             <t:pagination maxPage="${maxPage}" currentPage="${currentPage}"></t:pagination>
 
             <div class="btn-group btn-group-sm pull-right" role="group" >
-                <a href="<t:links target='displayBy' amount='10' />"><button type="button" class="btn btn-default">10</button></a>
-                <a href="<t:links target='displayBy' amount='50' />"><button type="button" class="btn btn-default">50</button></a>
-                <a href="<t:links target='displayBy' amount='100' />"><button type="button" class="btn btn-default">100</button></a>
+                <a href="<t:links target='displayBy' displayBy='10' page='${currentPage}' />"><button type="button" class="btn btn-default">10</button></a>
+                <a href="<t:links target='displayBy' displayBy='50' page='${currentPage}' />"><button type="button" class="btn btn-default">50</button></a>
+                <a href="<t:links target='displayBy' displayBy='100' page='${currentPage}' />"><button type="button" class="btn btn-default">100</button></a>
             </div>
 		</div>
     </footer>

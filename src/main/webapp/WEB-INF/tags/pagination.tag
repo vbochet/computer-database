@@ -7,7 +7,7 @@
 <ul class="pagination">
     <li>
     <c:if test="${currentPage > 1}">
-        <a href="<t:links target='dashboardPrev' />" aria-label="Previous">
+        <a href="<t:links target='dashboardPrev' page='${currentPage}' displayBy='${displayBy}' />" aria-label="Previous">
             <span aria-hidden="true">&laquo;</span>
         </a>
     </c:if>
@@ -23,7 +23,7 @@
             <c:if test="${i <= maxPage}">
                 <li>
                 <c:if test="${i == currentPage}"><a class="disabled" style="text-decoration:underline;color:grey;">${i}</a></c:if>
-                <c:if test="${i != currentPage}"><a href="<t:links target='dashboardGoTo' npage='${i}' />">${i}</a></c:if>
+                <c:if test="${i != currentPage}"><a href="<t:links target='dashboardGoTo' page='${i}' displayBy='${displayBy}' />">${i}</a></c:if>
                 </li>
             </c:if>
         </c:forEach>
@@ -33,7 +33,7 @@
             <c:if test="${i <= maxPage}">
                 <li>
                 <c:if test="${i == currentPage}"><a class="disabled" style="text-decoration:underline;color:grey;">${i}</a></c:if>
-                <c:if test="${i != currentPage}"><a href="<t:links target='dashboardGoTo' npage='${i}' />">${i}</a></c:if>
+                <c:if test="${i != currentPage}"><a href="<t:links target='dashboardGoTo' page='${i}' displayBy='${displayBy}' />">${i}</a></c:if>
                 </li>
             </c:if>
         </c:forEach>
@@ -41,7 +41,7 @@
     
     <li>
         
-    <a href="<t:links target='dashboardNext' />" aria-label="Next">
+    <a href="<t:links target='dashboardNext' page='${currentPage}' displayBy='${displayBy}' />" aria-label="Next">
         <span aria-hidden="true">&raquo;</span>
     </a>
     </li>
