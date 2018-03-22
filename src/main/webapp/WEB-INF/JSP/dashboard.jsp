@@ -15,7 +15,7 @@
 <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="<c:url value="/"/>dashboard"> Application - Computer Database </a>
+            <a class="navbar-brand" href="<t:links target='dashboard' />"> Application - Computer Database </a>
         </div>
     </header>
 
@@ -34,7 +34,7 @@
                     </form>
                 </div>
                 <div class="pull-right">
-                    <a class="btn btn-success" id="addComputer" href="<c:url value="/"/>addComputer">Add Computer</a> 
+                    <a class="btn btn-success" id="addComputer" href="<t:links target='addComputer' />">Add Computer</a> 
                     <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Edit</a>
                 </div>
             </div>
@@ -82,7 +82,7 @@
                             <input type="checkbox" name="cb" class="cb" value="${computer.computerId}">
                         </td>
                         <td>
-                            <a href="<c:url value="/"/>editComputer" onclick="">${computer.computerName}</a>
+                            <a href="<t:links target='editComputer' computerId='${computer.computerId}' />" onclick="">${computer.computerName}</a>
                         </td>
                         <td>${computer.computerIntroduced}</td>
                         <td>${computer.computerDiscontinued}</td>
@@ -101,9 +101,9 @@
             <t:pagination maxPage="${maxPage}" currentPage="${currentPage}"></t:pagination>
 
             <div class="btn-group btn-group-sm pull-right" role="group" >
-                <a href="?displayBy=10"><button type="button" class="btn btn-default">10</button></a>
-                <a href="?displayBy=50"><button type="button" class="btn btn-default">50</button></a>
-                <a href="?displayBy=100"><button type="button" class="btn btn-default">100</button></a>
+                <a href="<t:links target='displayBy' amount='10' />"><button type="button" class="btn btn-default">10</button></a>
+                <a href="<t:links target='displayBy' amount='50' />"><button type="button" class="btn btn-default">50</button></a>
+                <a href="<t:links target='displayBy' amount='100' />"><button type="button" class="btn btn-default">100</button></a>
             </div>
 		</div>
     </footer>

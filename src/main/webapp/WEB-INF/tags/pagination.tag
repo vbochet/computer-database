@@ -1,4 +1,5 @@
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
+<%@ taglib tagdir = "/WEB-INF/tags" prefix = "t" %>
 
 <%@ attribute name="currentPage" required="true" %>
 <%@ attribute name="maxPage" required="true" %>
@@ -6,7 +7,7 @@
 <ul class="pagination">
     <li>
     <c:if test="${currentPage > 1}">
-        <a href="?prev" aria-label="Previous">
+        <a href="<t:links target='dashboardPrev' />" aria-label="Previous">
             <span aria-hidden="true">&laquo;</span>
         </a>
     </c:if>
@@ -22,7 +23,7 @@
             <c:if test="${i <= maxPage}">
                 <li>
                 <c:if test="${i == currentPage}"><a class="disabled" style="text-decoration:underline;color:grey;">${i}</a></c:if>
-                <c:if test="${i != currentPage}"><a href="?npage=${i}">${i}</a></c:if>
+                <c:if test="${i != currentPage}"><a href="<t:links target='dashboardGoTo' npage='${i}' />">${i}</a></c:if>
                 </li>
             </c:if>
         </c:forEach>
@@ -32,7 +33,7 @@
             <c:if test="${i <= maxPage}">
                 <li>
                 <c:if test="${i == currentPage}"><a class="disabled" style="text-decoration:underline;color:grey;">${i}</a></c:if>
-                <c:if test="${i != currentPage}"><a href="?npage=${i}">${i}</a></c:if>
+                <c:if test="${i != currentPage}"><a href="<t:links target='dashboardGoTo' npage='${i}' />">${i}</a></c:if>
                 </li>
             </c:if>
         </c:forEach>
@@ -40,7 +41,7 @@
     
     <li>
         
-    <a href="?next" aria-label="Next">
+    <a href="<t:links target='dashboardNext' />" aria-label="Next">
         <span aria-hidden="true">&raquo;</span>
     </a>
     </li>
