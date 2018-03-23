@@ -20,6 +20,13 @@
 
     <section id="main">
         <div class="container">
+        	<c:if test="${error}">
+        	<div class="row">
+        		<div class="alert alert-danger" role="alert">
+				  	Some fields were not filled properly. Couldn't create the computer in database.
+				</div>
+        	</div>
+        	</c:if>
             <div class="row">
                 <div class="col-xs-8 col-xs-offset-2 box">
                     <h1>Add Computer</h1>
@@ -28,6 +35,7 @@
                             <div class="form-group">
                                 <label for="computerName">Computer name</label>
                                 <input type="text" class="form-control" id="computerName" name="computerName" placeholder="Computer name"
+                                        value='<c:if test="${error}">${computer.computerName}</c:if>'
                                         data-validation="custom"
                                         data-validation-regexp="^([^\s-]+)$"
                                         data-validation-error-msg="Computer name cannot be empty">
@@ -35,6 +43,7 @@
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label>
                                 <input type="date" class="form-control" id="introduced" name="introduced" placeholder="Introduced date"
+                                        value='<c:if test="${error}">${computer.computerIntroduced}</c:if>'
                                         data-validation="date" 
                                         data-validation-format="yyyy-mm-dd"
                                         data-validation-depends-on="discontinued" >
@@ -42,6 +51,7 @@
                             <div class="form-group">
                                 <label for="discontinued">Discontinued date</label>
                                 <input type="date" class="form-control" id="discontinued" name="discontinued" placeholder="Discontinued date"
+                                        value='<c:if test="${error}">${computer.computerDiscontinued}</c:if>'
                                         data-validation="date"
                                         data-validation-format="yyyy-mm-dd"
                                         data-validation-optional="true" >
@@ -70,9 +80,9 @@
 <script src="<t:links target='js' append='bootstrap.min.js' />"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
 <script>
-$.validate({
-	  modules : 'date, logic'
-	});
+ $.validate({
+ 	  modules : 'date, logic'
+ 	});
 </script>
 
 </body>

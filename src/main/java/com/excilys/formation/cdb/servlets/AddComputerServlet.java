@@ -72,10 +72,10 @@ public class AddComputerServlet extends HttpServlet {
             LOGGER.debug("Company set to null (received value \"" + request.getParameter("companyId") + "\")");
         }
         
-        computer = ComputerService.INSTANCE.createComputer(computer);
+        Computer res = ComputerService.INSTANCE.createComputer(computer);
 
-        if (computer != null) {
-            request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(computer));
+        if (res != null) {
+            request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(res));
             
             try {
                 RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/computerAdded.jsp");
@@ -84,6 +84,8 @@ public class AddComputerServlet extends HttpServlet {
                 throw new ServletException(e);
             }
         } else {
+            request.setAttribute("error", true);
+            request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(computer));
             try {
                 RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/addComputer.jsp");
                 rd.forward(request,response);
