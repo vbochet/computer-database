@@ -17,6 +17,9 @@
         <!-- sets the projects encoding to UTF-8 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <maven-compiler.version>3.1</maven-compiler.version>
+        <tomcat.version>2.2</tomcat.version>
+        <checkstyle.version>3.0.0</checkstyle.version>
 
         <!-- test -->
         <junit.version>4.12</junit.version>
@@ -31,6 +34,13 @@
         <!-- runtime -->
         <mysql.version>5.1.38</mysql.version>
         <myqsl-jdbc.version>8.0.8-dmr</myqsl-jdbc.version>
+
+        <!-- webapp -->
+        <javax-servlet.version>3.0.1</javax-servlet.version>
+        <jstl.version>1.2</jstl.version>
+        <apache-taglibs.version>1.2.5</apache-taglibs.version>
+        <taglibs-c.version>1.1.2</taglibs-c.version>
+        <taglibs-fmt.version>1.1.2</taglibs-fmt.version>
     </properties>
 
     <build>
@@ -38,7 +48,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>${maven-compiler.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -47,11 +57,12 @@
 
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat8-maven-plugin</artifactId>
-				<version>3.0-r1756463</version>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>${tomcat.version}</version>
 				<configuration>
-					<path>/computer-database-maven-2</path>
-					<port>9090</port>
+					<maven.tomcat.url>http://localhost:8080/manager/text</maven.tomcat.url>
+					<server>TomcatServer</server>
+					<path>/computer-database</path>
 				</configuration>
 			</plugin>
         </plugins>
@@ -62,7 +73,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>${checkstyle.version}</version>
 				<reportSets>
 					<reportSet>
 						<reports>
@@ -89,6 +100,7 @@
             <scope>test</scope>
         </dependency>
 
+		<!-- logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -105,40 +117,42 @@
             <version>${logback.version}</version>
         </dependency>
 
+		<!-- mysql -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${myqsl-jdbc.version}</version>
         </dependency>
         
+        <!-- webapp -->
         <dependency>
 		    <groupId>javax.servlet</groupId>
 		    <artifactId>javax.servlet-api</artifactId>
-		    <version>3.0.1</version>
+		    <version>${javax-servlet.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>javax.servlet.jsp.jstl</groupId>
 		    <artifactId>jstl-api</artifactId>
-		    <version>1.2</version>
+		    <version>${jstl.version}</version>
 	        <scope>runtime</scope>
 		</dependency>
 	    <dependency>
 	        <groupId>org.apache.taglibs</groupId>
 	        <artifactId>taglibs-standard-impl</artifactId>
-	        <version>1.2.5</version>
+	        <version>${apache-taglibs.version}</version>
 	        <scope>runtime</scope>
 	    </dependency>
 	    <dependency>
 	        <groupId>taglibs</groupId>
 	        <artifactId>c</artifactId>
-	        <version>1.1.2</version>
+	        <version>${taglibs-c.version}</version>
 	        <scope>runtime</scope>
 	        <type>tld</type>
 	    </dependency>
 	    <dependency>
 	        <groupId>taglibs</groupId>
 	        <artifactId>fmt</artifactId>
-	        <version>1.1.2</version>
+	        <version>${taglibs-fmt.version}</version>
 	        <scope>runtime</scope>
 	        <type>tld</type>
 	    </dependency>

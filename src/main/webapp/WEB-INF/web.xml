@@ -8,17 +8,17 @@
     <display-name>Computer-Database Web Application</display-name>
     
 	<error-page>
-	    <!-- Forbidden directory listing -->
+<!-- 	    Forbidden directory listing -->
 	    <error-code>403</error-code>
 	    <location>/WEB-INF/JSP/403.jsp</location>
 	</error-page>
 	<error-page>
-	    <!-- Missing resource -->
+<!-- 	    Missing resource -->
 	    <error-code>404</error-code>
 	    <location>/WEB-INF/JSP/404.jsp</location>
 	</error-page>
 	<error-page>
-	    <!-- Uncaught exception -->
+<!-- 	    Uncaught exception -->
 	    <error-code>500</error-code>
 	    <location>/WEB-INF/JSP/500.jsp</location>
 	</error-page>
