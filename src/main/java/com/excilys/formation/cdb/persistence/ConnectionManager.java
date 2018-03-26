@@ -38,15 +38,13 @@ public enum ConnectionManager {
         try {
             properties.load(file);
         } catch (IOException e) {
-            LOGGER.error("Open/Read error on file " + CONFIG_FILE);
-            LOGGER.error(e.getLocalizedMessage());
+            LOGGER.error("Open/Read error on file {}\n{}", CONFIG_FILE, e);
         }
 
         try {
             file.close();
         } catch (IOException e) {
-            LOGGER.error("Close error on file " + CONFIG_FILE);
-            LOGGER.error(e.getLocalizedMessage());
+            LOGGER.error("Close error on file {}\n{}", CONFIG_FILE, e);
         }
 
         driver = properties.getProperty("jdbc.driver");
@@ -68,8 +66,7 @@ public enum ConnectionManager {
             connection = DriverManager.getConnection(url, username, password);
             LOGGER.info("New connection created to DB " + url);
         } catch (SQLException e) {
-            LOGGER.error("SQL error");
-            LOGGER.error(e.getLocalizedMessage());
+            LOGGER.error("SQL error\n{}", e);
         }
 
         return connection;
@@ -82,8 +79,7 @@ public enum ConnectionManager {
                 statement.close();
                 LOGGER.info("Closed Statement " + statement);
             } catch (SQLException e) {
-                LOGGER.error("SQL error");
-                LOGGER.error(e.getLocalizedMessage());
+                LOGGER.error("SQL error\n{}", e);
             }
         }
 
@@ -92,8 +88,7 @@ public enum ConnectionManager {
                 connection.close();
                 LOGGER.info("Closed Connection " + connection);
             } catch (SQLException e) {
-                LOGGER.error("SQL error");
-                LOGGER.error(e.getLocalizedMessage());
+                LOGGER.error("SQL error\n{}", e);
             }
         }
 
@@ -102,8 +97,7 @@ public enum ConnectionManager {
                 resultSet.close();
                 LOGGER.info("Closed ResultSet " + resultSet);
             } catch (SQLException e) {
-                LOGGER.error("SQL error");
-                LOGGER.error(e.getLocalizedMessage());
+                LOGGER.error("SQL error\n{}", e);
             }
         }
     }

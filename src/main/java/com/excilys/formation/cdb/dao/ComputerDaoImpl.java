@@ -43,8 +43,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         try {
             executeCreateRequest(connection, preparedStatement, resultSet, computer);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer creation");
-            LOGGER.error(e.getLocalizedMessage());
+            LOGGER.error("SQL error in computer creation\n{}", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -100,8 +99,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         try {
             optComputer = executeReadRequest(connection, preparedStatement, resultSet, id);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer reading");
-            LOGGER.error(e.getLocalizedMessage());
+            LOGGER.error("SQL error in computer reading\n{}", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -134,8 +132,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         try {
             executeUpdateRequest(connection, preparedStatement, resultSet, computer);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer update");
-            LOGGER.error(e.getLocalizedMessage());
+            LOGGER.error("SQL error in computer update\n{}", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -211,8 +208,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         try {
             executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, computersList);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer listing");
-            LOGGER.error(e.getLocalizedMessage());
+            LOGGER.error("SQL error in computer listing\n{}", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -247,8 +243,7 @@ public enum ComputerDaoImpl implements ComputerDao {
                 count = resultSet.getLong(1);
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer counting");
-            LOGGER.error(e.getLocalizedMessage());
+            LOGGER.error("SQL error in computer counting\n{}", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, statement, resultSet);
         }
