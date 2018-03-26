@@ -47,7 +47,8 @@ public class Company {
     }
 
 
-    public boolean equals(Company other) {
+    @Override
+    public boolean equals(Object other) {
         if (other == null) {
             return false;
         }
@@ -56,9 +57,14 @@ public class Company {
             return true;
         }
 
-        if (this.getId() == other.getId()) {
-            if (this.getName() == other.getName()) {
-                return true;
+        if (other instanceof Company) {
+            Company otherc = (Company) other;
+
+            if (this.getId() == otherc.getId()) {
+                if (this.getName() == otherc.getName()) {
+                    return true;
+                }
+                return false;
             }
             return false;
         }
