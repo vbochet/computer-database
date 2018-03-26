@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import com.excilys.formation.cdb.dto.ComputerDto;
 import com.excilys.formation.cdb.model.Company;
@@ -70,7 +71,12 @@ public enum ComputerMapper {
         computer.setName(computerDto.getComputerName());
         computer.setIntroduced(intro);
         computer.setDiscontinued(discont);
-        computer.setCompany(CompanyService.INSTANCE.getByName(computerDto.getComputerCompanyName()));
+        Optional<Company> optCompany = CompanyService.INSTANCE.getByName(computerDto.getComputerCompanyName());
+        if (optCompany.isPresent()) {
+            computer.setCompany(optCompany.get());
+        } else {
+            computer.setCompany(null);
+        }
 
         return computer;
     }

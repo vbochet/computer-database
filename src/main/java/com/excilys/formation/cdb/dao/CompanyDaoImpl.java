@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,16 +60,16 @@ public enum CompanyDaoImpl implements CompanyDao {
     }
 
     @Override
-    public Company read(long companyId) {
+    public Optional<Company> read(long companyId) {
         LOGGER.info("Showing info from company n°" + companyId);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        Company company = null;
+        Optional<Company> optCompany = Optional.empty();
 
         try {
-            company = executeReadRequest(connection, preparedStatement, resultSet, companyId);
+            optCompany = executeReadRequest(connection, preparedStatement, resultSet, companyId);
         } catch (SQLException e) {
             LOGGER.error("SQL error in company reading");
             LOGGER.error(e.getLocalizedMessage());
@@ -76,32 +77,32 @@ public enum CompanyDaoImpl implements CompanyDao {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
 
-        return company;
+        return optCompany;
     };
 
-    private Company executeReadRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, long id) throws SQLException {
+    private Optional<Company> executeReadRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, long id) throws SQLException {
         preparedStatement = connection.prepareStatement(READ_REQUEST);
         preparedStatement.setLong(1, id);
         resultSet = preparedStatement.executeQuery();
 
         if (resultSet.first()) {
-            return CompanyMapper.INSTANCE.resultSetToCompany(resultSet);
+            return Optional.of(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public Company findByName(String companyName) {
+    public Optional<Company> findByName(String companyName) {
         LOGGER.info("Showing info from company " + companyName);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        Company company = null;
+        Optional<Company> optCompany = Optional.empty();
 
         try {
-            company = executeFindByNameRequest(connection, preparedStatement, resultSet, companyName);
+            optCompany = executeFindByNameRequest(connection, preparedStatement, resultSet, companyName);
         } catch (SQLException e) {
             LOGGER.error("SQL error in company reading");
             LOGGER.error(e.getLocalizedMessage());
@@ -109,19 +110,19 @@ public enum CompanyDaoImpl implements CompanyDao {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
 
-        return company;
+        return optCompany;
     }
 
-    private Company executeFindByNameRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, String name) throws SQLException {
+    private Optional<Company> executeFindByNameRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, String name) throws SQLException {
         preparedStatement = connection.prepareStatement(FIND_BY_NAME_REQUEST);
         preparedStatement.setString(1, name);
         resultSet = preparedStatement.executeQuery();
 
         if (resultSet.first()) {
-            return CompanyMapper.INSTANCE.resultSetToCompany(resultSet);
+            return Optional.of(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override

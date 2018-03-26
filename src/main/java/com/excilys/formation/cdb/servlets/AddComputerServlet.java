@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.servlet.RequestDispatcher;
@@ -64,9 +65,15 @@ public class AddComputerServlet extends HttpServlet {
 
         try {
             long companyId = Long.parseLong(request.getParameter("companyId"));
-            Company company = CompanyService.INSTANCE.getById(companyId);
-            computer.setCompany(company);
-            LOGGER.debug("Company set to " + company);
+
+            Optional<Company> optCompany = CompanyService.INSTANCE.getById(companyId);
+            if (optCompany.isPresent()) {
+                computer.setCompany(optCompany.get());
+                LOGGER.debug("Company set to " + optCompany.get().toString());
+            } else {
+                computer.setCompany(null);
+                LOGGER.debug("Company set to null");
+            }
         } catch (NumberFormatException e) {
             computer.setCompany(null);
             LOGGER.debug("Company set to null (received value \"" + request.getParameter("companyId") + "\")");

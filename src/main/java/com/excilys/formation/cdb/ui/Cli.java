@@ -1,9 +1,8 @@
 package com.excilys.formation.cdb.ui;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.InputMismatchException;
+import java.util.Optional;
 import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,13 +184,17 @@ public class Cli {
     private static void caseShowComputer(Scanner scanner) {
         LOGGER.info("User choice: Show computer info");
         long id;
-        Computer computer = null;
+        Optional<Computer> optComputer = Optional.empty();
 
         id = getId(scanner);
         LOGGER.info("Computer's id: {}", id);
 
-        computer = ComputerService.INSTANCE.getById(id);
-        System.out.println(computer);
+        optComputer = ComputerService.INSTANCE.getById(id);
+        if (optComputer.isPresent()) {
+            System.out.println(optComputer.get().toString());
+        } else {
+            System.out.println("null");
+        }
         LOGGER.info("End of computer info");
     }
 
@@ -225,11 +228,18 @@ public class Cli {
                 companyIdStr = scanner.nextLine();
                 if (!companyIdStr.isEmpty()) {
                     companyId = Integer.parseInt(companyIdStr);
-                    Company company = CompanyService.INSTANCE.getById(companyId);
+                    Optional<Company> optCompany = CompanyService.INSTANCE.getById(companyId);
                     LOGGER.info("Company id: {}", companyId);
-                    computer.setCompany(company);
+                    if (optCompany.isPresent()) {
+                        computer.setCompany(optCompany.get());
+                        System.out.println("Company found: " + optCompany.get().getName());
+                        LOGGER.info("Company found: {}",optCompany.get().getName());
+                    } else {
+                        System.out.println("No company matches this id");
+                        LOGGER.info("No company matches this id");
+                    }
                 } else {
-                    LOGGER.info("Computer id: null");
+                    LOGGER.info("Company id: null");
                 }
                 loop = false;
             } catch (NumberFormatException e) {
@@ -245,14 +255,17 @@ public class Cli {
         LOGGER.info("User choice: Update computer");
         long id;
         Computer computer;
+        Optional<Computer> optComputer = Optional.empty();
 
         id = getId(scanner);
         LOGGER.info("Computer's id: {}", id);
-        computer = ComputerService.INSTANCE.getById(id);
-        if (null == computer) {
+        optComputer = ComputerService.INSTANCE.getById(id);
+        if (!optComputer.isPresent()) {
             System.out.println("No computer matching this id");
             LOGGER.warn("No computer matching id {}", id);
             return;
+        } else {
+            computer = optComputer.get();
         }
 
         updateComputerName(scanner, computer);
@@ -321,8 +334,10 @@ public class Cli {
                     companyIdStr = scanner.nextLine();
                     if (!companyIdStr.isEmpty()) {
                         companyId = Integer.parseInt(companyIdStr);
-                        company = CompanyService.INSTANCE.getById(companyId);
-                        computer.setCompany(company);
+                        Optional<Company> optCompany = CompanyService.INSTANCE.getById(companyId);
+                        if (optCompany.isPresent()) {
+                            company = optCompany.get();
+                        }
                     }
                     loop = false;
                 } catch (InputMismatchException e) {

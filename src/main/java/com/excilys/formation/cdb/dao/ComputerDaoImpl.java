@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,16 +89,16 @@ public enum ComputerDaoImpl implements ComputerDao {
     }
 
     @Override
-    public Computer read(long id) {
+    public Optional<Computer> read(long id) {
         LOGGER.info("Showing info from computer n°" + id);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        Computer computer_res = null;
+        Optional<Computer> optComputer = Optional.empty();
 
         try {
-            computer_res = executeReadRequest(connection, preparedStatement, resultSet, id);
+            optComputer = executeReadRequest(connection, preparedStatement, resultSet, id);
         } catch (SQLException e) {
             LOGGER.error("SQL error in computer reading");
             LOGGER.error(e.getLocalizedMessage());
@@ -105,21 +106,21 @@ public enum ComputerDaoImpl implements ComputerDao {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
 
-        return computer_res;
+        return optComputer;
     }
 
-    private Computer executeReadRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, long id) throws SQLException {
-        Computer computer = null;
+    private Optional<Computer> executeReadRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, long id) throws SQLException {
+        Optional<Computer> optComputer = Optional.empty();
 
         preparedStatement = connection.prepareStatement(READ_REQUEST);
         preparedStatement.setLong(1, id);
         resultSet = preparedStatement.executeQuery();
 
         if (resultSet.first()) {
-            computer = ComputerMapper.INSTANCE.resultSetToComputer(resultSet);
+            optComputer = Optional.of(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
         }
 
-        return computer;
+        return optComputer;
     }
 
     @Override
