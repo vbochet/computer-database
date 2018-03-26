@@ -16,26 +16,27 @@
     <properties>
         <!-- sets the projects encoding to UTF-8 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
+        <!-- general versions -->
         <java.version>1.8</java.version>
         <maven-compiler.version>3.1</maven-compiler.version>
         <tomcat.version>2.2</tomcat.version>
         <checkstyle.version>3.0.0</checkstyle.version>
 
-        <!-- test -->
+        <!-- test plugins versions -->
         <junit.version>4.12</junit.version>
         <mockito.version>1.9.5</mockito.version>
 
-        <!-- compile -->
-        <!-- logs -->
+        <!-- logs plugins versions -->
         <log4j.version>2.10.0</log4j.version>
         <slf4j.version>1.7.25</slf4j.version>
         <logback.version>1.2.3</logback.version>
 
-        <!-- runtime -->
+        <!-- runtime plugins versions -->
         <mysql.version>5.1.38</mysql.version>
         <myqsl-jdbc.version>8.0.8-dmr</myqsl-jdbc.version>
 
-        <!-- webapp -->
+        <!-- webapp plugins versions -->
         <javax-servlet.version>3.0.1</javax-servlet.version>
         <jstl.version>1.2</jstl.version>
         <apache-taglibs.version>1.2.5</apache-taglibs.version>
