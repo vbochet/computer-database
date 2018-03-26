@@ -1,8 +1,7 @@
 package com.excilys.formation.cdb.persistence;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -19,10 +18,11 @@ public enum ConnectionManager {
 
     private final Logger LOGGER = LoggerFactory.getLogger(ConnectionManager.class);
 
-    private String CONFIG_FILE = "config/db/db.properties";
+    private String CONFIG_FILE = "db.properties";
 
     private Properties properties;
-    private FileInputStream file;
+    private InputStream file;
+    private String driver;
     private String url;
     private String username;
     private String password;
@@ -33,12 +33,7 @@ public enum ConnectionManager {
         properties = new Properties();
         LOGGER.info("Loading DB configuration from file " + CONFIG_FILE);
 
-        try {
-            file = new FileInputStream(CONFIG_FILE);
-        } catch (FileNotFoundException e) {
-            LOGGER.error("Error: couldn't find file " + CONFIG_FILE);
-            LOGGER.error(e.getLocalizedMessage());
-        }
+        file = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE);
 
         try {
             properties.load(file);
@@ -52,6 +47,15 @@ public enum ConnectionManager {
         } catch (IOException e) {
             LOGGER.error("Close error on file " + CONFIG_FILE);
             LOGGER.error(e.getLocalizedMessage());
+        }
+
+        driver = properties.getProperty("jdbc.driver");
+        if (driver != null) {
+            try {
+                Class.forName(driver) ;
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
         url = properties.getProperty("jdbc.url");

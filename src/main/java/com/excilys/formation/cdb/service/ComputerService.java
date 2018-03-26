@@ -3,6 +3,7 @@ package com.excilys.formation.cdb.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Optional;
 
 import com.excilys.formation.cdb.dao.ComputerDaoImpl;
 import com.excilys.formation.cdb.model.Computer;
@@ -19,12 +20,16 @@ public enum ComputerService {
         return null;
     }
 
-    public Computer getById(long id) {
+    public Optional<Computer> getById(long id) {
         if (id > 0) {
             return ComputerDaoImpl.INSTANCE.read(id);
         }
 
-        return null;
+        return Optional.empty();
+    }
+
+    public long getNbFound() {
+        return ComputerDaoImpl.INSTANCE.count();
     }
 
     public boolean deleteById(long id) {
