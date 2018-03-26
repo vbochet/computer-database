@@ -39,7 +39,7 @@ public enum CompanyDaoImpl implements CompanyDao {
         try {
             executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, companiesList);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in companies listing\n{}", e);
+            LOGGER.error("SQL error in companies listing", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -70,7 +70,7 @@ public enum CompanyDaoImpl implements CompanyDao {
         try {
             optCompany = executeReadRequest(connection, preparedStatement, resultSet, companyId);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in company reading\n{}", e);
+            LOGGER.error("SQL error in company reading", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -102,7 +102,7 @@ public enum CompanyDaoImpl implements CompanyDao {
         try {
             optCompany = executeFindByNameRequest(connection, preparedStatement, resultSet, companyName);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in company reading\n{}", e);
+            LOGGER.error("SQL error in company reading", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -138,7 +138,7 @@ public enum CompanyDaoImpl implements CompanyDao {
                 count = resultSet.getLong(1);
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL error in companies counting\n{}", e);
+            LOGGER.error("SQL error in companies counting", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, statement, resultSet);
         }
