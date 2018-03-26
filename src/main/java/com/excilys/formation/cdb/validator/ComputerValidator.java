@@ -1,10 +1,15 @@
 package com.excilys.formation.cdb.validator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.formation.cdb.model.Computer;
 
 public enum ComputerValidator {
 
     INSTANCE;
+
+    static final Logger LOGGER = LoggerFactory.getLogger(ComputerValidator.class);
 
     public boolean validateComputer(Computer computer) {
         if (validateComputerName(computer)) {
@@ -29,7 +34,7 @@ public enum ComputerValidator {
         if ((computer.getDiscontinued() != null) && 
                 ((computer.getIntroduced() == null) ||
                     (computer.getIntroduced().compareTo(computer.getDiscontinued()) > 0))) {
-            System.err.println("The discontinuation date must be greater than the introduction date!");
+            LOGGER.error("The discontinuation date must be greater than the introduction date!");
             return false;
         }
         return true;
