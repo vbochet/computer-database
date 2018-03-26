@@ -35,6 +35,7 @@ public class AddComputerServlet extends HttpServlet {
 
     private static final long serialVersionUID = 4171669005687350388L;
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         Computer computer = new Computer();
@@ -102,6 +103,7 @@ public class AddComputerServlet extends HttpServlet {
         }
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Company> companyList = CompanyService.INSTANCE.getList(0, (int)CompanyService.INSTANCE.getNbFound());
         List<CompanyDto> companyDtoList = new ArrayList<>();

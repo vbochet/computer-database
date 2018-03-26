@@ -64,6 +64,7 @@ public class Computer {
     }
 
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("COMPUTER\n");

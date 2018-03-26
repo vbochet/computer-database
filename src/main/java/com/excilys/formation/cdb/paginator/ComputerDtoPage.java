@@ -11,6 +11,7 @@ import com.excilys.formation.cdb.service.ComputerService;
 
 public class ComputerDtoPage extends Page<ComputerDto> {
 
+    @Override
     protected void refreshContent() {
         List<Computer> computerList = ComputerService.INSTANCE.getList(getOffset(), getNbPerPage());
         List<ComputerDto> computerDtoList = new ArrayList<>();
