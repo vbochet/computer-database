@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import org.junit.Test;
 
 import com.excilys.formation.cdb.dto.ComputerDto;
+import com.excilys.formation.cdb.exceptions.MapperException;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 
@@ -111,7 +112,7 @@ public class ComputerMapperTest {
 
 
     @Test
-    public void computerDtoToComputerTest() throws SQLException {
+    public void computerDtoToComputerTest() throws SQLException, MapperException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         
         //given

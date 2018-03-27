@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.formation.cdb.dto.CompanyDto;
+import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Company;
@@ -67,7 +68,14 @@ public class AddComputerServlet extends HttpServlet {
         try {
             long companyId = Long.parseLong(request.getParameter("companyId"));
 
-            Optional<Company> optCompany = CompanyService.INSTANCE.getById(companyId);
+            Optional<Company> optCompany;
+            try {
+                optCompany = CompanyService.INSTANCE.getById(companyId);
+            } catch (ServiceException e) {
+                LOGGER.error("Error while getting company details", e);
+                throw(new ServletException("Error while getting company details", e));
+            }
+
             if (optCompany.isPresent()) {
                 computer.setCompany(optCompany.get());
                 LOGGER.debug("Company set to " + optCompany.get().toString());
@@ -80,7 +88,13 @@ public class AddComputerServlet extends HttpServlet {
             LOGGER.debug("Company set to null (received value \"" + request.getParameter("companyId") + "\")");
         }
         
-        Computer res = ComputerService.INSTANCE.createComputer(computer);
+        Computer res;
+        try {
+            res = ComputerService.INSTANCE.createComputer(computer);
+        } catch (ServiceException e) {
+            LOGGER.error("Error while getting computer details", e);
+            throw(new ServletException("Error while getting computer details", e));
+        }
 
         if (res != null) {
             request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(res));
@@ -105,7 +119,13 @@ public class AddComputerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Company> companyList = CompanyService.INSTANCE.getList(0, (int)CompanyService.INSTANCE.getNbFound());
+        List<Company> companyList;
+        try {
+            companyList = CompanyService.INSTANCE.getList(0, (int)CompanyService.INSTANCE.getNbFound());
+        } catch (ServiceException e) {
+            LOGGER.error("Error while getting company list", e);
+            throw(new ServletException("Error while getting company list", e));
+        }
         List<CompanyDto> companyDtoList = new ArrayList<>();
         Consumer<Company> companyConsumer = (x) -> companyDtoList.add(CompanyMapper.INSTANCE.companyToCompanyDto(x));
         companyList.forEach(companyConsumer);

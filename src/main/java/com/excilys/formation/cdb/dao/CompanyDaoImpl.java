@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.persistence.ConnectionManager;
@@ -28,7 +29,7 @@ public enum CompanyDaoImpl implements CompanyDao {
     private final String COUNT_REQUEST  = "SELECT COUNT(company.id) FROM company;";
 
     @Override
-    public List<Company> list(int offset, int nbToPrint) {
+    public List<Company> list(int offset, int nbToPrint) throws DaoException {
         LOGGER.info("Listing companies from " + offset + " (" + nbToPrint + " per page)");
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
@@ -40,6 +41,7 @@ public enum CompanyDaoImpl implements CompanyDao {
             executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, companiesList);
         } catch (SQLException e) {
             LOGGER.error("SQL error in companies listing", e);
+            throw(new DaoException("SQL error in companies listing", e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -59,7 +61,7 @@ public enum CompanyDaoImpl implements CompanyDao {
     }
 
     @Override
-    public Optional<Company> read(long companyId) {
+    public Optional<Company> read(long companyId) throws DaoException {
         LOGGER.info("Showing info from company n°" + companyId);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
@@ -71,6 +73,7 @@ public enum CompanyDaoImpl implements CompanyDao {
             optCompany = executeReadRequest(connection, preparedStatement, resultSet, companyId);
         } catch (SQLException e) {
             LOGGER.error("SQL error in company reading", e);
+            throw(new DaoException("SQL error in companies reading", e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -91,7 +94,7 @@ public enum CompanyDaoImpl implements CompanyDao {
     }
 
     @Override
-    public Optional<Company> findByName(String companyName) {
+    public Optional<Company> findByName(String companyName) throws DaoException {
         LOGGER.info("Showing info from company " + companyName);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
@@ -103,6 +106,7 @@ public enum CompanyDaoImpl implements CompanyDao {
             optCompany = executeFindByNameRequest(connection, preparedStatement, resultSet, companyName);
         } catch (SQLException e) {
             LOGGER.error("SQL error in company reading", e);
+            throw(new DaoException("SQL error in company reading", e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -123,7 +127,7 @@ public enum CompanyDaoImpl implements CompanyDao {
     }
 
     @Override
-    public long count() {
+    public long count() throws DaoException {
         LOGGER.info("Counting companies");
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
@@ -139,6 +143,7 @@ public enum CompanyDaoImpl implements CompanyDao {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL error in companies counting", e);
+            throw(new DaoException("SQL error in companies counting", e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, statement, resultSet);
         }
