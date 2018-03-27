@@ -5,36 +5,63 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.formation.cdb.dao.ComputerDaoImpl;
+import com.excilys.formation.cdb.exceptions.DaoException;
+import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.validator.ComputerValidator;
 
 public enum ComputerService {
     INSTANCE;
 
-    public List<Computer> getList(int offset, int nbToPrint) {
+    static final Logger LOGGER = LoggerFactory.getLogger(ComputerService.class);
+
+    public List<Computer> getList(int offset, int nbToPrint) throws ServiceException {
         if (nbToPrint >= 1) {
-            return ComputerDaoImpl.INSTANCE.list(offset, nbToPrint);
+            try {
+                return ComputerDaoImpl.INSTANCE.list(offset, nbToPrint);
+            } catch (DaoException e) {
+                LOGGER.error("Error while listing computers from {} to {}", offset, offset + nbToPrint, e);
+                throw(new ServiceException("Error while listing computers from " + offset + " to " + (offset + nbToPrint), e));
+            }
         }
 
         return null;
     }
 
-    public Optional<Computer> getById(long id) {
+    public Optional<Computer> getById(long id) throws ServiceException {
         if (id > 0) {
-            return ComputerDaoImpl.INSTANCE.read(id);
+            try {
+                return ComputerDaoImpl.INSTANCE.read(id);
+            } catch (DaoException e) {
+                LOGGER.error("Error while reading details of computer {} ", id, e);
+                throw(new ServiceException("Error while reading details of computer " + id, e));
+            }
         }
 
         return Optional.empty();
     }
 
-    public long getNbFound() {
-        return ComputerDaoImpl.INSTANCE.count();
+    public long getNbFound() throws ServiceException {
+        try {
+            return ComputerDaoImpl.INSTANCE.count();
+        } catch (DaoException e) {
+            LOGGER.error("Error while counting number of computers in database", e);
+            throw(new ServiceException("Error while counting number of computers in database", e));
+        }
     }
 
-    public boolean deleteById(long id) {
+    public boolean deleteById(long id) throws ServiceException {
         if (id > 0) {
-            ComputerDaoImpl.INSTANCE.delete(id);
+            try {
+                ComputerDaoImpl.INSTANCE.delete(id);
+            } catch (DaoException e) {
+                LOGGER.error("Error while deleting company {}", id, e);
+                throw(new ServiceException("Error while deleting company " + id, e));
+            }
             return true;
         }
 
@@ -77,19 +104,29 @@ public enum ComputerService {
         return true;
     }
 
-    public Computer createComputer(Computer computer) {
+    public Computer createComputer(Computer computer) throws ServiceException {
         if (!ComputerValidator.INSTANCE.validateComputer(computer)) {
             return null;
         }
 
-        return ComputerDaoImpl.INSTANCE.create(computer);
+        try {
+            return ComputerDaoImpl.INSTANCE.create(computer);
+        } catch (DaoException e) {
+            LOGGER.error("Error while creating a new computer", e);
+            throw(new ServiceException("Error while creating a new computer", e));
+        }
     }
 
-    public Computer updateComputer(Computer computer) {
+    public Computer updateComputer(Computer computer) throws ServiceException {
         if (!ComputerValidator.INSTANCE.validateComputer(computer)) {
             return null;
         }
 
-        return ComputerDaoImpl.INSTANCE.update(computer);
+        try {
+            return ComputerDaoImpl.INSTANCE.update(computer);
+        } catch (DaoException e) {
+            LOGGER.error("Error while updating computer", e);
+            throw(new ServiceException("Error while updating computer", e));
+        }
     }
 }

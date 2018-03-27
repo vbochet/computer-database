@@ -7,6 +7,8 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.excilys.formation.cdb.exceptions.PageException;
+import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.paginator.CompanyPage;
@@ -19,7 +21,7 @@ public class Cli {
 
     static Logger LOGGER = LoggerFactory.getLogger(Cli.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ServiceException, PageException {
         LOGGER.info("Starting Computer-Database command line interface");
 
         System.out.println("COMPUTER DATABASE\n-----------------\n");
@@ -108,9 +110,10 @@ public class Cli {
         System.out.println(sb.toString());
     }
 
-    private static void caseListComputer(Scanner scanner) {
+    private static void caseListComputer(Scanner scanner) throws ServiceException, PageException {
         LOGGER.info("User choice: List computers");
-        ComputerPage page = new ComputerPage();
+        ComputerPage page;
+        page = new ComputerPage();
         page.setNbTotal(CompanyService.INSTANCE.getNbFound());
         int nbToPrint = getNbToPrint(scanner);
         page.setNbPerPage(nbToPrint);
@@ -126,7 +129,7 @@ public class Cli {
         LOGGER.info("End of computer listing");
     }
 
-    private static void caseListCompany(Scanner scanner) {
+    private static void caseListCompany(Scanner scanner) throws PageException, ServiceException {
         LOGGER.info("User choice: List companies");
         CompanyPage page = new CompanyPage();
         page.setNbTotal(ComputerService.INSTANCE.getNbFound());
@@ -144,7 +147,7 @@ public class Cli {
         LOGGER.info("End of company listing");
     }
 
-    private static boolean getAction(Scanner scanner, Page page) {
+    private static boolean getAction(Scanner scanner, Page page) throws PageException {
         System.out.println("Type 'n' to go to next page, 'p' to go to previous page, 'g 42' to go to page 42, and 'q' to quit.");
         boolean loop = true, ret = true;
         String action;
@@ -181,7 +184,7 @@ public class Cli {
         return ret;
     }
 
-    private static void caseShowComputer(Scanner scanner) {
+    private static void caseShowComputer(Scanner scanner) throws ServiceException {
         LOGGER.info("User choice: Show computer info");
         long id;
         Optional<Computer> optComputer = Optional.empty();
@@ -198,7 +201,7 @@ public class Cli {
         LOGGER.info("End of computer info");
     }
 
-    private static void caseCreateComputer(Scanner scanner) throws ParseException {
+    private static void caseCreateComputer(Scanner scanner) throws ParseException, ServiceException {
         LOGGER.info("User choice: Create new computer");
         String name, intro, discont, companyIdStr = null;
         long companyId;
@@ -251,7 +254,7 @@ public class Cli {
         LOGGER.info("End of computer creation");
     }
 
-    private static void caseUpdateComputer(Scanner scanner) throws ParseException {
+    private static void caseUpdateComputer(Scanner scanner) throws ParseException, ServiceException {
         LOGGER.info("User choice: Update computer");
         long id;
         Computer computer;
@@ -318,7 +321,7 @@ public class Cli {
         }
     }
 
-    private static void updateComputerCompany(Scanner scanner, Computer computer) {
+    private static void updateComputerCompany(Scanner scanner, Computer computer) throws ServiceException {
         String answer = "", companyIdStr = null;
         boolean loop = true;
         long companyId;
@@ -358,7 +361,7 @@ public class Cli {
         return answer;
     }
 
-    private static void caseDeleteComputer(Scanner scanner) {
+    private static void caseDeleteComputer(Scanner scanner) throws ServiceException {
         LOGGER.info("User choice: Update computer");
         long id;
 
