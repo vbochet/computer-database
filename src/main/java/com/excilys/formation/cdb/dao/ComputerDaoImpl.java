@@ -52,7 +52,7 @@ public enum ComputerDaoImpl implements ComputerDao {
                 LOGGER.error("SQL error in computer creation", e1);
                 throw(new DaoException("SQL error in computer creation", e1));
             }
-            
+
             LOGGER.error("SQL error in computer creation", e);
             throw(new DaoException("SQL error in computer creation", e));
         } finally {
@@ -152,7 +152,7 @@ public enum ComputerDaoImpl implements ComputerDao {
                 LOGGER.error("SQL error in computer update", e1);
                 throw(new DaoException("SQL error in computer update", e1));
             }
-            
+
             LOGGER.error("SQL error in computer update", e);
             throw(new DaoException("SQL error in computer update", e));
         } finally {
@@ -213,7 +213,7 @@ public enum ComputerDaoImpl implements ComputerDao {
                 LOGGER.error("SQL error in companies listing", e1);
                 throw(new DaoException("SQL error in companies listing", e1));
             }
-            
+
             LOGGER.error("SQL error in computer deletion", e);
             throw(new DaoException("SQL error in computer deletion", e));
         } finally {
