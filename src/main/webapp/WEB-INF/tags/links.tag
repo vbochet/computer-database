@@ -14,5 +14,6 @@
     <c:when test="${target == 'dashboardGoTo'}"><c:url value="/dashboard?npage=${page}&displayBy=${displayBy}"/></c:when>
     <c:when test="${target == 'displayBy'}"><c:url value="/dashboard?npage=${page}&displayBy=${displayBy}"/></c:when>
     <c:when test="${target == 'editComputer'}"><c:url value="/editComputer?computerId="/>${computerId}</c:when>
+    <c:when test="${target == 'editComputerPost'}"><c:url value="/editComputer"/></c:when>
     <c:when test="${target == 'addComputer'}"><c:url value="/addComputer"/></c:when>
 </c:choose>
