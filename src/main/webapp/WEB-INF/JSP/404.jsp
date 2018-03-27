@@ -1,3 +1,4 @@
+<%@ page isErrorPage="true" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ taglib tagdir = "/WEB-INF/tags" prefix = "t" %>
 
@@ -21,9 +22,14 @@
     <section id="main">
         <div class="container">
             <div class="alert alert-danger">
-                Error 404: Page not found. Too bad bitch!
+                Error 404: Page not found.
                 <br/>
-                <!-- stacktrace -->
+				<br/>
+				<!-- stacktrace -->
+				<c:forEach var = "trace" 
+                  items = "${pageContext.exception.stackTrace}">
+                  ${trace}<br/>
+               </c:forEach>
             </div>
         </div>
     </section>

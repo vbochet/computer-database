@@ -1,3 +1,4 @@
+<%@ page isErrorPage="true" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ taglib tagdir = "/WEB-INF/tags" prefix = "t" %>
 
@@ -23,7 +24,12 @@
 			<div class="alert alert-danger">
 				Error 500: An error has occured!
 				<br/>
+				<br/>
 				<!-- stacktrace -->
+				<c:forEach var = "trace" 
+                  items = "${pageContext.exception.stackTrace}">
+                  ${trace}<br/>
+               </c:forEach>
 			</div>
 		</div>
 	</section>
