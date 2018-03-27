@@ -29,6 +29,7 @@ public enum ConnectionManager {
         InputStream file = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE);
         Properties properties = new Properties();
         String driver, username, password;
+        int maxPoolSize;
         HikariConfig config = new HikariConfig();
 
         LOGGER.info("Loading DB configuration from file " + CONFIG_FILE);
@@ -57,10 +58,12 @@ public enum ConnectionManager {
         url = properties.getProperty("jdbc.url");
         username = properties.getProperty("jdbc.username");
         password = properties.getProperty("jdbc.password");
+        maxPoolSize = Integer.parseInt(properties.getProperty("jdbc.maxPoolSize"));
         
         config.setJdbcUrl(url);
         config.setUsername(username);
         config.setPassword(password);
+        config.setMaximumPoolSize(maxPoolSize);
         ds = new HikariDataSource(config);
     }
 
