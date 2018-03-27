@@ -37,8 +37,8 @@
                                 <input type="text" class="form-control" id="computerName" name="computerName" placeholder="Computer name"
                                         value='<c:if test="${error}">${computer.computerName}</c:if>'
                                         data-validation="custom"
-                                        data-validation-regexp="^([^\s-]+)$"
-                                        data-validation-error-msg="Computer name cannot be empty">
+                                        data-validation-regexp="^([^\s<>]+(\s)*)+$"
+                                        data-validation-error-msg="This computer name is not allowed">
                             </div>
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label>
