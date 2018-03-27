@@ -42,8 +42,17 @@ public enum ComputerDaoImpl implements ComputerDao {
         ResultSet resultSet = null;
 
         try {
+            connection.setAutoCommit(false);
             executeCreateRequest(connection, preparedStatement, resultSet, computer);
+            connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                LOGGER.error("SQL error in computer creation", e1);
+                throw(new DaoException("SQL error in computer creation", e1));
+            }
+
             LOGGER.error("SQL error in computer creation", e);
             throw(new DaoException("SQL error in computer creation", e));
         } finally {
@@ -133,8 +142,17 @@ public enum ComputerDaoImpl implements ComputerDao {
         ResultSet resultSet = null;
 
         try {
+            connection.setAutoCommit(false);
             executeUpdateRequest(connection, preparedStatement, resultSet, computer);
+            connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                LOGGER.error("SQL error in computer update", e1);
+                throw(new DaoException("SQL error in computer update", e1));
+            }
+
             LOGGER.error("SQL error in computer update", e);
             throw(new DaoException("SQL error in computer update", e));
         } finally {
@@ -185,8 +203,17 @@ public enum ComputerDaoImpl implements ComputerDao {
         PreparedStatement preparedStatement = null;
 
         try {
+            connection.setAutoCommit(false);
             executeDeleteRequest(connection, preparedStatement, id);
+            connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                LOGGER.error("SQL error in companies listing", e1);
+                throw(new DaoException("SQL error in companies listing", e1));
+            }
+
             LOGGER.error("SQL error in computer deletion", e);
             throw(new DaoException("SQL error in computer deletion", e));
         } finally {

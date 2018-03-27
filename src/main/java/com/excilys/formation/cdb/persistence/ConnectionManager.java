@@ -3,7 +3,6 @@ package com.excilys.formation.cdb.persistence;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,6 +11,9 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 public enum ConnectionManager {
 
     INSTANCE;
@@ -19,21 +21,18 @@ public enum ConnectionManager {
     private final Logger LOGGER = LoggerFactory.getLogger(ConnectionManager.class);
 
     private String CONFIG_FILE = "db.properties";
-
-    private Properties properties;
-    private InputStream file;
-    private String driver;
     private String url;
-    private String username;
-    private String password;
 
-    private Connection connection;
+    private HikariDataSource ds;
 
     ConnectionManager() {
-        properties = new Properties();
-        LOGGER.info("Loading DB configuration from file " + CONFIG_FILE);
+        InputStream file = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE);
+        Properties properties = new Properties();
+        String driver, username, password;
+        int maxPoolSize;
+        HikariConfig config = new HikariConfig();
 
-        file = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE);
+        LOGGER.info("Loading DB configuration from file " + CONFIG_FILE);
 
         try {
             properties.load(file);
@@ -59,11 +58,19 @@ public enum ConnectionManager {
         url = properties.getProperty("jdbc.url");
         username = properties.getProperty("jdbc.username");
         password = properties.getProperty("jdbc.password");
+        maxPoolSize = Integer.parseInt(properties.getProperty("jdbc.maxPoolSize"));
+        
+        config.setJdbcUrl(url);
+        config.setUsername(username);
+        config.setPassword(password);
+        config.setMaximumPoolSize(maxPoolSize);
+        ds = new HikariDataSource(config);
     }
 
     public Connection getConnection() {
+        Connection connection = null;
         try {
-            connection = DriverManager.getConnection(url, username, password);
+            connection = ds.getConnection();
             LOGGER.info("New connection created to DB " + url);
         } catch (SQLException e) {
             LOGGER.error("SQL error", e);
