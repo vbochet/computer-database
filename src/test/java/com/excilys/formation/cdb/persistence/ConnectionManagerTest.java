@@ -15,6 +15,7 @@ public class ConnectionManagerTest {
     public void getConnectionTest() {
         Connection conn = ConnectionManager.INSTANCE.getConnection();
         assertNotNull(conn);
+        ConnectionManager.INSTANCE.closeElements(conn, null, null);
     }
 
     @Test
