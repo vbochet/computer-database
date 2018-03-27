@@ -83,7 +83,8 @@ public class Computer {
     }
 
 
-    public boolean equals(Computer other) {
+    @Override
+    public boolean equals(Object other) {
         if (other == null) {
             return false;
         }
@@ -92,18 +93,23 @@ public class Computer {
             return true;
         }
 
-        if (this.getId() == other.getId()) {
-            if (this.getName() == other.getName()) {
-                if ((this.getIntroduced() == null && other.getIntroduced() == null)
-                    || (this.getIntroduced() != null && this.getIntroduced().equals(other.getIntroduced()))) {
+        if (other instanceof Computer) {
+            Computer otherc = (Computer) other;
 
-                    if ((this.getDiscontinued() == null && other.getDiscontinued() == null)
-                        || (this.getDiscontinued() != null && this.getDiscontinued().equals(other.getDiscontinued()))) {
+            if (this.getId() == otherc.getId()) {
+                if (this.getName() == otherc.getName()) {
+                    if ((this.getIntroduced() == null && otherc.getIntroduced() == null)
+                        || (this.getIntroduced() != null && this.getIntroduced().equals(otherc.getIntroduced()))) {
 
-                        if ((this.getCompany() == null && other.getCompany() == null)
-                            || (this.getCompany() != null && this.getCompany().equals(other.getCompany()))) {
+                        if ((this.getDiscontinued() == null && otherc.getDiscontinued() == null)
+                            || (this.getDiscontinued() != null && this.getDiscontinued().equals(otherc.getDiscontinued()))) {
 
-                            return true;
+                            if ((this.getCompany() == null && otherc.getCompany() == null)
+                                || (this.getCompany() != null && this.getCompany().equals(otherc.getCompany()))) {
+
+                                return true;
+                            }
+                            return false;
                         }
                         return false;
                     }
