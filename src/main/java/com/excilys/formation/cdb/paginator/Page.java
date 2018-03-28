@@ -17,6 +17,7 @@ public abstract class Page<T> {
     private long maxPage;
     protected String orderBy = "id";
     protected boolean orderDesc = false;
+    private String search = "";
 
     public boolean getOrderDesc() {
         return orderDesc;
@@ -44,6 +45,10 @@ public abstract class Page<T> {
 
     public String getOrderBy() {
         return orderBy;
+    }
+
+    public String getSearch() {
+        return search;
     }
 
     public void setContent(List<T> content) {
@@ -91,6 +96,15 @@ public abstract class Page<T> {
     public void setOrderBy(String orderBy) throws PageException {
         this.orderBy = orderBy;
         this.refreshContent();
+    }
+
+    public void setSearch(String search) {
+        if (search == null) {
+            this.search = "";
+        }
+        else {
+            this.search = search;
+        }
     }
 
     public void next() throws PageException {

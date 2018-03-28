@@ -34,8 +34,9 @@ public enum ComputerDaoImpl implements ComputerDao {
     
     private final String READ_REQUEST    = " WHERE computer.id = ?;";
     private final String LIST_REQUEST = " LIMIT ? OFFSET ?;";
-    
+
     private final String COUNT_REQUEST   = "SELECT COUNT(computer.id) FROM computer;";
+    private final String COUNT_SEARCH_REQUEST   = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.name LIKE ? OR company.name LIKE ?;";
 
     @Override
     public Computer create(Computer computer) throws DaoException {
@@ -300,7 +301,53 @@ public enum ComputerDaoImpl implements ComputerDao {
         
         preparedStatement.setInt(1, nbToPrint);
         preparedStatement.setLong(2, offset);
-        LOGGER.debug(preparedStatement.toString());
+        resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()) {
+            computersList.add(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
+        }
+    }
+
+    @Override
+    public List<Computer> listSearch(int offset, int nbToPrint, String order, boolean desc, String search) throws DaoException {
+        LOGGER.info("Listing computers from " + offset + " (" + nbToPrint + " per page) ordered by " + order);
+
+        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<Computer> computersList = new ArrayList<>();
+
+        try {
+            executeListSearchRequest(connection, preparedStatement, resultSet, offset, nbToPrint, order, desc, search, computersList);
+        } catch (SQLException e) {
+            LOGGER.error("SQL error in computer listing", e);
+            throw(new DaoException("SQL error in computer listing", e));
+        } finally {
+            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
+        }
+
+        return computersList;
+    }
+
+    private void executeListSearchRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, String order, boolean desc, String search, List<Computer> computersList) throws SQLException {
+        String field, req;
+        
+        switch (ComputerOrderBy.parse(order)) {
+            case ID: field = ComputerOrderBy.ID.toString() + (desc ? " DESC" : ""); break;
+            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? " DESC" : ""); break;
+            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? " DESC" : ""); break;
+            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? " DESC" : ""); break;
+            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? " DESC" : ""); break;
+            default: field = ComputerOrderBy.ID.toString();
+        }
+
+        req = REQUEST_SELECT_FROM_JOIN + " WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY " + field + LIST_REQUEST;
+        preparedStatement = connection.prepareStatement(req);
+
+        preparedStatement.setString(1, search + "%");
+        preparedStatement.setString(2, search + "%");
+        preparedStatement.setInt(3, nbToPrint);
+        preparedStatement.setLong(4, offset);
         resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
@@ -328,6 +375,34 @@ public enum ComputerDaoImpl implements ComputerDao {
             throw(new DaoException("SQL error in computer counting", e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, statement, resultSet);
+        }
+
+        return count;
+    }
+
+    public long countSearch(String search) throws DaoException {
+        LOGGER.info("Counting computers");
+
+        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        long count = -1;
+
+        try {
+            preparedStatement = connection.prepareStatement(COUNT_SEARCH_REQUEST);
+
+            preparedStatement.setString(1, search + "%");
+            preparedStatement.setString(2, search + "%");
+            resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.first()) {
+                count = resultSet.getLong(1);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("SQL error in computer counting", e);
+            throw(new DaoException("SQL error in computer counting", e));
+        } finally {
+            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
 
         return count;

@@ -6,11 +6,12 @@
 <%@ attribute name="displayBy" required="true" %>
 <%@ attribute name="orderBy" required="true" %>
 <%@ attribute name="orderDesc" required="true" %>
+<%@ attribute name="search" required="true" %>
 
 <ul class="pagination">
     <li>
     <c:if test="${currentPage > 1}">
-        <a href="<t:links target='dashboardPrev' pagenb='${currentPage}' displayBy='${displayBy}' orderBy='${orderBy}' orderDesc='${orderDesc}' />" aria-label="Previous">
+        <a href="<t:links target='dashboardPrev' pagenb='${currentPage}' displayBy='${displayBy}' orderBy='${orderBy}' orderDesc='${orderDesc}' search='${search}' />" aria-label="Previous">
             <span aria-hidden="true">&laquo;</span>
         </a>
     </c:if>
@@ -26,7 +27,7 @@
             <c:if test="${i <= maxPage}">
                 <li>
                 <c:if test="${i == currentPage}"><a class="disabled" style="text-decoration:underline;color:grey;">${i}</a></c:if>
-                <c:if test="${i != currentPage}"><a href="<t:links target='dashboardOther' pagenb='${i}' displayBy='${displayBy}' orderBy='${orderBy}' orderDesc='${orderDesc}' />">${i}</a></c:if>
+                <c:if test="${i != currentPage}"><a href="<t:links target='dashboardOther' pagenb='${i}' displayBy='${displayBy}' orderBy='${orderBy}' orderDesc='${orderDesc}' search='${search}' />">${i}</a></c:if>
                 </li>
             </c:if>
         </c:forEach>
@@ -36,7 +37,7 @@
             <c:if test="${i <= maxPage}">
                 <li>
                 <c:if test="${i == currentPage}"><a class="disabled" style="text-decoration:underline;color:grey;">${i}</a></c:if>
-                <c:if test="${i != currentPage}"><a href="<t:links target='dashboardOther' pagenb='${i}' displayBy='${displayBy}' orderBy='${orderBy}' orderDesc='${orderDesc}' />">${i}</a></c:if>
+                <c:if test="${i != currentPage}"><a href="<t:links target='dashboardOther' pagenb='${i}' displayBy='${displayBy}' orderBy='${orderBy}' orderDesc='${orderDesc}' search='${search}' />">${i}</a></c:if>
                 </li>
             </c:if>
         </c:forEach>
@@ -44,7 +45,7 @@
     
     <li>
         
-    <a href="<t:links target='dashboardNext' pagenb='${currentPage}' displayBy='${displayBy}' orderBy='${orderBy}' orderDesc='${orderDesc}' />" aria-label="Next">
+    <a href="<t:links target='dashboardNext' pagenb='${currentPage}' displayBy='${displayBy}' orderBy='${orderBy}' orderDesc='${orderDesc}' search='${search}' />" aria-label="Next">
         <span aria-hidden="true">&raquo;</span>
     </a>
     </li>

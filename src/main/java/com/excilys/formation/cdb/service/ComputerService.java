@@ -32,6 +32,19 @@ public enum ComputerService {
         return null;
     }
 
+    public List<Computer> getSearchList(int offset, int nbToPrint, String order, boolean desc, String search) throws ServiceException {
+        if (nbToPrint >= 1) {
+            try {
+                return ComputerDaoImpl.INSTANCE.listSearch(offset, nbToPrint, order, desc, search);
+            } catch (DaoException e) {
+                LOGGER.error("Error while listing computers from {} to {}", offset, offset + nbToPrint, e);
+                throw(new ServiceException("Error while listing computers from " + offset + " to " + (offset + nbToPrint), e));
+            }
+        }
+
+        return null;
+    }
+
     public Optional<Computer> getById(long id) throws ServiceException {
         if (id > 0) {
             try {
@@ -48,6 +61,15 @@ public enum ComputerService {
     public long getNbFound() throws ServiceException {
         try {
             return ComputerDaoImpl.INSTANCE.count();
+        } catch (DaoException e) {
+            LOGGER.error("Error while counting number of computers in database", e);
+            throw(new ServiceException("Error while counting number of computers in database", e));
+        }
+    }
+
+    public long getNbSearch(String search) throws ServiceException {
+        try {
+            return ComputerDaoImpl.INSTANCE.countSearch(search);
         } catch (DaoException e) {
             LOGGER.error("Error while counting number of computers in database", e);
             throw(new ServiceException("Error while counting number of computers in database", e));

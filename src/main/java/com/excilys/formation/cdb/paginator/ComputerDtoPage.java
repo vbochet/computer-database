@@ -25,8 +25,16 @@ public class ComputerDtoPage extends Page<ComputerDto> {
     @Override
     protected void refreshContent() throws PageException {
         List<Computer> computerList;
+        long nb = getNbTotal();
+        
         try {
-            computerList = ComputerService.INSTANCE.getList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc());
+            if (!getSearch().isEmpty()) {
+                computerList = ComputerService.INSTANCE.getSearchList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc(), getSearch());
+                nb = ComputerService.INSTANCE.getNbSearch(getSearch());
+            } else {
+                computerList = ComputerService.INSTANCE.getList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc());
+            }
+
             LOGGER.debug("refreshContentOrderBy: " + orderBy);
         } catch (ServiceException e) {
             LOGGER.error("Error while refreshing page content", e);
@@ -36,6 +44,7 @@ public class ComputerDtoPage extends Page<ComputerDto> {
         Consumer<Computer> computerConsumer = (x) -> computerDtoList.add(ComputerMapper.INSTANCE.computerToComputerDto(x));
         computerList.forEach(computerConsumer);
         setContent(computerDtoList);
+        setNbTotal(nb);
     }
 
 }

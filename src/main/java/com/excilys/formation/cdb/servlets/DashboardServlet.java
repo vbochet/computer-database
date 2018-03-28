@@ -66,18 +66,22 @@ public class DashboardServlet extends HttpServlet {
         }
 
         try {
-            page.setNbTotal(ComputerService.INSTANCE.getNbFound());
-        } catch (ServiceException e) {
-            LOGGER.error("Error while retrieving the amount of computers in database", e);
-            throw(new ServletException("Error while retrieving the amount of computers in database", e));
-        }
-
-        try {
             page.setNbPerPage(Integer.parseInt(request.getParameter("displayBy")));
         } catch (NumberFormatException e) { 
         } catch (PageException e) {
             LOGGER.error("Error while setting number of computers to display per page", e);
             throw(new ServletException("Error while setting number of computers to display per page", e));
+        }
+
+        try {
+            page.setNbTotal(ComputerService.INSTANCE.getNbFound());
+        } catch (ServiceException e) {
+            LOGGER.error("Error while retrieving the amount of computers in database", e);
+            throw(new ServletException("Error while retrieving the amount of computers in database", e));
+        }
+        
+        if (request.getParameter("search") != null) {
+            page.setSearch(request.getParameter("search"));
         }
 
         try {
