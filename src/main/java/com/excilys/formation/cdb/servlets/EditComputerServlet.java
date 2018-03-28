@@ -158,7 +158,9 @@ public class EditComputerServlet extends HttpServlet {
             computer = ComputerService.INSTANCE.getById(id).get();
         } catch (NoSuchElementException e) {
             LOGGER.error("No computer matching id {}", id, e);
-            throw(new ServletException("No computer matching id " + id, e));
+            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/404.jsp");
+            rd.forward(request,response);
+            return;
         } catch (ServiceException e) {
             LOGGER.error("Error while retrieving computer n°{}", id, e);
             throw(new ServletException("Error while retrieving computer n°" + id, e));
