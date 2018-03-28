@@ -16,6 +16,11 @@ public abstract class Page<T> {
     private int currentPage = 1;
     private long maxPage;
     protected String orderBy = "id";
+    protected boolean orderDesc = false;
+
+    public boolean getOrderDesc() {
+        return orderDesc;
+    }
 
     public List<T> getContent() {
         return content;
@@ -43,6 +48,11 @@ public abstract class Page<T> {
 
     public void setContent(List<T> content) {
         this.content = content;
+    }
+
+    public void setOrderDesc(boolean orderDesc) throws PageException {
+        this.orderDesc = orderDesc;
+        this.refreshContent();
     }
 
     public void setNbPerPage(int nb) throws PageException {
@@ -78,7 +88,10 @@ public abstract class Page<T> {
         }
     }
 
-    public abstract void setOrderBy(String orderBy) throws PageException;
+    public void setOrderBy(String orderBy) throws PageException {
+        this.orderBy = orderBy;
+        this.refreshContent();
+    }
 
     public void next() throws PageException {
         this.setCurrentPage(currentPage + 1);

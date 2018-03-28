@@ -35,6 +35,11 @@ public enum ComputerDaoImpl implements ComputerDao {
     private final String LIST_REQUEST_INTRODUCED = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY introduced LIMIT ? OFFSET ?;";
     private final String LIST_REQUEST_DISCONTINUED = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY discontinued LIMIT ? OFFSET ?;";
     private final String LIST_REQUEST_COMPANY = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY company_name LIMIT ? OFFSET ?;";
+    private final String LIST_REQUEST_ID_DESC = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY id DESC LIMIT ? OFFSET ?;";
+    private final String LIST_REQUEST_NAME_DESC = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY name DESC LIMIT ? OFFSET ?;";
+    private final String LIST_REQUEST_INTRODUCED_DESC = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY introduced DESC LIMIT ? OFFSET ?;";
+    private final String LIST_REQUEST_DISCONTINUED_DESC = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY discontinued DESC LIMIT ? OFFSET ?;";
+    private final String LIST_REQUEST_COMPANY_DESC = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY company_name DESC LIMIT ? OFFSET ?;";
     private final String COUNT_REQUEST   = "SELECT COUNT(computer.id) FROM computer;";
 
     @Override
@@ -263,7 +268,7 @@ public enum ComputerDaoImpl implements ComputerDao {
     }
 
     @Override
-    public List<Computer> list(int offset, int nbToPrint, String order) throws DaoException {
+    public List<Computer> list(int offset, int nbToPrint, String order, boolean desc) throws DaoException {
         LOGGER.info("Listing computers from " + offset + " (" + nbToPrint + " per page) ordered by " + order);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
@@ -272,7 +277,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         List<Computer> computersList = new ArrayList<>();
 
         try {
-            executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, order, computersList);
+            executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, order, desc, computersList);
         } catch (SQLException e) {
             LOGGER.error("SQL error in computer listing", e);
             throw(new DaoException("SQL error in computer listing", e));
@@ -283,15 +288,20 @@ public enum ComputerDaoImpl implements ComputerDao {
         return computersList;
     }
 
-    private void executeListRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, String order, List<Computer> computersList) throws SQLException {
-        switch (order) {
-            case "id": preparedStatement = connection.prepareStatement(LIST_REQUEST_ID); break;
-            case "name": preparedStatement = connection.prepareStatement(LIST_REQUEST_NAME); break;
-            case "introduced": preparedStatement = connection.prepareStatement(LIST_REQUEST_INTRODUCED); break;
-            case "discontinued": preparedStatement = connection.prepareStatement(LIST_REQUEST_DISCONTINUED); break;
-            case "company_name": preparedStatement = connection.prepareStatement(LIST_REQUEST_COMPANY); break;
-            default: preparedStatement = connection.prepareStatement(LIST_REQUEST_ID);
+    private void executeListRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, String order, boolean desc, List<Computer> computersList) throws SQLException {
+        String req = LIST_REQUEST_ID;
+        
+        switch (ComputerOrderBy.parse(order)) {
+            case ID: req = desc ? LIST_REQUEST_ID_DESC : LIST_REQUEST_ID; break;
+            case NAME: req = desc ? LIST_REQUEST_NAME_DESC : LIST_REQUEST_NAME; break;
+            case INTRODUCED: req = desc ? LIST_REQUEST_INTRODUCED_DESC : LIST_REQUEST_INTRODUCED; break;
+            case DISCONTINUED: req = desc ? LIST_REQUEST_DISCONTINUED_DESC : LIST_REQUEST_DISCONTINUED; break;
+            case COMPANY_NAME: req = desc ? LIST_REQUEST_COMPANY_DESC : LIST_REQUEST_COMPANY; break;
+            default: req = LIST_REQUEST_ID;
         }
+        
+        preparedStatement = connection.prepareStatement(req);
+        
         preparedStatement.setInt(1, nbToPrint);
         preparedStatement.setLong(2, offset);
         LOGGER.debug(preparedStatement.toString());

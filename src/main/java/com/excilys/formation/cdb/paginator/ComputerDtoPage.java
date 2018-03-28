@@ -1,7 +1,6 @@
 package com.excilys.formation.cdb.paginator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -27,7 +26,7 @@ public class ComputerDtoPage extends Page<ComputerDto> {
     protected void refreshContent() throws PageException {
         List<Computer> computerList;
         try {
-            computerList = ComputerService.INSTANCE.getList(getOffset(), getNbPerPage(), getOrderBy());
+            computerList = ComputerService.INSTANCE.getList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc());
             LOGGER.debug("refreshContentOrderBy: " + orderBy);
         } catch (ServiceException e) {
             LOGGER.error("Error while refreshing page content", e);
@@ -37,20 +36,6 @@ public class ComputerDtoPage extends Page<ComputerDto> {
         Consumer<Computer> computerConsumer = (x) -> computerDtoList.add(ComputerMapper.INSTANCE.computerToComputerDto(x));
         computerList.forEach(computerConsumer);
         setContent(computerDtoList);
-    }
-
-    @Override
-    public void setOrderBy(String orderBy) throws PageException {
-        List<String> allowedOrders = Arrays.asList(new String[] {"id", "name", "introduced", "discontinued", "company_name"});
-
-        if (allowedOrders.contains(orderBy)) {
-            LOGGER.debug("Valid " + orderBy);
-            this.orderBy = orderBy;
-            LOGGER.debug("Valid " + orderBy);
-            this.refreshContent();
-        } else {
-            LOGGER.debug("Invalid " + orderBy);
-        }
     }
 
 }

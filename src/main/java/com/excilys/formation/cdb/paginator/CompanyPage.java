@@ -1,8 +1,5 @@
 package com.excilys.formation.cdb.paginator;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,17 +23,6 @@ public class CompanyPage extends Page<Company> {
         } catch (ServiceException e) {
             LOGGER.error("Error while refreshing page content", e);
             throw(new PageException("Error while refreshing page content", e));
-        }
-    }
-
-    @Override
-    public void setOrderBy(String orderBy) throws PageException {
-        List<String> allowedOrders = Arrays.asList(new String[] {});
-        List<String> ordersMap = Arrays.asList(new String[] {});
-
-        if (allowedOrders.contains(orderBy)) {
-            this.orderBy = ordersMap.get(allowedOrders.indexOf(orderBy));
-            this.refreshContent();
         }
     }
 

@@ -19,10 +19,10 @@ public enum ComputerService {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerService.class);
 
-    public List<Computer> getList(int offset, int nbToPrint, String order) throws ServiceException {
+    public List<Computer> getList(int offset, int nbToPrint, String order, boolean desc) throws ServiceException {
         if (nbToPrint >= 1) {
             try {
-                return ComputerDaoImpl.INSTANCE.list(offset, nbToPrint, order);
+                return ComputerDaoImpl.INSTANCE.list(offset, nbToPrint, order, desc);
             } catch (DaoException e) {
                 LOGGER.error("Error while listing computers from {} to {}", offset, offset + nbToPrint, e);
                 throw(new ServiceException("Error while listing computers from " + offset + " to " + (offset + nbToPrint), e));

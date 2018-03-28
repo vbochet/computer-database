@@ -51,12 +51,8 @@ public class DashboardServlet extends HttpServlet {
         }
     
         request.setAttribute("deletionSuccess", true);
-        try {
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/dashboard.jsp");
-            rd.forward(request,response);
-        } catch (Exception e) { 
-            throw new ServletException(e);
-        }
+        
+        doGet(request, response);
     }
 
     @Override
@@ -94,10 +90,16 @@ public class DashboardServlet extends HttpServlet {
 
         try {
             page.setOrderBy(request.getParameter("orderBy"));
-        } catch (NumberFormatException e) { 
         } catch (PageException e) {
-            LOGGER.error("Error while setting current page number", e);
-            throw(new ServletException("Error while setting current page number", e));
+            LOGGER.error("Error while setting ordering parameter", e);
+            throw(new ServletException("Error while setting ordering parameter", e));
+        }
+
+        try {
+            page.setOrderDesc(Boolean.valueOf(request.getParameter("orderDesc")));
+        } catch (PageException e) {
+            LOGGER.error("Error while setting ordering parameter", e);
+            throw(new ServletException("Error while setting ordering parameter", e));
         }
 
 
@@ -126,6 +128,7 @@ public class DashboardServlet extends HttpServlet {
         LOGGER.info("Current page number: {}", page.getCurrentPage());
         LOGGER.info("Number of computers per page: {}", page.getNbPerPage());
         LOGGER.info("Page elements ordered by: {}", page.getOrderBy());
+        LOGGER.info("Page elements order desc: {}", page.getOrderDesc());
 
         try {
             RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/dashboard.jsp");

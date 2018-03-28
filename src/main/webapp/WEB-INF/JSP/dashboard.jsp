@@ -64,16 +64,16 @@
                             </span>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='name' />">Computer name</a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='name' orderDesc='${page.orderBy == "name" && !page.orderDesc}' />">Computer name</a>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='introduced' />">Introduced date</a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='introduced' orderDesc='${page.orderBy == "introduced" && !page.orderDesc}' />">Introduced date</a>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='discontinued' />">Discontinued date</a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='discontinued' orderDesc='${page.orderBy == "discontinued" && !page.orderDesc}' />">Discontinued date</a>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='company_name' />">Company</a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='company_name' orderDesc='${page.orderBy == "company_name" && !page.orderDesc}' />">Company</a>
                         </th>
 
                     </tr>
@@ -103,12 +103,12 @@
 
     <footer class="navbar-fixed-bottom">
         <div class="container text-center">
-            <t:pagination maxPage="${page.maxPage}" currentPage="${page.currentPage}" displayBy="${page.nbPerPage}" orderBy="${page.orderBy}"></t:pagination>
+            <t:pagination maxPage="${page.maxPage}" currentPage="${page.currentPage}" displayBy="${page.nbPerPage}" orderBy="${page.orderBy}" orderDesc="${page.orderDesc}"></t:pagination>
 
             <div class="btn-group btn-group-sm pull-right" role="group" >
-                <a href="<t:links target='dashboardOther' displayBy='10' pagenb='${page.currentPage}' orderBy='${page.orderBy}' />"><button type="button" class="btn btn-default">10</button></a>
-                <a href="<t:links target='dashboardOther' displayBy='50' pagenb='${page.currentPage}' orderBy='${page.orderBy}' />"><button type="button" class="btn btn-default">50</button></a>
-                <a href="<t:links target='dashboardOther' displayBy='100' pagenb='${page.currentPage}' orderBy='${page.orderBy}' />"><button type="button" class="btn btn-default">100</button></a>
+                <a href="<t:links target='dashboardOther' displayBy='10' pagenb='${page.currentPage}' orderBy='${page.orderBy}' orderDesc='${page.orderDesc}' />"><button type="button" class="btn btn-default">10</button></a>
+                <a href="<t:links target='dashboardOther' displayBy='50' pagenb='${page.currentPage}' orderBy='${page.orderBy}' orderDesc='${page.orderDesc}' />"><button type="button" class="btn btn-default">50</button></a>
+                <a href="<t:links target='dashboardOther' displayBy='100' pagenb='${page.currentPage}' orderBy='${page.orderBy}' orderDesc='${page.orderDesc}' />"><button type="button" class="btn btn-default">100</button></a>
             </div>
 		</div>
     </footer>
