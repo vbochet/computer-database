@@ -16,4 +16,5 @@
     <c:when test="${target == 'editComputer'}"><c:url value="/editComputer?computerId="/>${computerId}</c:when>
     <c:when test="${target == 'editComputerPost'}"><c:url value="/editComputer"/></c:when>
     <c:when test="${target == 'addComputer'}"><c:url value="/addComputer"/></c:when>
+    <c:when test="${target == 'deleteComputer'}"><c:url value="/deleteComputer"/></c:when>
 </c:choose>

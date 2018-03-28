@@ -21,6 +21,11 @@
 
     <section id="main">
         <div class="container">
+			<c:if test = "${deletionSuccess}">
+            <div class="alert alert-success">
+                Computer(s) were deleted successfully
+            </div>
+            </c:if>
             <h1 id="homeTitle">
                 ${page.nbTotal} Computers found
             </h1>

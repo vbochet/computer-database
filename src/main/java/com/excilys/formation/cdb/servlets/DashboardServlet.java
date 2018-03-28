@@ -26,7 +26,38 @@ public class DashboardServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
+        LOGGER.debug("COUCOU, JE SUIS UN LOG [POST]");
+        long id = -1;
+
+        String idsString = request.getParameter("selection");
+        LOGGER.debug("Ids received for deletion: {}", idsString);
+      
+        String[] idsList = idsString.split(",");
+        for(String idString : idsList) {
+            try {
+                id = Long.parseLong(idString);
+                LOGGER.debug("Computer id: " + id);
+            } catch (NumberFormatException e) {
+                LOGGER.error("Error: invalid computer id. Deletion cancelled", e);
+                throw(new ServletException("Error: invalid computer id. Deletion cancelled", e));
+            }
+    
+            try {
+                ComputerService.INSTANCE.deleteById(id);
+                LOGGER.debug("Deleted computer n°{}", id);
+            } catch (ServiceException e) {
+                LOGGER.error("Error while deleting computer", e);
+                throw(new ServletException("Error while deleting computer", e));
+            }
+        }
+    
+        request.setAttribute("deletionSuccess", true);
+        try {
+            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/dashboard.jsp");
+            rd.forward(request,response);
+        } catch (Exception e) { 
+            throw new ServletException(e);
+        }
     }
 
     @Override
