@@ -221,6 +221,37 @@ public enum ComputerDaoImpl implements ComputerDao {
         }
     }
 
+    @Override
+    public void deleteMany(List<Long> ids) throws DaoException {
+        LOGGER.info("Deleting computers n°" + ids);
+
+        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection.setAutoCommit(false);
+
+            for (long id : ids) {
+                    executeDeleteRequest(connection, preparedStatement, id);
+                    LOGGER.info("Deletion of computers n°" + id);
+            }
+
+            connection.commit();
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                LOGGER.error("SQL error in computer list deletion", e1);
+                throw(new DaoException("SQL error in computer list deletion", e1));
+            }
+
+            LOGGER.error("SQL error in computer list deletion", e);
+            throw(new DaoException("SQL error in computer list deletion", e));
+        } finally {
+            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, null);
+        }
+    }
+
     private void executeDeleteRequest(Connection connection, PreparedStatement preparedStatement, Long id) throws SQLException {
         preparedStatement = connection.prepareStatement(DELETE_REQUEST);
         preparedStatement.setLong(1, id);

@@ -129,4 +129,23 @@ public enum ComputerService {
             throw(new ServiceException("Error while updating computer", e));
         }
     }
+
+    public boolean deleteManyById(List<Long> ids) throws ServiceException {
+        boolean elementsValid = true;
+        for(Long id : ids) {
+            elementsValid = elementsValid && (id > 0);
+        }
+        
+        if (elementsValid) {
+            try {
+                ComputerDaoImpl.INSTANCE.deleteMany(ids);
+            } catch (DaoException e) {
+                LOGGER.error("Error while deleting companies {}", ids, e);
+                throw(new ServiceException("Error while deleting companies "+ ids, e));
+            }
+            return true;
+        }
+
+        return false;
+    }
 }

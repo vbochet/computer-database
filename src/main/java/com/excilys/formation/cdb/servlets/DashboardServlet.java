@@ -1,6 +1,8 @@
 package com.excilys.formation.cdb.servlets;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -28,27 +30,27 @@ public class DashboardServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         LOGGER.debug("COUCOU, JE SUIS UN LOG [POST]");
         long id = -1;
+        List<Long> ids = new ArrayList<>();
 
         String idsString = request.getParameter("selection");
         LOGGER.debug("Ids received for deletion: {}", idsString);
       
         String[] idsList = idsString.split(",");
-        for(String idString : idsList) {
+        for (String idString : idsList) {
             try {
-                id = Long.parseLong(idString);
+                ids.add(Long.valueOf(idString));
                 LOGGER.debug("Computer id: " + id);
             } catch (NumberFormatException e) {
                 LOGGER.error("Error: invalid computer id. Deletion cancelled", e);
                 throw(new ServletException("Error: invalid computer id. Deletion cancelled", e));
             }
-    
-            try {
-                ComputerService.INSTANCE.deleteById(id);
-                LOGGER.debug("Deleted computer n°{}", id);
-            } catch (ServiceException e) {
-                LOGGER.error("Error while deleting computer", e);
-                throw(new ServletException("Error while deleting computer", e));
-            }
+        }
+
+        try {
+            ComputerService.INSTANCE.deleteManyById(ids);
+        } catch (ServiceException e) {
+            LOGGER.error("Error while deleting computers", e);
+            throw(new ServletException("Error while deleting computers", e));
         }
     
         request.setAttribute("deletionSuccess", true);

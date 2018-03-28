@@ -14,5 +14,6 @@ public interface ComputerDao {
     void delete(long id) throws DaoException;
     List<Computer> list(int offset, int nbToPrint) throws DaoException;
     public long count() throws DaoException;
+    void deleteMany(List<Long> id) throws DaoException;
 
 }
