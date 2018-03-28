@@ -92,6 +92,14 @@ public class DashboardServlet extends HttpServlet {
             throw(new ServletException("Error while setting current page number", e));
         }
 
+        try {
+            page.setOrderBy(request.getParameter("orderBy"));
+        } catch (NumberFormatException e) { 
+        } catch (PageException e) {
+            LOGGER.error("Error while setting current page number", e);
+            throw(new ServletException("Error while setting current page number", e));
+        }
+
 
         if (request.getParameter("next") != null) {
             try {
@@ -117,6 +125,7 @@ public class DashboardServlet extends HttpServlet {
         LOGGER.info("Maximum page number: {}", page.getMaxPage());
         LOGGER.info("Current page number: {}", page.getCurrentPage());
         LOGGER.info("Number of computers per page: {}", page.getNbPerPage());
+        LOGGER.info("Page elements ordered by: {}", page.getOrderBy());
 
         try {
             RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/dashboard.jsp");

@@ -15,6 +15,7 @@ public abstract class Page<T> {
     private long nbTotal;
     private int currentPage = 1;
     private long maxPage;
+    protected String orderBy = "id";
 
     public List<T> getContent() {
         return content;
@@ -34,6 +35,10 @@ public abstract class Page<T> {
 
     public long getMaxPage() {
         return maxPage;
+    }
+
+    public String getOrderBy() {
+        return orderBy;
     }
 
     public void setContent(List<T> content) {
@@ -72,6 +77,8 @@ public abstract class Page<T> {
             this.refreshContent();
         }
     }
+
+    public abstract void setOrderBy(String orderBy) throws PageException;
 
     public void next() throws PageException {
         this.setCurrentPage(currentPage + 1);

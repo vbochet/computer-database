@@ -26,12 +26,16 @@ public enum ComputerDaoImpl implements ComputerDao {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
 
-    private final String CREATE_REQUEST = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
-    private final String READ_REQUEST   = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id = ?;";
-    private final String UPDATE_REQUEST = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
-    private final String DELETE_REQUEST = "DELETE FROM computer WHERE id = ?;";
-    private final String LIST_REQUEST   = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id LIMIT ? OFFSET ?;";
-    private final String COUNT_REQUEST  = "SELECT COUNT(computer.id) FROM computer;";
+    private final String CREATE_REQUEST  = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
+    private final String READ_REQUEST    = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id = ?;";
+    private final String UPDATE_REQUEST  = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
+    private final String DELETE_REQUEST  = "DELETE FROM computer WHERE id = ?;";
+    private final String LIST_REQUEST_ID = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY id LIMIT ? OFFSET ?;";
+    private final String LIST_REQUEST_NAME = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY name LIMIT ? OFFSET ?;";
+    private final String LIST_REQUEST_INTRODUCED = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY introduced LIMIT ? OFFSET ?;";
+    private final String LIST_REQUEST_DISCONTINUED = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY discontinued LIMIT ? OFFSET ?;";
+    private final String LIST_REQUEST_COMPANY = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY company_name LIMIT ? OFFSET ?;";
+    private final String COUNT_REQUEST   = "SELECT COUNT(computer.id) FROM computer;";
 
     @Override
     public Computer create(Computer computer) throws DaoException {
@@ -259,8 +263,8 @@ public enum ComputerDaoImpl implements ComputerDao {
     }
 
     @Override
-    public List<Computer> list(int offset, int nbToPrint) throws DaoException {
-        LOGGER.info("Listing computers from " + offset + " (" + nbToPrint + " per page)");
+    public List<Computer> list(int offset, int nbToPrint, String order) throws DaoException {
+        LOGGER.info("Listing computers from " + offset + " (" + nbToPrint + " per page) ordered by " + order);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -268,7 +272,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         List<Computer> computersList = new ArrayList<>();
 
         try {
-            executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, computersList);
+            executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, order, computersList);
         } catch (SQLException e) {
             LOGGER.error("SQL error in computer listing", e);
             throw(new DaoException("SQL error in computer listing", e));
@@ -279,10 +283,18 @@ public enum ComputerDaoImpl implements ComputerDao {
         return computersList;
     }
 
-    private void executeListRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, List<Computer> computersList) throws SQLException {
-        preparedStatement = connection.prepareStatement(LIST_REQUEST);
+    private void executeListRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, String order, List<Computer> computersList) throws SQLException {
+        switch (order) {
+            case "id": preparedStatement = connection.prepareStatement(LIST_REQUEST_ID); break;
+            case "name": preparedStatement = connection.prepareStatement(LIST_REQUEST_NAME); break;
+            case "introduced": preparedStatement = connection.prepareStatement(LIST_REQUEST_INTRODUCED); break;
+            case "discontinued": preparedStatement = connection.prepareStatement(LIST_REQUEST_DISCONTINUED); break;
+            case "company_name": preparedStatement = connection.prepareStatement(LIST_REQUEST_COMPANY); break;
+            default: preparedStatement = connection.prepareStatement(LIST_REQUEST_ID);
+        }
         preparedStatement.setInt(1, nbToPrint);
         preparedStatement.setLong(2, offset);
+        LOGGER.debug(preparedStatement.toString());
         resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
