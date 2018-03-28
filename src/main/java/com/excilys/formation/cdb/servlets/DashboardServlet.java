@@ -28,8 +28,6 @@ public class DashboardServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        LOGGER.debug("COUCOU, JE SUIS UN LOG [POST]");
-        long id = -1;
         List<Long> ids = new ArrayList<>();
 
         String idsString = request.getParameter("selection");
@@ -39,7 +37,6 @@ public class DashboardServlet extends HttpServlet {
         for (String idString : idsList) {
             try {
                 ids.add(Long.valueOf(idString));
-                LOGGER.debug("Computer id: " + id);
             } catch (NumberFormatException e) {
                 LOGGER.error("Error: invalid computer id. Deletion cancelled", e);
                 throw(new ServletException("Error: invalid computer id. Deletion cancelled", e));
