@@ -22,7 +22,7 @@
     <section id="main">
         <div class="container">
             <h1 id="homeTitle">
-                Computer added
+                Computer saved
             </h1>
         </div>
 
