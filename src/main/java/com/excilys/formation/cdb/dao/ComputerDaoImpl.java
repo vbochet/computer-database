@@ -26,20 +26,15 @@ public enum ComputerDaoImpl implements ComputerDao {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
 
+    private final String REQUEST_SELECT_FROM_JOIN = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ";
+    
     private final String CREATE_REQUEST  = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
-    private final String READ_REQUEST    = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.id = ?;";
     private final String UPDATE_REQUEST  = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
     private final String DELETE_REQUEST  = "DELETE FROM computer WHERE id = ?;";
-    private final String LIST_REQUEST_ID = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY id LIMIT ? OFFSET ?;";
-    private final String LIST_REQUEST_NAME = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY name LIMIT ? OFFSET ?;";
-    private final String LIST_REQUEST_INTRODUCED = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY introduced LIMIT ? OFFSET ?;";
-    private final String LIST_REQUEST_DISCONTINUED = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY discontinued LIMIT ? OFFSET ?;";
-    private final String LIST_REQUEST_COMPANY = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY company_name LIMIT ? OFFSET ?;";
-    private final String LIST_REQUEST_ID_DESC = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY id DESC LIMIT ? OFFSET ?;";
-    private final String LIST_REQUEST_NAME_DESC = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY name DESC LIMIT ? OFFSET ?;";
-    private final String LIST_REQUEST_INTRODUCED_DESC = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY introduced DESC LIMIT ? OFFSET ?;";
-    private final String LIST_REQUEST_DISCONTINUED_DESC = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY discontinued DESC LIMIT ? OFFSET ?;";
-    private final String LIST_REQUEST_COMPANY_DESC = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ORDER BY company_name DESC LIMIT ? OFFSET ?;";
+    
+    private final String READ_REQUEST    = " WHERE computer.id = ?;";
+    private final String LIST_REQUEST = " LIMIT ? OFFSET ?;";
+    
     private final String COUNT_REQUEST   = "SELECT COUNT(computer.id) FROM computer;";
 
     @Override
@@ -289,17 +284,18 @@ public enum ComputerDaoImpl implements ComputerDao {
     }
 
     private void executeListRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, String order, boolean desc, List<Computer> computersList) throws SQLException {
-        String req = LIST_REQUEST_ID;
+        String field, req;
         
         switch (ComputerOrderBy.parse(order)) {
-            case ID: req = desc ? LIST_REQUEST_ID_DESC : LIST_REQUEST_ID; break;
-            case NAME: req = desc ? LIST_REQUEST_NAME_DESC : LIST_REQUEST_NAME; break;
-            case INTRODUCED: req = desc ? LIST_REQUEST_INTRODUCED_DESC : LIST_REQUEST_INTRODUCED; break;
-            case DISCONTINUED: req = desc ? LIST_REQUEST_DISCONTINUED_DESC : LIST_REQUEST_DISCONTINUED; break;
-            case COMPANY_NAME: req = desc ? LIST_REQUEST_COMPANY_DESC : LIST_REQUEST_COMPANY; break;
-            default: req = LIST_REQUEST_ID;
+            case ID: field = ComputerOrderBy.ID.toString() + (desc ? " DESC" : ""); break;
+            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? " DESC" : ""); break;
+            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? " DESC" : ""); break;
+            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? " DESC" : ""); break;
+            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? " DESC" : ""); break;
+            default: field = ComputerOrderBy.ID.toString();
         }
-        
+
+        req = REQUEST_SELECT_FROM_JOIN + "ORDER BY " + field + LIST_REQUEST;
         preparedStatement = connection.prepareStatement(req);
         
         preparedStatement.setInt(1, nbToPrint);
