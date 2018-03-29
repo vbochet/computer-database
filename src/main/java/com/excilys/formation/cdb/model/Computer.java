@@ -2,6 +2,8 @@ package com.excilys.formation.cdb.model;
 
 import java.time.LocalDate;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Computer {
 
     private long id;
@@ -134,5 +136,10 @@ public class Computer {
     private boolean sameCompany(Computer other) {
         return (this.getCompany() == null && other.getCompany() == null)
                 || (this.getCompany() != null && this.getCompany().equals(other.getCompany()));
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 31).append(id).append(name).append(introduced).append(discontinued).append(company).toHashCode();
     }
 }

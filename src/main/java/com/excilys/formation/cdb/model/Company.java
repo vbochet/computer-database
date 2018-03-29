@@ -1,5 +1,7 @@
 package com.excilys.formation.cdb.model;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Company {
 
     private long id;
@@ -82,5 +84,10 @@ public class Company {
         }
         
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 31).append(id).append(name).toHashCode();
     }
 }
