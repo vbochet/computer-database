@@ -26,6 +26,8 @@ public enum CompanyDaoImpl implements CompanyDao {
     private final String LIST_REQUEST = "SELECT id, name FROM company LIMIT ? OFFSET ?;";
     private final String READ_REQUEST = "SELECT id, name FROM company WHERE id = ?;";
     private final String FIND_BY_NAME_REQUEST = "SELECT id, name FROM company WHERE name = ?;";
+    private final String DELETE_COMPANY_REQUEST  = "DELETE FROM company WHERE id = ?;";
+    private final String DELETE_COMPUTER_REQUEST  = "DELETE FROM computer WHERE company_id = ?;";
     private final String COUNT_REQUEST  = "SELECT COUNT(company.id) FROM company;";
 
     @Override
@@ -124,6 +126,45 @@ public enum CompanyDaoImpl implements CompanyDao {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public void deleteById(long companyId) throws DaoException {
+        LOGGER.info("Deleting company n°" + companyId);
+
+        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection.setAutoCommit(false);
+            executeDeleteComputerRequest(connection, preparedStatement, companyId);
+            executeDeleteCompanyRequest(connection, preparedStatement, companyId);
+            connection.commit();
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                LOGGER.error("SQL error in company deletion", e1);
+                throw(new DaoException("SQL error in company deletion", e1));
+            }
+
+            LOGGER.error("SQL error in company deletion", e);
+            throw(new DaoException("SQL error in company deletion", e));
+        } finally {
+            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, null);
+        }
+    }
+
+    private void executeDeleteCompanyRequest(Connection connection, PreparedStatement preparedStatement, Long id) throws SQLException {
+        preparedStatement = connection.prepareStatement(DELETE_COMPANY_REQUEST);
+        preparedStatement.setLong(1, id);
+        preparedStatement.executeUpdate();
+    }
+
+    private void executeDeleteComputerRequest(Connection connection, PreparedStatement preparedStatement, Long id) throws SQLException {
+        preparedStatement = connection.prepareStatement(DELETE_COMPUTER_REQUEST);
+        preparedStatement.setLong(1, id);
+        preparedStatement.executeUpdate();
     }
 
     @Override

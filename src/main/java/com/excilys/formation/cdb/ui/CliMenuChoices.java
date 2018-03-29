@@ -7,5 +7,6 @@ public enum CliMenuChoices {
     /* 3 */ READ_COMPUTER,
     /* 4 */ CREATE_COMPUTER,
     /* 5 */ UPDATE_COMPUTER,
-    /* 6 */ DELETE_COMPUTER;
+    /* 6 */ DELETE_COMPUTER,
+    /* 7 */ DELETE_COMPANY;
 }

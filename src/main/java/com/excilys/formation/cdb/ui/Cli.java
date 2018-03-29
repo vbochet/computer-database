@@ -66,6 +66,10 @@ public class Cli {
                         caseDeleteComputer(scanner);
                         break;
 
+                    case DELETE_COMPANY:
+                        caseDeleteCompany(scanner);
+                        break;
+
                     default:
                         System.out.println("Option " + i + " is unknown");
                     }
@@ -105,6 +109,8 @@ public class Cli {
             .append(". Update a computer \t\t ")
             .append(CliMenuChoices.DELETE_COMPUTER.ordinal())
             .append(". Delete a computer\n")
+            .append(CliMenuChoices.DELETE_COMPANY.ordinal())
+            .append(". Delete a company (and related computers)\n")
             .append(CliMenuChoices.QUIT.ordinal())
             .append(". Exit\n");
         System.out.println(sb.toString());
@@ -114,7 +120,7 @@ public class Cli {
         LOGGER.info("User choice: List computers");
         ComputerPage page;
         page = new ComputerPage();
-        page.setNbTotal(CompanyService.INSTANCE.getNbFound());
+        page.setNbTotal(ComputerService.INSTANCE.getNbFound());
         int nbToPrint = getNbToPrint(scanner);
         page.setNbPerPage(nbToPrint);
         LOGGER.info("(print {} computers per page)", nbToPrint);
@@ -132,7 +138,7 @@ public class Cli {
     private static void caseListCompany(Scanner scanner) throws PageException, ServiceException {
         LOGGER.info("User choice: List companies");
         CompanyPage page = new CompanyPage();
-        page.setNbTotal(ComputerService.INSTANCE.getNbFound());
+        page.setNbTotal(CompanyService.INSTANCE.getNbFound());
         int nbToPrint = getNbToPrint(scanner);
         page.setNbPerPage(nbToPrint);
         LOGGER.info("(print {} companies per page)", nbToPrint);
@@ -362,7 +368,7 @@ public class Cli {
     }
 
     private static void caseDeleteComputer(Scanner scanner) throws ServiceException {
-        LOGGER.info("User choice: Update computer");
+        LOGGER.info("User choice: Delete computer");
         long id;
 
         id = getId(scanner);
@@ -374,6 +380,23 @@ public class Cli {
         } else {
             System.out.println("A problem occured. Computer n°" + id + " couldn't be deleted");
             LOGGER.warn("Computer {} couldn't be deleted", id);
+        }
+        LOGGER.info("End of computer deletion");
+    }
+
+    private static void caseDeleteCompany(Scanner scanner) throws ServiceException {
+        LOGGER.info("User choice: Delete company");
+        long id;
+
+        id = getId(scanner);
+        LOGGER.info("Company's id: {}", id);
+
+        if (CompanyService.INSTANCE.deleteById(id)) {
+            System.out.println("Company n°" + id + " and its related computers have been successfully deleted");
+            LOGGER.info("Company {} and its related computers have been deleted", id);
+        } else {
+            System.out.println("A problem occured. Company n°" + id + " or one of its computers couldn't be deleted");
+            LOGGER.warn("Company {} or one of its computers couldn't be deleted", id);
         }
         LOGGER.info("End of computer deletion");
     }

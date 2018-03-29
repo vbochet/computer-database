@@ -57,6 +57,20 @@ public enum CompanyService {
         return ret;
     }
 
+    public boolean deleteById(long id) throws ServiceException {
+        if (id > 0) {
+            try {
+                CompanyDaoImpl.INSTANCE.deleteById(id);
+            } catch (DaoException e) {
+                LOGGER.error("Error while deleting company {}", id, e);
+                throw(new ServiceException("Error while deleting company " + id, e));
+            }
+            return true;
+        }
+
+        return false;
+    }
+
     public long getNbFound() throws ServiceException {
         try {
             return CompanyDaoImpl.INSTANCE.count();
