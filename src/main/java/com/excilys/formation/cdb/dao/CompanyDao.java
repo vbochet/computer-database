@@ -12,4 +12,5 @@ public interface CompanyDao {
     Optional<Company> read(long companyId) throws DaoException;
     Optional<Company> findByName(String companyName) throws DaoException;
     public long count() throws DaoException;
+    void deleteById(long companyId) throws DaoException;
 }
