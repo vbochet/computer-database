@@ -43,26 +43,26 @@ public class AddComputerServlet extends HttpServlet {
         
         String name = request.getParameter("computerName");
         computer.setName(name);
-        LOGGER.debug("Name set to \"" + name + "\"");
+        LOGGER.debug("Name set to \"{}\"", name);
 
         try {
             String introString = request.getParameter("introduced");
             LocalDate introLD = LocalDate.parse(introString, formatter);
             computer.setIntroduced(introLD);
-            LOGGER.debug("Introduction date set to " + introLD);
+            LOGGER.debug("Introduction date set to {}", introLD);
         } catch (DateTimeParseException e) {
             computer.setIntroduced(null);
-            LOGGER.debug("Introduction date set to null (received value \"" + request.getParameter("introduced") + "\")");
+            LOGGER.debug("Introduction date set to null (received value \"{}\")", request.getParameter("introduced"));
         }
 
         try {
             String discontString = request.getParameter("discontinued");
             LocalDate discontLD = LocalDate.parse(discontString, formatter);
             computer.setDiscontinued(discontLD);
-            LOGGER.debug("Discontinuation date set to " + discontLD);
+            LOGGER.debug("Discontinuation date set to {}", discontLD);
         } catch (DateTimeParseException e) {
             computer.setDiscontinued(null);
-            LOGGER.debug("Discontinuation date set to null (received value \"" + request.getParameter("discontinued") + "\")");
+            LOGGER.debug("Discontinuation date set to null (received value \"{}\")", request.getParameter("discontinued"));
         }
 
         try {
@@ -78,42 +78,35 @@ public class AddComputerServlet extends HttpServlet {
 
             if (optCompany.isPresent()) {
                 computer.setCompany(optCompany.get());
-                LOGGER.debug("Company set to " + optCompany.get().toString());
+                LOGGER.debug("Company set to {}", optCompany.get().toString());
             } else {
                 computer.setCompany(null);
                 LOGGER.debug("Company set to null");
             }
         } catch (NumberFormatException e) {
             computer.setCompany(null);
-            LOGGER.debug("Company set to null (received value \"" + request.getParameter("companyId") + "\")");
+            LOGGER.debug("Company set to null (received value \"{}\")", request.getParameter("companyId"));
         }
         
         Computer res;
         try {
             res = ComputerService.INSTANCE.createComputer(computer);
         } catch (ServiceException e) {
-            LOGGER.error("Error while getting computer details", e);
-            throw(new ServletException("Error while getting computer details", e));
+            LOGGER.error("Error while creating computer", e);
+            throw(new ServletException("Error while creating computer", e));
         }
 
         if (res != null) {
             request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(res));
-            
-            try {
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/computerAdded.jsp");
-                rd.forward(request,response);
-            } catch (Exception e) { 
-                throw new ServletException(e);
-            }
+
+            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/computerAdded.jsp");
+            rd.forward(request,response);
         } else {
             request.setAttribute("error", true);
             request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(computer));
-            try {
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/addComputer.jsp");
-                rd.forward(request,response);
-            } catch (Exception e) { 
-                throw new ServletException(e);
-            }
+
+            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/addComputer.jsp");
+            rd.forward(request,response);
         }
     }
 
@@ -131,12 +124,8 @@ public class AddComputerServlet extends HttpServlet {
         companyList.forEach(companyConsumer);
         
         request.setAttribute("companyList", companyDtoList);
-        
-        try {
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/addComputer.jsp");
-            rd.forward(request,response);
-        } catch (Exception e) { 
-            throw new ServletException(e);
-        }
+
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/addComputer.jsp");
+        rd.forward(request,response);
     }
 }

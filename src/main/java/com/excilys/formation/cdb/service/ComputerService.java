@@ -37,8 +37,8 @@ public enum ComputerService {
             try {
                 return ComputerDaoImpl.INSTANCE.listSearch(offset, nbToPrint, order, desc, search);
             } catch (DaoException e) {
-                LOGGER.error("Error while listing computers from {} to {}", offset, offset + nbToPrint, e);
-                throw(new ServiceException("Error while listing computers from " + offset + " to " + (offset + nbToPrint), e));
+                LOGGER.error("Error while listing search results from {} to {}", offset, offset + nbToPrint, e);
+                throw(new ServiceException("Error while listing search results from " + offset + " to " + (offset + nbToPrint), e));
             }
         }
 
@@ -50,8 +50,8 @@ public enum ComputerService {
             try {
                 return ComputerDaoImpl.INSTANCE.read(id);
             } catch (DaoException e) {
-                LOGGER.error("Error while reading details of computer {} ", id, e);
-                throw(new ServiceException("Error while reading details of computer " + id, e));
+                LOGGER.error("Error while reading details of computer n°{} ", id, e);
+                throw(new ServiceException("Error while reading details of computer n°" + id, e));
             }
         }
 
@@ -62,8 +62,8 @@ public enum ComputerService {
         try {
             return ComputerDaoImpl.INSTANCE.count();
         } catch (DaoException e) {
-            LOGGER.error("Error while counting number of computers in database", e);
-            throw(new ServiceException("Error while counting number of computers in database", e));
+            LOGGER.error("Error while counting computers in database", e);
+            throw(new ServiceException("Error while counting computers in database", e));
         }
     }
 
@@ -71,8 +71,8 @@ public enum ComputerService {
         try {
             return ComputerDaoImpl.INSTANCE.countSearch(search);
         } catch (DaoException e) {
-            LOGGER.error("Error while counting number of computers in database", e);
-            throw(new ServiceException("Error while counting number of computers in database", e));
+            LOGGER.error("Error while counting search results in database", e);
+            throw(new ServiceException("Error while counting search results in database", e));
         }
     }
 
@@ -81,8 +81,8 @@ public enum ComputerService {
             try {
                 ComputerDaoImpl.INSTANCE.delete(id);
             } catch (DaoException e) {
-                LOGGER.error("Error while deleting company {}", id, e);
-                throw(new ServiceException("Error while deleting company " + id, e));
+                LOGGER.error("Error while deleting company n°{}", id, e);
+                throw(new ServiceException("Error while deleting company n°" + id, e));
             }
             return true;
         }
@@ -92,7 +92,7 @@ public enum ComputerService {
 
     public void setName(String name, Computer computer) {
         if (name.isEmpty()) {
-            System.err.println("Name is mandatory, aborting creation");
+            LOGGER.error("Name is mandatory, aborting creation");
         } else {
             computer.setName(name);
         }

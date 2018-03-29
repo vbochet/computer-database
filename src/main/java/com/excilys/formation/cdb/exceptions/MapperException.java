@@ -2,7 +2,7 @@ package com.excilys.formation.cdb.exceptions;
 
 public class MapperException extends Exception {
 
-    private static final long serialVersionUID = -4277715960883395165L;
+    private static final long serialVersionUID = 2113049222407445753L;
 
     public MapperException() {
     }

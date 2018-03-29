@@ -24,7 +24,7 @@ public enum ComputerValidator {
 
     public boolean validateComputerName(Computer computer) {
         if (computer.getName() == null || computer.getName().isEmpty()) {
-            System.err.println("A computer must have a name!");
+            LOGGER.error("A computer must have a name!");
             return false;
         }
         return true;

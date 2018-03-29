@@ -2,7 +2,7 @@ package com.excilys.formation.cdb.exceptions;
 
 public class ServiceException extends Exception {
 
-    private static final long serialVersionUID = -4277715960883395165L;
+    private static final long serialVersionUID = 1520327385784195689L;
 
     public ServiceException() {
     }

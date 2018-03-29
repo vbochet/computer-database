@@ -47,7 +47,7 @@ public class EditComputerServlet extends HttpServlet {
             String idString = request.getParameter("computerId");
             long id = Long.parseLong(idString);
             computer.setId(id);
-            LOGGER.debug("Computer id set to " + id);
+            LOGGER.debug("Computer id set to {}", id);
         } catch (NumberFormatException e) {
             LOGGER.error("Error: invalid computer id. Update cancelled", e);
             throw(new ServletException("Error: invalid computer id. Update cancelled", e));
@@ -55,7 +55,7 @@ public class EditComputerServlet extends HttpServlet {
 
         String name = request.getParameter("computerName");
         computer.setName(name);
-        LOGGER.debug("Name set to \"" + name + "\"");
+        LOGGER.debug("Name set to \"{}\"", name);
 
         try {
             String introString = request.getParameter("introduced");
@@ -64,7 +64,7 @@ public class EditComputerServlet extends HttpServlet {
             LOGGER.debug("Introduction date set to " + introLD);
         } catch (DateTimeParseException e) {
             computer.setIntroduced(null);
-            LOGGER.debug("Introduction date set to null (received value \"" + request.getParameter("introduced") + "\")");
+            LOGGER.debug("Introduction date set to null (received value \"{}\")", request.getParameter("introduced"));
         }
 
         try {
@@ -74,7 +74,7 @@ public class EditComputerServlet extends HttpServlet {
             LOGGER.debug("Discontinuation date set to " + discontLD);
         } catch (DateTimeParseException e) {
             computer.setDiscontinued(null);
-            LOGGER.debug("Discontinuation date set to null (received value \"" + request.getParameter("discontinued") + "\")");
+            LOGGER.debug("Discontinuation date set to null (received value \"{}\")", request.getParameter("discontinued"));
         }
 
         try {
@@ -97,7 +97,7 @@ public class EditComputerServlet extends HttpServlet {
             }
         } catch (NumberFormatException e) {
             computer.setCompany(null);
-            LOGGER.debug("Company set to null (received value \"" + request.getParameter("companyId") + "\")");
+            LOGGER.debug("Company set to null (received value \"{}\")", request.getParameter("companyId"));
         }
         
         Computer res;
@@ -111,21 +111,14 @@ public class EditComputerServlet extends HttpServlet {
         if (res != null) {
             request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(res));
             
-            try {
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/computerAdded.jsp");
-                rd.forward(request,response);
-            } catch (Exception e) { 
-                throw new ServletException(e);
-            }
+            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/computerAdded.jsp");
+            rd.forward(request,response);
         } else {
             request.setAttribute("error", true);
             request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(computer));
-            try {
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/addComputer.jsp");
-                rd.forward(request,response);
-            } catch (Exception e) { 
-                throw new ServletException(e);
-            }
+
+            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/addComputer.jsp");
+            rd.forward(request,response);
         }
     }
 
@@ -171,11 +164,7 @@ public class EditComputerServlet extends HttpServlet {
         request.setAttribute("computer", computerDto);
         request.setAttribute("company", companyDto);
 
-        try {
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/editComputer.jsp");
-            rd.forward(request,response);
-        } catch (Exception e) { 
-            throw new ServletException(e);
-        }
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/editComputer.jsp");
+        rd.forward(request,response);
     }
 }

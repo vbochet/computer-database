@@ -32,7 +32,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 
     @Override
     public List<Company> list(int offset, int nbToPrint) throws DaoException {
-        LOGGER.info("Listing companies from " + offset + " (" + nbToPrint + " per page)");
+        LOGGER.debug("Listing companies from " + offset + " (" + nbToPrint + " per page)");
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -64,7 +64,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 
     @Override
     public Optional<Company> read(long companyId) throws DaoException {
-        LOGGER.info("Showing info from company n°" + companyId);
+        LOGGER.debug("Showing info from company n°" + companyId);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -97,7 +97,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 
     @Override
     public Optional<Company> findByName(String companyName) throws DaoException {
-        LOGGER.info("Showing info from company " + companyName);
+        LOGGER.debug("Showing info from company " + companyName);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -130,7 +130,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 
     @Override
     public void deleteById(long companyId) throws DaoException {
-        LOGGER.info("Deleting company n°" + companyId);
+        LOGGER.debug("Deleting company n°" + companyId);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -169,7 +169,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 
     @Override
     public long count() throws DaoException {
-        LOGGER.info("Counting companies");
+        LOGGER.debug("Counting companies");
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         Statement statement = null;

@@ -32,7 +32,7 @@ public enum ConnectionManager {
         int maxPoolSize;
         HikariConfig config = new HikariConfig();
 
-        LOGGER.info("Loading DB configuration from file " + CONFIG_FILE);
+        LOGGER.debug("Loading DB configuration from file {}", CONFIG_FILE);
 
         try {
             properties.load(file);
@@ -71,7 +71,7 @@ public enum ConnectionManager {
         Connection connection = null;
         try {
             connection = ds.getConnection();
-            LOGGER.info("New connection created to DB " + url);
+            LOGGER.debug("New connection created to DB {}", url);
         } catch (SQLException e) {
             LOGGER.error("SQL error", e);
         }
@@ -81,10 +81,19 @@ public enum ConnectionManager {
 
 
     public void closeElements(Connection connection, Statement statement, ResultSet resultSet) {
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+                LOGGER.debug("Closed ResultSet " + resultSet);
+            } catch (SQLException e) {
+                LOGGER.error("SQL error", e);
+            }
+        }
+
         if (statement != null) {
             try {
                 statement.close();
-                LOGGER.info("Closed Statement " + statement);
+                LOGGER.debug("Closed Statement " + statement);
             } catch (SQLException e) {
                 LOGGER.error("SQL error", e);
             }
@@ -93,16 +102,7 @@ public enum ConnectionManager {
         if (connection != null) {
             try {
                 connection.close();
-                LOGGER.info("Closed Connection " + connection);
-            } catch (SQLException e) {
-                LOGGER.error("SQL error", e);
-            }
-        }
-
-        if (resultSet != null) {
-            try {
-                resultSet.close();
-                LOGGER.info("Closed ResultSet " + resultSet);
+                LOGGER.debug("Closed Connection " + connection);
             } catch (SQLException e) {
                 LOGGER.error("SQL error", e);
             }

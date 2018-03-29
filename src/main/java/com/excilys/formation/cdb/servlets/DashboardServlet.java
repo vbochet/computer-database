@@ -76,8 +76,8 @@ public class DashboardServlet extends HttpServlet {
         try {
             page.setNbTotal(ComputerService.INSTANCE.getNbFound());
         } catch (ServiceException e) {
-            LOGGER.error("Error while retrieving the amount of computers in database", e);
-            throw(new ServletException("Error while retrieving the amount of computers in database", e));
+            LOGGER.error("Error while retrieving the number of computers in database", e);
+            throw(new ServletException("Error while retrieving the number of computers in database", e));
         }
         
         if (request.getParameter("search") != null) {
@@ -126,20 +126,16 @@ public class DashboardServlet extends HttpServlet {
 
 
         request.setAttribute("page", page);
-        LOGGER.info("Number of computers found in database : {}", page.getNbTotal());
-        LOGGER.info("Number of computers stored in computersList: {}", page.getContent().size());
-        LOGGER.info("Maximum page number: {}", page.getMaxPage());
-        LOGGER.info("Current page number: {}", page.getCurrentPage());
-        LOGGER.info("Number of computers per page: {}", page.getNbPerPage());
-        LOGGER.info("Page elements ordered by: {}", page.getOrderBy());
-        LOGGER.info("Page elements order desc: {}", page.getOrderDesc());
+        LOGGER.debug("Number of computers found in database : {}", page.getNbTotal());
+        LOGGER.debug("Number of computers stored in computersList: {}", page.getContent().size());
+        LOGGER.debug("Maximum page number: {}", page.getMaxPage());
+        LOGGER.debug("Current page number: {}", page.getCurrentPage());
+        LOGGER.debug("Number of computers per page: {}", page.getNbPerPage());
+        LOGGER.debug("Page elements ordered by: {}", page.getOrderBy());
+        LOGGER.debug("Page elements order desc: {}", page.getOrderDesc());
 
-        try {
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/dashboard.jsp");
-            rd.forward(request,response);
-       } catch (Exception e) { 
-           throw new ServletException(e);
-       }
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/dashboard.jsp");
+        rd.forward(request,response);
     }
 
 }
