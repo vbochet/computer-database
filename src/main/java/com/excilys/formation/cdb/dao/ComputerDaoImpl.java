@@ -38,9 +38,11 @@ public enum ComputerDaoImpl implements ComputerDao {
     private final String COUNT_REQUEST   = "SELECT COUNT(computer.id) FROM computer;";
     private final String COUNT_SEARCH_REQUEST   = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.name LIKE ? OR company.name LIKE ?;";
 
+    private final String DESC = " DESC";
+    
     @Override
     public Computer create(Computer computer) throws DaoException {
-        LOGGER.debug("Creating computer " + computer);
+        LOGGER.debug("Creating computer {}", computer);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -51,15 +53,16 @@ public enum ComputerDaoImpl implements ComputerDao {
             executeCreateRequest(connection, preparedStatement, resultSet, computer);
             connection.commit();
         } catch (SQLException e) {
+            String errorMsg = "SQL error in computer creation";
             try {
                 connection.rollback();
             } catch (SQLException e1) {
-                LOGGER.error("SQL error in computer creation", e1);
-                throw(new DaoException("SQL error in computer creation", e1));
+                LOGGER.error(errorMsg, e1);
+                throw(new DaoException(errorMsg, e1));
             }
 
-            LOGGER.error("SQL error in computer creation", e);
-            throw(new DaoException("SQL error in computer creation", e));
+            LOGGER.error(errorMsg, e);
+            throw(new DaoException(errorMsg, e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -105,7 +108,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 
     @Override
     public Optional<Computer> read(long id) throws DaoException {
-        LOGGER.debug("Showing info from computer n°" + id);
+        LOGGER.debug("Showing info from computer n°{}", id);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -115,8 +118,9 @@ public enum ComputerDaoImpl implements ComputerDao {
         try {
             optComputer = executeReadRequest(connection, preparedStatement, resultSet, id);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer reading", e);
-            throw(new DaoException("SQL error in computer reading", e));
+            String errorMsg = "SQL error in computer reading";
+            LOGGER.error(errorMsg, e);
+            throw(new DaoException(errorMsg, e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -140,7 +144,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 
     @Override
     public Computer update(Computer computer) throws DaoException {
-        LOGGER.debug("Updating computer " + computer);
+        LOGGER.debug("Updating computer {}", computer);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -148,18 +152,19 @@ public enum ComputerDaoImpl implements ComputerDao {
 
         try {
             connection.setAutoCommit(false);
-            executeUpdateRequest(connection, preparedStatement, resultSet, computer);
+            executeUpdateRequest(connection, preparedStatement, computer);
             connection.commit();
         } catch (SQLException e) {
+            String errorMsg = "SQL error in computer update";
             try {
                 connection.rollback();
             } catch (SQLException e1) {
-                LOGGER.error("SQL error in computer update", e1);
-                throw(new DaoException("SQL error in computer update", e1));
+                LOGGER.error(errorMsg, e1);
+                throw(new DaoException(errorMsg, e1));
             }
 
-            LOGGER.error("SQL error in computer update", e);
-            throw(new DaoException("SQL error in computer update", e));
+            LOGGER.error(errorMsg, e);
+            throw(new DaoException(errorMsg, e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -167,7 +172,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         return computer;
     }
 
-    private int executeUpdateRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, Computer computer) throws SQLException {
+    private int executeUpdateRequest(Connection connection, PreparedStatement preparedStatement, Computer computer) throws SQLException {
         Company company = computer.getCompany();
         LocalDate intro, discont;
 
@@ -202,7 +207,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 
     @Override
     public void delete(long id) throws DaoException {
-        LOGGER.debug("Deleting computer n°" + id);
+        LOGGER.debug("Deleting computer n°{}", id);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -212,15 +217,16 @@ public enum ComputerDaoImpl implements ComputerDao {
             executeDeleteRequest(connection, preparedStatement, id);
             connection.commit();
         } catch (SQLException e) {
+            String errorMsg = "SQL error in computer deletion";
             try {
                 connection.rollback();
             } catch (SQLException e1) {
-                LOGGER.error("SQL error in computer deletion", e1);
-                throw(new DaoException("SQL error in computer deletion", e1));
+                LOGGER.error(errorMsg, e1);
+                throw(new DaoException(errorMsg, e1));
             }
 
-            LOGGER.error("SQL error in computer deletion", e);
-            throw(new DaoException("SQL error in computer deletion", e));
+            LOGGER.error(errorMsg, e);
+            throw(new DaoException(errorMsg, e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, null);
         }
@@ -228,7 +234,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 
     @Override
     public void deleteMany(List<Long> ids) throws DaoException {
-        LOGGER.debug("Deleting computers n°" + ids);
+        LOGGER.debug("Deleting computers n°{}", ids);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -238,20 +244,21 @@ public enum ComputerDaoImpl implements ComputerDao {
 
             for (long id : ids) {
                 executeDeleteRequest(connection, preparedStatement, id);
-                LOGGER.debug("Deletion of computers n°" + id);
+                LOGGER.debug("Deletion of computers n°{}", id);
             }
 
             connection.commit();
         } catch (SQLException e) {
+            String errorMsg = "SQL error in computer list deletion";
             try {
                 connection.rollback();
             } catch (SQLException e1) {
-                LOGGER.error("SQL error in computer list deletion", e1);
-                throw(new DaoException("SQL error in computer list deletion", e1));
+                LOGGER.error(errorMsg, e1);
+                throw(new DaoException(errorMsg, e1));
             }
 
-            LOGGER.error("SQL error in computer list deletion", e);
-            throw(new DaoException("SQL error in computer list deletion", e));
+            LOGGER.error(errorMsg, e);
+            throw(new DaoException(errorMsg, e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, null);
         }
@@ -265,7 +272,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 
     @Override
     public List<Computer> list(int offset, int nbToPrint, String order, boolean desc) throws DaoException {
-        LOGGER.debug("Listing computers from " + offset + " (" + nbToPrint + " per page) ordered by " + order);
+        LOGGER.debug("Listing computers from {} ({} per page) ordered by {}", offset, nbToPrint, order);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -275,8 +282,9 @@ public enum ComputerDaoImpl implements ComputerDao {
         try {
             executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, order, desc, computersList);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer listing", e);
-            throw(new DaoException("SQL error in computer listing", e));
+            String errorMsg = "SQL error in computer listing";
+            LOGGER.error(errorMsg, e);
+            throw(new DaoException(errorMsg, e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -286,13 +294,13 @@ public enum ComputerDaoImpl implements ComputerDao {
 
     private void executeListRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, String order, boolean desc, List<Computer> computersList) throws SQLException {
         String field, req;
-        
+
         switch (ComputerOrderBy.parse(order)) {
-            case ID: field = ComputerOrderBy.ID.toString() + (desc ? " DESC" : ""); break;
-            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? " DESC" : ""); break;
-            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? " DESC" : ""); break;
-            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? " DESC" : ""); break;
-            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? " DESC" : ""); break;
+            case ID: field = ComputerOrderBy.ID.toString() + (desc ? DESC : ""); break;
+            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? DESC : ""); break;
+            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? DESC : ""); break;
+            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? DESC : ""); break;
+            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? DESC : ""); break;
             default: field = ComputerOrderBy.ID.toString();
         }
 
@@ -310,7 +318,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 
     @Override
     public List<Computer> listSearch(int offset, int nbToPrint, String order, boolean desc, String search) throws DaoException {
-        LOGGER.debug("Listing search result from search \"" + search + "\" beginning at " + offset + " (" + nbToPrint + " per page) ordered by " + order);
+        LOGGER.debug("Listing search result from search \"{}\" beginning at {} ({} per page) ordered by {}", search, offset, nbToPrint, order);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -320,8 +328,9 @@ public enum ComputerDaoImpl implements ComputerDao {
         try {
             executeListSearchRequest(connection, preparedStatement, resultSet, offset, nbToPrint, order, desc, search, computersList);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in search result listing", e);
-            throw(new DaoException("SQL error in search result listing", e));
+            String errorMsg = "SQL error in search result listing";
+            LOGGER.error(errorMsg, e);
+            throw(new DaoException(errorMsg, e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -333,11 +342,11 @@ public enum ComputerDaoImpl implements ComputerDao {
         String field, req;
         
         switch (ComputerOrderBy.parse(order)) {
-            case ID: field = ComputerOrderBy.ID.toString() + (desc ? " DESC" : ""); break;
-            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? " DESC" : ""); break;
-            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? " DESC" : ""); break;
-            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? " DESC" : ""); break;
-            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? " DESC" : ""); break;
+            case ID: field = ComputerOrderBy.ID.toString() + (desc ? DESC : ""); break;
+            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? DESC : ""); break;
+            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? DESC : ""); break;
+            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? DESC : ""); break;
+            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? DESC : ""); break;
             default: field = ComputerOrderBy.ID.toString();
         }
 
@@ -371,8 +380,9 @@ public enum ComputerDaoImpl implements ComputerDao {
                 count = resultSet.getLong(1);
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer counting", e);
-            throw(new DaoException("SQL error in computer counting", e));
+            String errorMsg = "SQL error in computer counting";
+            LOGGER.error(errorMsg, e);
+            throw(new DaoException(errorMsg, e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, statement, resultSet);
         }
@@ -399,8 +409,9 @@ public enum ComputerDaoImpl implements ComputerDao {
                 count = resultSet.getLong(1);
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL error in search results counting", e);
-            throw(new DaoException("SQL error in search results counting", e));
+            String errorMsg = "SQL error in search results counting";
+            LOGGER.error(errorMsg, e);
+            throw(new DaoException(errorMsg, e));
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }

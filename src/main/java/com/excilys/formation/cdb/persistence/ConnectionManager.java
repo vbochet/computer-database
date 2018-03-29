@@ -24,6 +24,8 @@ public enum ConnectionManager {
     private String url;
 
     private HikariDataSource ds;
+    
+    private final String SQL_ERROR = "SQL error";
 
     ConnectionManager() {
         InputStream file = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE);
@@ -73,7 +75,7 @@ public enum ConnectionManager {
             connection = ds.getConnection();
             LOGGER.debug("New connection created to DB {}", url);
         } catch (SQLException e) {
-            LOGGER.error("SQL error", e);
+            LOGGER.error(SQL_ERROR, e);
         }
 
         return connection;
@@ -84,27 +86,27 @@ public enum ConnectionManager {
         if (resultSet != null) {
             try {
                 resultSet.close();
-                LOGGER.debug("Closed ResultSet " + resultSet);
+                LOGGER.debug("Closed ResultSet {}", resultSet);
             } catch (SQLException e) {
-                LOGGER.error("SQL error", e);
+                LOGGER.error(SQL_ERROR, e);
             }
         }
 
         if (statement != null) {
             try {
                 statement.close();
-                LOGGER.debug("Closed Statement " + statement);
+                LOGGER.debug("Closed Statement {}", statement);
             } catch (SQLException e) {
-                LOGGER.error("SQL error", e);
+                LOGGER.error(SQL_ERROR, e);
             }
         }
 
         if (connection != null) {
             try {
                 connection.close();
-                LOGGER.debug("Closed Connection " + connection);
+                LOGGER.debug("Closed Connection {}", connection);
             } catch (SQLException e) {
-                LOGGER.error("SQL error", e);
+                LOGGER.error(SQL_ERROR, e);
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.excilys.formation.cdb.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public enum CompanyService {
             }
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     public Optional<Company> getById(long companyId) throws ServiceException {

@@ -2,6 +2,7 @@ package com.excilys.formation.cdb.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ public enum ComputerService {
             }
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     public List<Computer> getSearchList(int offset, int nbToPrint, String order, boolean desc, String search) throws ServiceException {
@@ -42,7 +43,7 @@ public enum ComputerService {
             }
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     public Optional<Computer> getById(long id) throws ServiceException {

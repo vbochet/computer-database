@@ -264,7 +264,7 @@ public class Cli {
         LOGGER.debug("User choice: Update computer");
         long id;
         Computer computer;
-        Optional<Computer> optComputer = Optional.empty();
+        Optional<Computer> optComputer;
 
         id = getId(scanner);
         LOGGER.debug("Computer's id: {}", id);

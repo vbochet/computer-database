@@ -13,10 +13,7 @@ public enum ComputerValidator {
 
     public boolean validateComputer(Computer computer) {
         if (validateComputerName(computer)) {
-            if (validateComputerDates(computer)) {
-                return true;
-            }
-            return false;
+            return validateComputerDates(computer);
         }
 
         return false;

@@ -96,29 +96,43 @@ public class Computer {
         if (other instanceof Computer) {
             Computer otherc = (Computer) other;
 
-            if (this.getId() == otherc.getId()) {
-                if (this.getName() == otherc.getName()) {
-                    if ((this.getIntroduced() == null && otherc.getIntroduced() == null)
-                        || (this.getIntroduced() != null && this.getIntroduced().equals(otherc.getIntroduced()))) {
-
-                        if ((this.getDiscontinued() == null && otherc.getDiscontinued() == null)
-                            || (this.getDiscontinued() != null && this.getDiscontinued().equals(otherc.getDiscontinued()))) {
-
-                            if ((this.getCompany() == null && otherc.getCompany() == null)
-                                || (this.getCompany() != null && this.getCompany().equals(otherc.getCompany()))) {
-
-                                return true;
-                            }
-                            return false;
-                        }
-                        return false;
-                    }
-                    return false;
-                }
-                return false;
-            }
-            return false;
+            return (this.sameId(otherc) && this.sameName(otherc) && this.sameIntroduced(otherc) && this.sameDiscontinued(otherc) && this.sameCompany(otherc));
         }
         return false;
+    }
+
+    private boolean sameId(Computer other) {
+        return this.getId() == other.getId();
+    }
+
+    private boolean sameName(Computer other) {
+        if (this.getName() == other.getName()) {
+            return true;
+        }
+
+        if (this.getName() != null) {
+            return this.getName().equals(other.getName());
+        }
+
+        if (other.getName() != null) {
+            return other.getName().equals(this.getName());
+        }
+        
+        return false;
+    }
+
+    private boolean sameIntroduced(Computer other) {
+        return (this.getIntroduced() == null && other.getIntroduced() == null)
+                || (this.getIntroduced() != null && this.getIntroduced().equals(other.getIntroduced()));
+    }
+
+    private boolean sameDiscontinued(Computer other) {
+        return (this.getDiscontinued() == null && other.getDiscontinued() == null)
+                || (this.getDiscontinued() != null && this.getDiscontinued().equals(other.getDiscontinued()));
+    }
+
+    private boolean sameCompany(Computer other) {
+        return (this.getCompany() == null && other.getCompany() == null)
+                || (this.getCompany() != null && this.getCompany().equals(other.getCompany()));
     }
 }
