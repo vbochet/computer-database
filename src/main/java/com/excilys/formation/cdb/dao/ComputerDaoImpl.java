@@ -127,7 +127,7 @@ public enum ComputerDaoImpl implements ComputerDao {
     private Optional<Computer> executeReadRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, long id) throws SQLException {
         Optional<Computer> optComputer = Optional.empty();
 
-        preparedStatement = connection.prepareStatement(READ_REQUEST);
+        preparedStatement = connection.prepareStatement(REQUEST_SELECT_FROM_JOIN + READ_REQUEST);
         preparedStatement.setLong(1, id);
         resultSet = preparedStatement.executeQuery();
 
