@@ -286,7 +286,8 @@ public enum ComputerDaoImpl implements ComputerDao {
     }
 
     private void executeListRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, String order, boolean desc, List<Computer> computersList) throws SQLException {
-        String field, req;
+        String field;
+        StringBuilder req = new StringBuilder();
 
         switch (ComputerOrderBy.parse(order)) {
             case ID: field = ComputerOrderBy.ID.toString() + (desc ? DESC : ""); break;
@@ -297,8 +298,8 @@ public enum ComputerDaoImpl implements ComputerDao {
             default: field = ComputerOrderBy.ID.toString();
         }
 
-        req = REQUEST_SELECT_FROM_JOIN + "ORDER BY " + field + LIST_REQUEST;
-        preparedStatement = connection.prepareStatement(req);
+        req.append(REQUEST_SELECT_FROM_JOIN).append("ORDER BY ").append(field).append(LIST_REQUEST);
+        preparedStatement = connection.prepareStatement(req.toString());
         
         preparedStatement.setInt(1, nbToPrint);
         preparedStatement.setLong(2, offset);
@@ -330,7 +331,8 @@ public enum ComputerDaoImpl implements ComputerDao {
     }
 
     private void executeListSearchRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, String order, boolean desc, String search, List<Computer> computersList) throws SQLException {
-        String field, req;
+        String field;
+        StringBuilder req;
         
         switch (ComputerOrderBy.parse(order)) {
             case ID: field = ComputerOrderBy.ID.toString() + (desc ? DESC : ""); break;
@@ -341,8 +343,8 @@ public enum ComputerDaoImpl implements ComputerDao {
             default: field = ComputerOrderBy.ID.toString();
         }
 
-        req = REQUEST_SELECT_FROM_JOIN + " WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY " + field + LIST_REQUEST;
-        preparedStatement = connection.prepareStatement(req);
+        req.append(REQUEST_SELECT_FROM_JOIN).append(" WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY ").append(field).append(LIST_REQUEST);
+        preparedStatement = connection.prepareStatement(req.toString());
 
         preparedStatement.setString(1, search + "%");
         preparedStatement.setString(2, search + "%");
