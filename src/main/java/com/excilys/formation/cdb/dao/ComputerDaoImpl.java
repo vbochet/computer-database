@@ -332,7 +332,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 
     private void executeListSearchRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, String order, boolean desc, String search, List<Computer> computersList) throws SQLException {
         String field;
-        StringBuilder req;
+        StringBuilder req = new StringBuilder();
         
         switch (ComputerOrderBy.parse(order)) {
             case ID: field = ComputerOrderBy.ID.toString() + (desc ? DESC : ""); break;
