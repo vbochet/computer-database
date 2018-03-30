@@ -39,7 +39,12 @@ public enum ComputerDaoImpl implements ComputerDao {
     private final String COUNT_SEARCH_REQUEST   = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.name LIKE ? OR company.name LIKE ?;";
 
     private final String DESC = " DESC";
-    
+
+    private void DaoExceptionThrower(String errorMsg, Exception e) throws DaoException {
+        LOGGER.error(errorMsg, e);
+        throw(new DaoException(errorMsg, e));
+    }
+
     @Override
     public Computer create(Computer computer) throws DaoException {
         LOGGER.debug("Creating computer {}", computer);
@@ -57,12 +62,10 @@ public enum ComputerDaoImpl implements ComputerDao {
             try {
                 connection.rollback();
             } catch (SQLException e1) {
-                LOGGER.error(errorMsg, e1);
-                throw(new DaoException(errorMsg, e1));
+                DaoExceptionThrower(errorMsg, e1);
             }
 
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower(errorMsg, e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -118,9 +121,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         try {
             optComputer = executeReadRequest(connection, preparedStatement, resultSet, id);
         } catch (SQLException e) {
-            String errorMsg = "SQL error in computer reading";
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower("SQL error in computer reading", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -159,12 +160,10 @@ public enum ComputerDaoImpl implements ComputerDao {
             try {
                 connection.rollback();
             } catch (SQLException e1) {
-                LOGGER.error(errorMsg, e1);
-                throw(new DaoException(errorMsg, e1));
+                DaoExceptionThrower(errorMsg, e1);
             }
 
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower(errorMsg, e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -221,12 +220,10 @@ public enum ComputerDaoImpl implements ComputerDao {
             try {
                 connection.rollback();
             } catch (SQLException e1) {
-                LOGGER.error(errorMsg, e1);
-                throw(new DaoException(errorMsg, e1));
+                DaoExceptionThrower(errorMsg, e1);
             }
 
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower(errorMsg, e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, null);
         }
@@ -253,12 +250,10 @@ public enum ComputerDaoImpl implements ComputerDao {
             try {
                 connection.rollback();
             } catch (SQLException e1) {
-                LOGGER.error(errorMsg, e1);
-                throw(new DaoException(errorMsg, e1));
+                DaoExceptionThrower(errorMsg, e1);
             }
 
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower(errorMsg, e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, null);
         }
@@ -282,9 +277,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         try {
             executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, order, desc, computersList);
         } catch (SQLException e) {
-            String errorMsg = "SQL error in computer listing";
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower("SQL error in computer listing", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -328,9 +321,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         try {
             executeListSearchRequest(connection, preparedStatement, resultSet, offset, nbToPrint, order, desc, search, computersList);
         } catch (SQLException e) {
-            String errorMsg = "SQL error in search result listing";
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower("SQL error in search result listing", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -380,9 +371,7 @@ public enum ComputerDaoImpl implements ComputerDao {
                 count = resultSet.getLong(1);
             }
         } catch (SQLException e) {
-            String errorMsg = "SQL error in computer counting";
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower("SQL error in computer counting", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, statement, resultSet);
         }
@@ -409,9 +398,7 @@ public enum ComputerDaoImpl implements ComputerDao {
                 count = resultSet.getLong(1);
             }
         } catch (SQLException e) {
-            String errorMsg = "SQL error in search results counting";
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower("SQL error in search results counting", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }

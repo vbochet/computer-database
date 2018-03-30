@@ -30,6 +30,11 @@ public enum CompanyDaoImpl implements CompanyDao {
     private final String DELETE_COMPUTER_REQUEST  = "DELETE FROM computer WHERE company_id = ?;";
     private final String COUNT_REQUEST  = "SELECT COUNT(company.id) FROM company;";
 
+    private void DaoExceptionThrower(String errorMsg, Exception e) throws DaoException {
+        LOGGER.error(errorMsg, e);
+        throw(new DaoException(errorMsg, e));
+    }
+
     @Override
     public List<Company> list(int offset, int nbToPrint) throws DaoException {
         LOGGER.debug("Listing companies from {} ({} per page)", offset, nbToPrint);
@@ -42,9 +47,7 @@ public enum CompanyDaoImpl implements CompanyDao {
         try {
             executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, companiesList);
         } catch (SQLException e) {
-            String errorMsg = "SQL error in companies listing";
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower("SQL error in companies listing" ,e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -65,7 +68,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 
     @Override
     public Optional<Company> read(long companyId) throws DaoException {
-        LOGGER.debug("Showing info from company n°" + companyId);
+        LOGGER.debug("Showing info from company n°{}", companyId);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -75,9 +78,7 @@ public enum CompanyDaoImpl implements CompanyDao {
         try {
             optCompany = executeReadRequest(connection, preparedStatement, resultSet, companyId);
         } catch (SQLException e) {
-            String errorMsg = "SQL error in company reading";
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower("SQL error in company reading", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -109,9 +110,7 @@ public enum CompanyDaoImpl implements CompanyDao {
         try {
             optCompany = executeFindByNameRequest(connection, preparedStatement, resultSet, companyName);
         } catch (SQLException e) {
-            String errorMsg = "SQL error in company reading";
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower("SQL error in company reading", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -133,7 +132,7 @@ public enum CompanyDaoImpl implements CompanyDao {
 
     @Override
     public void deleteById(long companyId) throws DaoException {
-        LOGGER.debug("Deleting company n°" + companyId);
+        LOGGER.debug("Deleting company n°{}", companyId);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -148,12 +147,9 @@ public enum CompanyDaoImpl implements CompanyDao {
             try {
                 connection.rollback();
             } catch (SQLException e1) {
-                LOGGER.error(errorMsg, e1);
-                throw(new DaoException(errorMsg, e1));
+                DaoExceptionThrower(errorMsg, e1);
             }
-
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower(errorMsg, e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, null);
         }
@@ -187,9 +183,7 @@ public enum CompanyDaoImpl implements CompanyDao {
                 count = resultSet.getLong(1);
             }
         } catch (SQLException e) {
-            String errorMsg = "SQL error in companies counting";
-            LOGGER.error(errorMsg, e);
-            throw(new DaoException(errorMsg, e));
+            DaoExceptionThrower("SQL error in companies counting", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, statement, resultSet);
         }
