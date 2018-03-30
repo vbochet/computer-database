@@ -44,6 +44,16 @@ public enum ComputerDaoImpl implements ComputerDao {
         LOGGER.error(errorMsg, e);
         throw(new DaoException(errorMsg, e));
     }
+    
+    private void rollbackAndThrow(Connection connection, String errorMsg, Exception e) throws DaoException {
+        try {
+            connection.rollback();
+        } catch (SQLException e1) {
+            DaoExceptionThrower(errorMsg, e1);
+        }
+
+        DaoExceptionThrower(errorMsg, e);
+    }
 
     @Override
     public Computer create(Computer computer) throws DaoException {
@@ -56,14 +66,7 @@ public enum ComputerDaoImpl implements ComputerDao {
             executeCreateRequest(connection, computer);
             connection.commit();
         } catch (SQLException e) {
-            String errorMsg = "SQL error in computer creation";
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                DaoExceptionThrower(errorMsg, e1);
-            }
-
-            DaoExceptionThrower(errorMsg, e);
+            rollbackAndThrow(connection, "SQL error in computer creation", e);
         } finally {
             ConnectionManager.INSTANCE.closeConnection(connection);
         }
@@ -154,14 +157,7 @@ public enum ComputerDaoImpl implements ComputerDao {
             executeUpdateRequest(connection, computer);
             connection.commit();
         } catch (SQLException e) {
-            String errorMsg = "SQL error in computer update";
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                DaoExceptionThrower(errorMsg, e1);
-            }
-
-            DaoExceptionThrower(errorMsg, e);
+            rollbackAndThrow(connection, "SQL error in computer update", e);
         } finally {
             ConnectionManager.INSTANCE.closeConnection(connection);
         }
@@ -213,14 +209,7 @@ public enum ComputerDaoImpl implements ComputerDao {
             executeDeleteRequest(connection, id);
             connection.commit();
         } catch (SQLException e) {
-            String errorMsg = "SQL error in computer deletion";
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                DaoExceptionThrower(errorMsg, e1);
-            }
-
-            DaoExceptionThrower(errorMsg, e);
+            rollbackAndThrow(connection, "SQL error in computer deletion", e);
         } finally {
             ConnectionManager.INSTANCE.closeConnection(connection);
         }
@@ -242,14 +231,7 @@ public enum ComputerDaoImpl implements ComputerDao {
 
             connection.commit();
         } catch (SQLException e) {
-            String errorMsg = "SQL error in computer list deletion";
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                DaoExceptionThrower(errorMsg, e1);
-            }
-
-            DaoExceptionThrower(errorMsg, e);
+            rollbackAndThrow(connection, "SQL error in computer list deletion", e);
         } finally {
             ConnectionManager.INSTANCE.closeConnection(connection);
         }
