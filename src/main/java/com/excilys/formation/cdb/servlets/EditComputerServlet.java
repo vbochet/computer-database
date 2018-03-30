@@ -2,7 +2,7 @@ package com.excilys.formation.cdb.servlets;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -55,18 +55,7 @@ public class EditComputerServlet extends ManageComputerServlet {
             throw(new ServletException(errorMsg, e));
         }
 
-        if (res != null) {
-            request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(res));
-            
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/computerAdded.jsp");
-            rd.forward(request,response);
-        } else {
-            request.setAttribute("error", true);
-            request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(computer));
-
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/editComputer.jsp");
-            rd.forward(request,response);
-        }
+        checkAndRedirect(request, response, computer, res, "/WEB-INF/JSP/editComputer.jsp");
     }
 
     @Override
@@ -84,12 +73,16 @@ public class EditComputerServlet extends ManageComputerServlet {
         }
 
         try {
-            computer = ComputerService.INSTANCE.getById(id).get();
-        } catch (NoSuchElementException e) {
-            LOGGER.error("No computer matching id {}", id, e);
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/404.jsp");
-            rd.forward(request,response);
-            return;
+            Optional<Computer> optCpt = ComputerService.INSTANCE.getById(id);
+
+            if (optCpt.isPresent()) {
+                computer = optCpt.get();
+            } else {
+                LOGGER.error("No computer matching id {}", id);
+                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/404.jsp");
+                rd.forward(request,response);
+                return;
+            }
         } catch (ServiceException e) {
             LOGGER.error("Error while retrieving computer n°{}", id, e);
             throw(new ServletException("Error while retrieving computer n°" + id, e));

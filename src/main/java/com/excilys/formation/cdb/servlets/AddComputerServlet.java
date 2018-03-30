@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.formation.cdb.exceptions.ServiceException;
-import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.ComputerService;
 
@@ -40,18 +39,7 @@ public class AddComputerServlet extends ManageComputerServlet {
             throw(new ServletException("Error while creating computer", e));
         }
 
-        if (res != null) {
-            request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(res));
-
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/computerAdded.jsp");
-            rd.forward(request,response);
-        } else {
-            request.setAttribute("error", true);
-            request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(computer));
-
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/addComputer.jsp");
-            rd.forward(request,response);
-        }
+        checkAndRedirect(request, response, computer, res, "/WEB-INF/JSP/addComputer.jsp");
     }
 
     @Override

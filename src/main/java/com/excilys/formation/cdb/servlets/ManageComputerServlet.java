@@ -1,5 +1,6 @@
 package com.excilys.formation.cdb.servlets;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.time.format.DateTimeFormatter;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import com.excilys.formation.cdb.dto.CompanyDto;
 import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.mapper.CompanyMapper;
+import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.CompanyService;
@@ -85,5 +88,21 @@ public class ManageComputerServlet extends HttpServlet {
         companyList.forEach(companyConsumer);
         
         request.setAttribute("companyList", companyDtoList);
+    }
+    
+    protected void checkAndRedirect(HttpServletRequest request, HttpServletResponse response, Computer computer, Computer res, String errorRedirectUrl) throws ServletException, IOException {
+        if (res != null) {
+            request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(res));
+            
+            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/computerAdded.jsp");
+            rd.forward(request,response);
+        } else {
+            request.setAttribute("error", true);
+            request.setAttribute("computer", ComputerMapper.INSTANCE.computerToComputerDto(computer));
+        
+            RequestDispatcher rd;
+            rd = request.getRequestDispatcher(errorRedirectUrl);
+            rd.forward(request,response);
+        }
     }
 }
