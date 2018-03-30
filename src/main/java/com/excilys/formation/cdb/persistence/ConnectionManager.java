@@ -110,4 +110,8 @@ public enum ConnectionManager {
             }
         }
     }
+
+    public void closeConnection(Connection connection) {
+        closeElements(connection, null, null);
+    }
 }

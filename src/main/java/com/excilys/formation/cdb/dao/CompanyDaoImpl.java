@@ -40,29 +40,29 @@ public enum CompanyDaoImpl implements CompanyDao {
         LOGGER.debug("Listing companies from {} ({} per page)", offset, nbToPrint);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
         List<Company> companiesList = new ArrayList<>();
 
         try {
-            executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, companiesList);
+            executeListRequest(connection, offset, nbToPrint, companiesList);
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in companies listing" ,e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
+            ConnectionManager.INSTANCE.closeConnection(connection);
         }
 
         return companiesList;
     }
 
-    private void executeListRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, List<Company> companiesList) throws SQLException {
-        preparedStatement = connection.prepareStatement(LIST_REQUEST);
-        preparedStatement.setInt(1, nbToPrint);
-        preparedStatement.setInt(2, offset);
-        resultSet = preparedStatement.executeQuery();
+    private void executeListRequest(Connection connection, int offset, int nbToPrint, List<Company> companiesList) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(LIST_REQUEST);) {
+            preparedStatement.setInt(1, nbToPrint);
+            preparedStatement.setInt(2, offset);
 
-        while (resultSet.next()) {
-            companiesList.add(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
+            try (ResultSet resultSet = preparedStatement.executeQuery();) {
+                while (resultSet.next()) {
+                    companiesList.add(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
+                }
+            }
         }
     }
 
@@ -71,31 +71,30 @@ public enum CompanyDaoImpl implements CompanyDao {
         LOGGER.debug("Showing info from company n°{}", companyId);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
         Optional<Company> optCompany = Optional.empty();
 
         try {
-            optCompany = executeReadRequest(connection, preparedStatement, resultSet, companyId);
+            optCompany = executeReadRequest(connection, companyId);
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in company reading", e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
+            ConnectionManager.INSTANCE.closeConnection(connection);
         }
 
         return optCompany;
     }
 
-    private Optional<Company> executeReadRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, long id) throws SQLException {
-        preparedStatement = connection.prepareStatement(READ_REQUEST);
-        preparedStatement.setLong(1, id);
-        resultSet = preparedStatement.executeQuery();
+    private Optional<Company> executeReadRequest(Connection connection, long id) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(READ_REQUEST);) {
+            preparedStatement.setLong(1, id);
 
-        if (resultSet.first()) {
-            return Optional.of(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
+            try (ResultSet resultSet = preparedStatement.executeQuery();) {
+                if (resultSet.first()) {
+                    return Optional.of(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
+                }
+            }
+            return Optional.empty();
         }
-
-        return Optional.empty();
     }
 
     @Override
@@ -103,31 +102,30 @@ public enum CompanyDaoImpl implements CompanyDao {
         LOGGER.debug("Showing info from company {}", companyName);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
         Optional<Company> optCompany = Optional.empty();
 
         try {
-            optCompany = executeFindByNameRequest(connection, preparedStatement, resultSet, companyName);
+            optCompany = executeFindByNameRequest(connection, companyName);
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in company reading", e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
+            ConnectionManager.INSTANCE.closeConnection(connection);
         }
 
         return optCompany;
     }
 
-    private Optional<Company> executeFindByNameRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, String name) throws SQLException {
-        preparedStatement = connection.prepareStatement(FIND_BY_NAME_REQUEST);
-        preparedStatement.setString(1, name);
-        resultSet = preparedStatement.executeQuery();
+    private Optional<Company> executeFindByNameRequest(Connection connection, String name) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NAME_REQUEST);) {
+            preparedStatement.setString(1, name);
 
-        if (resultSet.first()) {
-            return Optional.of(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
+            try (ResultSet resultSet = preparedStatement.executeQuery();) {
+                if (resultSet.first()) {
+                    return Optional.of(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
+                }
+            }
+            return Optional.empty();
         }
-
-        return Optional.empty();
     }
 
     @Override
@@ -135,12 +133,11 @@ public enum CompanyDaoImpl implements CompanyDao {
         LOGGER.debug("Deleting company n°{}", companyId);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement preparedStatement = null;
 
         try {
             connection.setAutoCommit(false);
-            executeDeleteComputerRequest(connection, preparedStatement, companyId);
-            executeDeleteCompanyRequest(connection, preparedStatement, companyId);
+            executeDeleteComputerRequest(connection, companyId);
+            executeDeleteCompanyRequest(connection, companyId);
             connection.commit();
         } catch (SQLException e) {
             String errorMsg = "SQL error in company deletion";
@@ -151,20 +148,22 @@ public enum CompanyDaoImpl implements CompanyDao {
             }
             DaoExceptionThrower(errorMsg, e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, null);
+            ConnectionManager.INSTANCE.closeConnection(connection);
         }
     }
 
-    private void executeDeleteCompanyRequest(Connection connection, PreparedStatement preparedStatement, Long id) throws SQLException {
-        preparedStatement = connection.prepareStatement(DELETE_COMPANY_REQUEST);
-        preparedStatement.setLong(1, id);
-        preparedStatement.executeUpdate();
+    private void executeDeleteCompanyRequest(Connection connection, Long id) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_COMPANY_REQUEST);) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+        }
     }
 
-    private void executeDeleteComputerRequest(Connection connection, PreparedStatement preparedStatement, Long id) throws SQLException {
-        preparedStatement = connection.prepareStatement(DELETE_COMPUTER_REQUEST);
-        preparedStatement.setLong(1, id);
-        preparedStatement.executeUpdate();
+    private void executeDeleteComputerRequest(Connection connection, Long id) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_COMPUTER_REQUEST);) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+        }
     }
 
     @Override
