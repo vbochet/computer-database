@@ -38,101 +38,109 @@ public enum ComputerDaoImpl implements ComputerDao {
     private final String COUNT_REQUEST   = "SELECT COUNT(computer.id) FROM computer;";
     private final String COUNT_SEARCH_REQUEST   = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.name LIKE ? OR company.name LIKE ?;";
 
+    private final String DESC = " DESC";
+
+    private void DaoExceptionThrower(String errorMsg, Exception e) throws DaoException {
+        LOGGER.error(errorMsg, e);
+        throw(new DaoException(errorMsg, e));
+    }
+    
+    private void rollbackAndThrow(Connection connection, String errorMsg, Exception e) throws DaoException {
+        try {
+            connection.rollback();
+        } catch (SQLException e1) {
+            DaoExceptionThrower(errorMsg, e1);
+        }
+
+        DaoExceptionThrower(errorMsg, e);
+    }
+
     @Override
     public Computer create(Computer computer) throws DaoException {
-        LOGGER.info("Creating computer " + computer);
+        LOGGER.debug("Creating computer {}", computer);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
 
         try {
             connection.setAutoCommit(false);
-            executeCreateRequest(connection, preparedStatement, resultSet, computer);
+            executeCreateRequest(connection, computer);
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                LOGGER.error("SQL error in computer creation", e1);
-                throw(new DaoException("SQL error in computer creation", e1));
-            }
-
-            LOGGER.error("SQL error in computer creation", e);
-            throw(new DaoException("SQL error in computer creation", e));
+            rollbackAndThrow(connection, "SQL error in computer creation", e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
+            ConnectionManager.INSTANCE.closeConnection(connection);
         }
 
         return computer;
     }
 
-    private void executeCreateRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, Computer computer) throws SQLException {
+    private void executeCreateRequest(Connection connection, Computer computer) throws SQLException {
         Company company = computer.getCompany();
         LocalDate intro, discont;
 
-        preparedStatement = connection.prepareStatement(CREATE_REQUEST, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(CREATE_REQUEST, Statement.RETURN_GENERATED_KEYS); ) {
+    
+            preparedStatement.setString(1, computer.getName());
+    
+            intro = computer.getIntroduced();
+            if (intro == null) {
+                preparedStatement.setNull(2, java.sql.Types.DATE);
+            } else {
+                preparedStatement.setDate(2, Date.valueOf(intro));
+            }
+    
+            discont = computer.getDiscontinued();
+            if (discont == null) {
+                preparedStatement.setNull(3, java.sql.Types.DATE);
+            } else {
+                preparedStatement.setDate(3, Date.valueOf(discont));
+            }
+    
+            if (company == null) {
+                preparedStatement.setNull(4, java.sql.Types.BIGINT);
+            } else {
+                preparedStatement.setLong(4, company.getId());
+            }
+    
+            preparedStatement.executeUpdate();
 
-        preparedStatement.setString(1, computer.getName());
-
-        intro = computer.getIntroduced();
-        if (intro == null) {
-            preparedStatement.setNull(2, java.sql.Types.DATE);
-        } else {
-            preparedStatement.setDate(2, Date.valueOf(intro));
-        }
-
-        discont = computer.getDiscontinued();
-        if (discont == null) {
-            preparedStatement.setNull(3, java.sql.Types.DATE);
-        } else {
-            preparedStatement.setDate(3, Date.valueOf(discont));
-        }
-
-        if (company == null) {
-            preparedStatement.setNull(4, java.sql.Types.BIGINT);
-        } else {
-            preparedStatement.setLong(4, company.getId());
-        }
-
-        preparedStatement.executeUpdate();
-
-        resultSet = preparedStatement.getGeneratedKeys();
-        if (resultSet.first()) {
-            computer.setId(resultSet.getLong(1));
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
+                if (resultSet.first()) {
+                    computer.setId(resultSet.getLong(1));
+                }
+            }
         }
     }
 
     @Override
     public Optional<Computer> read(long id) throws DaoException {
-        LOGGER.info("Showing info from computer n°" + id);
+        LOGGER.debug("Showing info from computer n°{}", id);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
         Optional<Computer> optComputer = Optional.empty();
 
         try {
-            optComputer = executeReadRequest(connection, preparedStatement, resultSet, id);
+            optComputer = executeReadRequest(connection, id);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer reading", e);
-            throw(new DaoException("SQL error in computer reading", e));
+            DaoExceptionThrower("SQL error in computer reading", e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
+            ConnectionManager.INSTANCE.closeConnection(connection);
         }
 
         return optComputer;
     }
 
-    private Optional<Computer> executeReadRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, long id) throws SQLException {
+    private Optional<Computer> executeReadRequest(Connection connection, long id) throws SQLException {
         Optional<Computer> optComputer = Optional.empty();
 
-        preparedStatement = connection.prepareStatement(READ_REQUEST);
-        preparedStatement.setLong(1, id);
-        resultSet = preparedStatement.executeQuery();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(REQUEST_SELECT_FROM_JOIN + READ_REQUEST);) {
+            preparedStatement.setLong(1, id);
 
-        if (resultSet.first()) {
-            optComputer = Optional.of(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
+            try (ResultSet resultSet = preparedStatement.executeQuery();) {
+                if (resultSet.first()) {
+                    optComputer = Optional.of(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
+                }
+            }
         }
 
         return optComputer;
@@ -140,224 +148,197 @@ public enum ComputerDaoImpl implements ComputerDao {
 
     @Override
     public Computer update(Computer computer) throws DaoException {
-        LOGGER.info("Updating computer " + computer);
+        LOGGER.debug("Updating computer {}", computer);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
 
         try {
             connection.setAutoCommit(false);
-            executeUpdateRequest(connection, preparedStatement, resultSet, computer);
+            executeUpdateRequest(connection, computer);
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                LOGGER.error("SQL error in computer update", e1);
-                throw(new DaoException("SQL error in computer update", e1));
-            }
-
-            LOGGER.error("SQL error in computer update", e);
-            throw(new DaoException("SQL error in computer update", e));
+            rollbackAndThrow(connection, "SQL error in computer update", e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
+            ConnectionManager.INSTANCE.closeConnection(connection);
         }
 
         return computer;
     }
 
-    private int executeUpdateRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, Computer computer) throws SQLException {
+    private int executeUpdateRequest(Connection connection, Computer computer) throws SQLException {
         Company company = computer.getCompany();
         LocalDate intro, discont;
 
-        preparedStatement = connection.prepareStatement(UPDATE_REQUEST);
-
-        preparedStatement.setString(1, computer.getName());
-
-        intro = computer.getIntroduced();
-        if (intro == null) {
-            preparedStatement.setNull(2, java.sql.Types.DATE);
-        } else {
-            preparedStatement.setDate(2, Date.valueOf(intro));
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_REQUEST);) {
+            preparedStatement.setString(1, computer.getName());
+    
+            intro = computer.getIntroduced();
+            if (intro == null) {
+                preparedStatement.setNull(2, java.sql.Types.DATE);
+            } else {
+                preparedStatement.setDate(2, Date.valueOf(intro));
+            }
+    
+            discont = computer.getDiscontinued();
+            if (discont == null) {
+                preparedStatement.setNull(3, java.sql.Types.DATE);
+            } else {
+                preparedStatement.setDate(3, Date.valueOf(discont));
+            }
+    
+            if (company == null) {
+                preparedStatement.setNull(4, java.sql.Types.BIGINT);
+            } else {
+                preparedStatement.setLong(4, company.getId());
+            }
+    
+            preparedStatement.setLong(5, computer.getId());
+    
+            return preparedStatement.executeUpdate();
         }
-
-        discont = computer.getDiscontinued();
-        if (discont == null) {
-            preparedStatement.setNull(3, java.sql.Types.DATE);
-        } else {
-            preparedStatement.setDate(3, Date.valueOf(discont));
-        }
-
-        if (company == null) {
-            preparedStatement.setNull(4, java.sql.Types.BIGINT);
-        } else {
-            preparedStatement.setLong(4, company.getId());
-        }
-
-        preparedStatement.setLong(5, computer.getId());
-
-        return preparedStatement.executeUpdate();
     }
 
     @Override
     public void delete(long id) throws DaoException {
-        LOGGER.info("Deleting computer n°" + id);
+        LOGGER.debug("Deleting computer n°{}", id);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement preparedStatement = null;
 
         try {
             connection.setAutoCommit(false);
-            executeDeleteRequest(connection, preparedStatement, id);
+            executeDeleteRequest(connection, id);
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                LOGGER.error("SQL error in companies listing", e1);
-                throw(new DaoException("SQL error in companies listing", e1));
-            }
-
-            LOGGER.error("SQL error in computer deletion", e);
-            throw(new DaoException("SQL error in computer deletion", e));
+            rollbackAndThrow(connection, "SQL error in computer deletion", e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, null);
+            ConnectionManager.INSTANCE.closeConnection(connection);
         }
     }
 
     @Override
     public void deleteMany(List<Long> ids) throws DaoException {
-        LOGGER.info("Deleting computers n°" + ids);
+        LOGGER.debug("Deleting computers n°{}", ids);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement preparedStatement = null;
 
         try {
             connection.setAutoCommit(false);
 
             for (long id : ids) {
-                    executeDeleteRequest(connection, preparedStatement, id);
-                    LOGGER.info("Deletion of computers n°" + id);
+                executeDeleteRequest(connection, id);
+                LOGGER.debug("Deletion of computers n°{}", id);
             }
 
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                LOGGER.error("SQL error in computer list deletion", e1);
-                throw(new DaoException("SQL error in computer list deletion", e1));
-            }
-
-            LOGGER.error("SQL error in computer list deletion", e);
-            throw(new DaoException("SQL error in computer list deletion", e));
+            rollbackAndThrow(connection, "SQL error in computer list deletion", e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, null);
+            ConnectionManager.INSTANCE.closeConnection(connection);
         }
     }
 
-    private void executeDeleteRequest(Connection connection, PreparedStatement preparedStatement, Long id) throws SQLException {
-        preparedStatement = connection.prepareStatement(DELETE_REQUEST);
-        preparedStatement.setLong(1, id);
-        preparedStatement.executeUpdate();
+    private void executeDeleteRequest(Connection connection, Long id) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_REQUEST);) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+        }
     }
 
     @Override
     public List<Computer> list(int offset, int nbToPrint, String order, boolean desc) throws DaoException {
-        LOGGER.info("Listing computers from " + offset + " (" + nbToPrint + " per page) ordered by " + order);
+        LOGGER.debug("Listing computers from {} ({} per page) ordered by {}", offset, nbToPrint, order);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
         List<Computer> computersList = new ArrayList<>();
 
         try {
-            executeListRequest(connection, preparedStatement, resultSet, offset, nbToPrint, order, desc, computersList);
+            executeListRequest(connection, offset, nbToPrint, order, desc, computersList);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer listing", e);
-            throw(new DaoException("SQL error in computer listing", e));
+            DaoExceptionThrower("SQL error in computer listing", e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
+            ConnectionManager.INSTANCE.closeConnection(connection);
         }
 
         return computersList;
     }
 
-    private void executeListRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, String order, boolean desc, List<Computer> computersList) throws SQLException {
-        String field, req;
-        
+    private void executeListRequest(Connection connection, int offset, int nbToPrint, String order, boolean desc, List<Computer> computersList) throws SQLException {
+        String field;
+        StringBuilder req = new StringBuilder();
+
         switch (ComputerOrderBy.parse(order)) {
-            case ID: field = ComputerOrderBy.ID.toString() + (desc ? " DESC" : ""); break;
-            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? " DESC" : ""); break;
-            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? " DESC" : ""); break;
-            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? " DESC" : ""); break;
-            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? " DESC" : ""); break;
+            case ID: field = ComputerOrderBy.ID.toString() + (desc ? DESC : ""); break;
+            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? DESC : ""); break;
+            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? DESC : ""); break;
+            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? DESC : ""); break;
+            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? DESC : ""); break;
             default: field = ComputerOrderBy.ID.toString();
         }
 
-        req = REQUEST_SELECT_FROM_JOIN + "ORDER BY " + field + LIST_REQUEST;
-        preparedStatement = connection.prepareStatement(req);
-        
-        preparedStatement.setInt(1, nbToPrint);
-        preparedStatement.setLong(2, offset);
-        resultSet = preparedStatement.executeQuery();
+        req.append(REQUEST_SELECT_FROM_JOIN).append("ORDER BY ").append(field).append(LIST_REQUEST);
 
-        while (resultSet.next()) {
-            computersList.add(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
+        try (PreparedStatement preparedStatement = connection.prepareStatement(req.toString());) {
+            preparedStatement.setInt(1, nbToPrint);
+            preparedStatement.setLong(2, offset);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery();) {
+                while (resultSet.next()) {
+                    computersList.add(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
+                }
+            }
         }
     }
 
     @Override
     public List<Computer> listSearch(int offset, int nbToPrint, String order, boolean desc, String search) throws DaoException {
-        LOGGER.info("Listing computers from " + offset + " (" + nbToPrint + " per page) ordered by " + order);
+        LOGGER.debug("Listing search result from search \"{}\" beginning at {} ({} per page) ordered by {}", search, offset, nbToPrint, order);
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
         List<Computer> computersList = new ArrayList<>();
 
         try {
-            executeListSearchRequest(connection, preparedStatement, resultSet, offset, nbToPrint, order, desc, search, computersList);
+            executeListSearchRequest(connection, offset, nbToPrint, order, desc, search, computersList);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer listing", e);
-            throw(new DaoException("SQL error in computer listing", e));
+            DaoExceptionThrower("SQL error in search result listing", e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
+            ConnectionManager.INSTANCE.closeConnection(connection);
         }
 
         return computersList;
     }
 
-    private void executeListSearchRequest(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet, int offset, int nbToPrint, String order, boolean desc, String search, List<Computer> computersList) throws SQLException {
-        String field, req;
+    private void executeListSearchRequest(Connection connection, int offset, int nbToPrint, String order, boolean desc, String search, List<Computer> computersList) throws SQLException {
+        String field;
+        StringBuilder req = new StringBuilder();
         
         switch (ComputerOrderBy.parse(order)) {
-            case ID: field = ComputerOrderBy.ID.toString() + (desc ? " DESC" : ""); break;
-            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? " DESC" : ""); break;
-            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? " DESC" : ""); break;
-            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? " DESC" : ""); break;
-            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? " DESC" : ""); break;
+            case ID: field = ComputerOrderBy.ID.toString() + (desc ? DESC : ""); break;
+            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? DESC : ""); break;
+            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? DESC : ""); break;
+            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? DESC : ""); break;
+            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? DESC : ""); break;
             default: field = ComputerOrderBy.ID.toString();
         }
 
-        req = REQUEST_SELECT_FROM_JOIN + " WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY " + field + LIST_REQUEST;
-        preparedStatement = connection.prepareStatement(req);
+        req.append(REQUEST_SELECT_FROM_JOIN).append(" WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY ").append(field).append(LIST_REQUEST);
 
-        preparedStatement.setString(1, search + "%");
-        preparedStatement.setString(2, search + "%");
-        preparedStatement.setInt(3, nbToPrint);
-        preparedStatement.setLong(4, offset);
-        resultSet = preparedStatement.executeQuery();
-
-        while (resultSet.next()) {
-            computersList.add(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
+        try (PreparedStatement preparedStatement = connection.prepareStatement(req.toString());) {
+            preparedStatement.setString(1, search + "%");
+            preparedStatement.setString(2, search + "%");
+            preparedStatement.setInt(3, nbToPrint);
+            preparedStatement.setLong(4, offset);
+            
+            try (ResultSet resultSet = preparedStatement.executeQuery();) {
+                while (resultSet.next()) {
+                    computersList.add(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
+                }
+            }
         }
     }
 
     @Override
     public long count() throws DaoException {
-        LOGGER.info("Counting computers");
+        LOGGER.debug("Counting computers");
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         Statement statement = null;
@@ -371,8 +352,7 @@ public enum ComputerDaoImpl implements ComputerDao {
                 count = resultSet.getLong(1);
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer counting", e);
-            throw(new DaoException("SQL error in computer counting", e));
+            DaoExceptionThrower("SQL error in computer counting", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, statement, resultSet);
         }
@@ -381,7 +361,7 @@ public enum ComputerDaoImpl implements ComputerDao {
     }
 
     public long countSearch(String search) throws DaoException {
-        LOGGER.info("Counting computers");
+        LOGGER.debug("Counting search results");
 
         Connection connection = ConnectionManager.INSTANCE.getConnection();
         PreparedStatement preparedStatement = null;
@@ -399,8 +379,7 @@ public enum ComputerDaoImpl implements ComputerDao {
                 count = resultSet.getLong(1);
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL error in computer counting", e);
-            throw(new DaoException("SQL error in computer counting", e));
+            DaoExceptionThrower("SQL error in search results counting", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }

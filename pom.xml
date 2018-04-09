@@ -22,6 +22,7 @@
         <maven-compiler.version>3.1</maven-compiler.version>
         <tomcat.version>2.2</tomcat.version>
         <checkstyle.version>3.0.0</checkstyle.version>
+        <apache-commons.version>3.7</apache-commons.version>
 
         <!-- test plugins versions -->
         <junit.version>4.12</junit.version>
@@ -58,37 +59,43 @@
                 </configuration>
             </plugin>
 
-			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>${tomcat.version}</version>
-				<configuration>
-					<maven.tomcat.url>http://localhost:8080/manager/text</maven.tomcat.url>
-					<server>TomcatServer</server>
-					<path>/computer-database</path>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>${tomcat.version}</version>
+                <configuration>
+                    <maven.tomcat.url>http://localhost:8080/manager/text</maven.tomcat.url>
+                    <server>TomcatServer</server>
+                    <path>/computer-database</path>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>${checkstyle.version}</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>checkstyle</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>checkstyle</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${apache-commons.version}</version>
+        </dependency>
+
         <!-- tests -->
         <dependency>
             <groupId>junit</groupId>
@@ -103,7 +110,7 @@
             <scope>test</scope>
         </dependency>
 
-		<!-- logging -->
+        <!-- logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -120,7 +127,7 @@
             <version>${logback.version}</version>
         </dependency>
 
-		<!-- mysql -->
+        <!-- mysql -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -129,43 +136,43 @@
         
         <!-- webapp -->
         <dependency>
-		    <groupId>javax.servlet</groupId>
-		    <artifactId>javax.servlet-api</artifactId>
-		    <version>${javax-servlet.version}</version>
-		</dependency>
-		<dependency>
-		    <groupId>javax.servlet.jsp.jstl</groupId>
-		    <artifactId>jstl-api</artifactId>
-		    <version>${jstl.version}</version>
-	        <scope>runtime</scope>
-		</dependency>
-	    <dependency>
-	        <groupId>org.apache.taglibs</groupId>
-	        <artifactId>taglibs-standard-impl</artifactId>
-	        <version>${apache-taglibs.version}</version>
-	        <scope>runtime</scope>
-	    </dependency>
-	    <dependency>
-	        <groupId>taglibs</groupId>
-	        <artifactId>c</artifactId>
-	        <version>${taglibs-c.version}</version>
-	        <scope>runtime</scope>
-	        <type>tld</type>
-	    </dependency>
-	    <dependency>
-	        <groupId>taglibs</groupId>
-	        <artifactId>fmt</artifactId>
-	        <version>${taglibs-fmt.version}</version>
-	        <scope>runtime</scope>
-	        <type>tld</type>
-	    </dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax-servlet.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp.jstl</groupId>
+            <artifactId>jstl-api</artifactId>
+            <version>${jstl.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.taglibs</groupId>
+            <artifactId>taglibs-standard-impl</artifactId>
+            <version>${apache-taglibs.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>c</artifactId>
+            <version>${taglibs-c.version}</version>
+            <scope>runtime</scope>
+            <type>tld</type>
+        </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>fmt</artifactId>
+            <version>${taglibs-fmt.version}</version>
+            <scope>runtime</scope>
+            <type>tld</type>
+        </dependency>
 
 
-		<dependency>
-		    <groupId>com.zaxxer</groupId>
-		    <artifactId>HikariCP</artifactId>
-		    <version>${hikaricp.version}</version>
-		    <scope>compile</scope>
-		</dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikaricp.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

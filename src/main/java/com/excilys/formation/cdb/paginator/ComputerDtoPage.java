@@ -35,13 +35,14 @@ public class ComputerDtoPage extends Page<ComputerDto> {
                 computerList = ComputerService.INSTANCE.getList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc());
             }
 
-            LOGGER.debug("refreshContentOrderBy: " + orderBy);
+            LOGGER.debug("refreshContentOrderBy: {}", orderBy);
         } catch (ServiceException e) {
-            LOGGER.error("Error while refreshing page content", e);
-            throw(new PageException("Error while refreshing page content", e));
+            String errorMsg = "Error while refreshing page content";
+            LOGGER.error(errorMsg, e);
+            throw(new PageException(errorMsg, e));
         }
         List<ComputerDto> computerDtoList = new ArrayList<>();
-        Consumer<Computer> computerConsumer = (x) -> computerDtoList.add(ComputerMapper.INSTANCE.computerToComputerDto(x));
+        Consumer<Computer> computerConsumer = x -> computerDtoList.add(ComputerMapper.INSTANCE.computerToComputerDto(x));
         computerList.forEach(computerConsumer);
         setContent(computerDtoList);
         setNbTotal(nb);

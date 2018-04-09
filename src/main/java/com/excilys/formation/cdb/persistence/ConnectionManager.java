@@ -24,6 +24,8 @@ public enum ConnectionManager {
     private String url;
 
     private HikariDataSource ds;
+    
+    private final String SQL_ERROR = "SQL error";
 
     ConnectionManager() {
         InputStream file = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE);
@@ -32,7 +34,7 @@ public enum ConnectionManager {
         int maxPoolSize;
         HikariConfig config = new HikariConfig();
 
-        LOGGER.info("Loading DB configuration from file " + CONFIG_FILE);
+        LOGGER.debug("Loading DB configuration from file {}", CONFIG_FILE);
 
         try {
             properties.load(file);
@@ -71,9 +73,9 @@ public enum ConnectionManager {
         Connection connection = null;
         try {
             connection = ds.getConnection();
-            LOGGER.info("New connection created to DB " + url);
+            LOGGER.debug("New connection created to DB {}", url);
         } catch (SQLException e) {
-            LOGGER.error("SQL error", e);
+            LOGGER.error(SQL_ERROR, e);
         }
 
         return connection;
@@ -81,31 +83,35 @@ public enum ConnectionManager {
 
 
     public void closeElements(Connection connection, Statement statement, ResultSet resultSet) {
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+                LOGGER.debug("Closed ResultSet {}", resultSet);
+            } catch (SQLException e) {
+                LOGGER.error(SQL_ERROR, e);
+            }
+        }
+
         if (statement != null) {
             try {
                 statement.close();
-                LOGGER.info("Closed Statement " + statement);
+                LOGGER.debug("Closed Statement {}", statement);
             } catch (SQLException e) {
-                LOGGER.error("SQL error", e);
+                LOGGER.error(SQL_ERROR, e);
             }
         }
 
         if (connection != null) {
             try {
                 connection.close();
-                LOGGER.info("Closed Connection " + connection);
+                LOGGER.debug("Closed Connection {}", connection);
             } catch (SQLException e) {
-                LOGGER.error("SQL error", e);
+                LOGGER.error(SQL_ERROR, e);
             }
         }
+    }
 
-        if (resultSet != null) {
-            try {
-                resultSet.close();
-                LOGGER.info("Closed ResultSet " + resultSet);
-            } catch (SQLException e) {
-                LOGGER.error("SQL error", e);
-            }
-        }
+    public void closeConnection(Connection connection) {
+        closeElements(connection, null, null);
     }
 }

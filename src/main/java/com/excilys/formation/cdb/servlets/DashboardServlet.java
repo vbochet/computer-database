@@ -38,16 +38,18 @@ public class DashboardServlet extends HttpServlet {
             try {
                 ids.add(Long.valueOf(idString));
             } catch (NumberFormatException e) {
-                LOGGER.error("Error: invalid computer id. Deletion cancelled", e);
-                throw(new ServletException("Error: invalid computer id. Deletion cancelled", e));
+                String errorMsg = "Error: invalid computer id. Deletion cancelled";
+                LOGGER.error(errorMsg, e);
+                throw(new ServletException(errorMsg, e));
             }
         }
 
         try {
             ComputerService.INSTANCE.deleteManyById(ids);
         } catch (ServiceException e) {
-            LOGGER.error("Error while deleting computers", e);
-            throw(new ServletException("Error while deleting computers", e));
+            String errorMsg = "Error while deleting computers";
+            LOGGER.error(errorMsg, e);
+            throw(new ServletException(errorMsg, e));
         }
     
         request.setAttribute("deletionSuccess", true);
@@ -61,23 +63,27 @@ public class DashboardServlet extends HttpServlet {
         try {
             page = new ComputerDtoPage();
         } catch (PageException e) {
-            LOGGER.error("Error while constructing page", e);
-            throw(new ServletException("Error while constructing page", e));
+            String errorMsg = "Error while constructing page";
+            LOGGER.error(errorMsg, e);
+            throw(new ServletException(errorMsg, e));
         }
 
         try {
             page.setNbPerPage(Integer.parseInt(request.getParameter("displayBy")));
-        } catch (NumberFormatException e) { 
+        } catch (NumberFormatException e) {
+            // do nothing
         } catch (PageException e) {
-            LOGGER.error("Error while setting number of computers to display per page", e);
-            throw(new ServletException("Error while setting number of computers to display per page", e));
+            String errorMsg = "Error while setting number of computers to display per page";
+            LOGGER.error(errorMsg, e);
+            throw(new ServletException(errorMsg, e));
         }
 
         try {
             page.setNbTotal(ComputerService.INSTANCE.getNbFound());
         } catch (ServiceException e) {
-            LOGGER.error("Error while retrieving the amount of computers in database", e);
-            throw(new ServletException("Error while retrieving the amount of computers in database", e));
+            String errorMsg = "Error while retrieving the number of computers in database";
+            LOGGER.error(errorMsg, e);
+            throw(new ServletException(errorMsg, e));
         }
         
         if (request.getParameter("search") != null) {
@@ -86,24 +92,27 @@ public class DashboardServlet extends HttpServlet {
 
         try {
             page.setCurrentPage(Integer.parseInt(request.getParameter("npage")));
-        } catch (NumberFormatException e) { 
+        } catch (NumberFormatException e) {
+            // do nothing 
         } catch (PageException e) {
-            LOGGER.error("Error while setting current page number", e);
-            throw(new ServletException("Error while setting current page number", e));
+            String errorMsg = "Error while setting current page number";
+            LOGGER.error(errorMsg, e);
+            throw(new ServletException(errorMsg, e));
         }
 
+        String errorMsgOrder = "Error while setting ordering parameter";
         try {
             page.setOrderBy(request.getParameter("orderBy"));
         } catch (PageException e) {
-            LOGGER.error("Error while setting ordering parameter", e);
-            throw(new ServletException("Error while setting ordering parameter", e));
+            LOGGER.error(errorMsgOrder, e);
+            throw(new ServletException(errorMsgOrder, e));
         }
 
         try {
             page.setOrderDesc(Boolean.valueOf(request.getParameter("orderDesc")));
         } catch (PageException e) {
-            LOGGER.error("Error while setting ordering parameter", e);
-            throw(new ServletException("Error while setting ordering parameter", e));
+            LOGGER.error(errorMsgOrder, e);
+            throw(new ServletException(errorMsgOrder, e));
         }
 
 
@@ -111,35 +120,33 @@ public class DashboardServlet extends HttpServlet {
             try {
                 page.next();
             } catch (PageException e) {
-                LOGGER.error("Error while going to next page", e);
-                throw(new ServletException("Error while going to next page", e));
+                String errorMsg = "Error while going to next page";
+                LOGGER.error(errorMsg, e);
+                throw(new ServletException(errorMsg, e));
             }
         }
         else if (request.getParameter("prev") != null) {
             try {
                 page.prev();
             } catch (PageException e) {
-                LOGGER.error("Error while going to previous page", e);
-                throw(new ServletException("Error while going to previous page", e));
+                String errorMsg = "Error while going to previous page";
+                LOGGER.error(errorMsg, e);
+                throw(new ServletException(errorMsg, e));
             }
         }
 
 
         request.setAttribute("page", page);
-        LOGGER.info("Number of computers found in database : {}", page.getNbTotal());
-        LOGGER.info("Number of computers stored in computersList: {}", page.getContent().size());
-        LOGGER.info("Maximum page number: {}", page.getMaxPage());
-        LOGGER.info("Current page number: {}", page.getCurrentPage());
-        LOGGER.info("Number of computers per page: {}", page.getNbPerPage());
-        LOGGER.info("Page elements ordered by: {}", page.getOrderBy());
-        LOGGER.info("Page elements order desc: {}", page.getOrderDesc());
+        LOGGER.debug("Number of computers found in database : {}", page.getNbTotal());
+        LOGGER.debug("Number of computers stored in computersList: {}", page.getContent().size());
+        LOGGER.debug("Maximum page number: {}", page.getMaxPage());
+        LOGGER.debug("Current page number: {}", page.getCurrentPage());
+        LOGGER.debug("Number of computers per page: {}", page.getNbPerPage());
+        LOGGER.debug("Page elements ordered by: {}", page.getOrderBy());
+        LOGGER.debug("Page elements order desc: {}", page.getOrderDesc());
 
-        try {
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/dashboard.jsp");
-            rd.forward(request,response);
-       } catch (Exception e) { 
-           throw new ServletException(e);
-       }
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/dashboard.jsp");
+        rd.forward(request,response);
     }
 
 }

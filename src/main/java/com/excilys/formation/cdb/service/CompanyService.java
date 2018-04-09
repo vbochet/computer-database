@@ -1,5 +1,6 @@
 package com.excilys.formation.cdb.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public enum CompanyService {
             }
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     public Optional<Company> getById(long companyId) throws ServiceException {
@@ -35,8 +36,8 @@ public enum CompanyService {
             try {
                 ret = CompanyDaoImpl.INSTANCE.read(companyId);
             } catch (DaoException e) {
-                LOGGER.error("Error while reading details of company {} ", companyId, e);
-                throw(new ServiceException("Error while reading details of company " + companyId, e));
+                LOGGER.error("Error while reading details of company n°{} ", companyId, e);
+                throw(new ServiceException("Error while reading details of company n°" + companyId, e));
             }
         }
 
@@ -49,8 +50,8 @@ public enum CompanyService {
             try {
                 ret = CompanyDaoImpl.INSTANCE.findByName(companyName);
             } catch (DaoException e) {
-                LOGGER.error("Error while counting number of computers in database", e);
-                throw(new ServiceException("Error while counting number of computers in database", e));
+                LOGGER.error("Error while counting computers in database", e);
+                throw(new ServiceException("Error while counting computers in database", e));
             }
         }
 
@@ -62,8 +63,8 @@ public enum CompanyService {
             try {
                 CompanyDaoImpl.INSTANCE.deleteById(id);
             } catch (DaoException e) {
-                LOGGER.error("Error while deleting company {}", id, e);
-                throw(new ServiceException("Error while deleting company " + id, e));
+                LOGGER.error("Error while deleting company n°{}", id, e);
+                throw(new ServiceException("Error while deleting company n°" + id, e));
             }
             return true;
         }
@@ -75,8 +76,8 @@ public enum CompanyService {
         try {
             return CompanyDaoImpl.INSTANCE.count();
         } catch (DaoException e) {
-            LOGGER.error("Error while counting number of companies in database", e);
-            throw(new ServiceException("Error while counting number of companies in database", e));
+            LOGGER.error("Error while counting companies in database", e);
+            throw(new ServiceException("Error while counting companies in database", e));
         }
     }
 }

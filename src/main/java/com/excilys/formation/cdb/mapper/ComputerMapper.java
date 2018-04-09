@@ -68,11 +68,15 @@ public enum ComputerMapper {
         
         try {
             intro = Date.valueOf(computerDto.getComputerIntroduced()).toLocalDate();
-        } catch (IllegalArgumentException e) { }
+        } catch (IllegalArgumentException e) {
+            // do nothing
+        }
         
         try {
             discont = Date.valueOf(computerDto.getComputerDiscontinued()).toLocalDate();
-        } catch (IllegalArgumentException e) { }
+        } catch (IllegalArgumentException e) {
+            // do nothing
+        }
 
         computer.setId(computerDto.getComputerId());
         computer.setName(computerDto.getComputerName());

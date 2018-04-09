@@ -31,15 +31,27 @@
                         <fieldset>
                             <div class="form-group">
                                 <label for="computerName">Computer name</label>
-                                <input type="text" class="form-control" id="computerName" name="computerName" placeholder="Computer name" value="${computer.computerName}">
+                                <input type="text" class="form-control" id="computerName" name="computerName" placeholder="Computer name" 
+		                                value="${computer.computerName}"
+		                                data-validation="custom"
+		                                data-validation-regexp="^([^\s<>]+(\s)*)+$"
+		                                data-validation-error-msg="This computer name is not allowed">
                             </div>
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label>
-                                <input type="date" class="form-control" id="introduced" name="introduced" placeholder="Introduced date" value="${computer.computerIntroduced}">
+                                <input type="date" class="form-control" id="introduced" name="introduced" placeholder="Introduced date" 
+                                		value="${computer.computerIntroduced}"
+                                        data-validation="date" 
+                                        data-validation-format="yyyy-mm-dd"
+                                        data-validation-depends-on="discontinued" >
                             </div>
                             <div class="form-group">
                                 <label for="discontinued">Discontinued date</label>
-                                <input type="date" class="form-control" id="discontinued" name="discontinued" placeholder="Discontinued date" value="${computer.computerDiscontinued}">
+                                <input type="date" class="form-control" id="discontinued" name="discontinued" placeholder="Discontinued date" 
+                                		value="${computer.computerDiscontinued}"
+                                        data-validation="date"
+                                        data-validation-format="yyyy-mm-dd"
+                                        data-validation-optional="true" >
                             </div>
                             <div class="form-group">
                                 <label for="companyId">Company</label>
@@ -66,5 +78,13 @@
             </div>
         </div>
     </section>
+<script src="<t:links target='js' append='jquery.min.js' />"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+<script>
+ $.validate({
+ 	  modules : 'date, logic'
+ 	});
+</script>
+    
 </body>
 </html>
