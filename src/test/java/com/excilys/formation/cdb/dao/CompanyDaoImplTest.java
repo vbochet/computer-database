@@ -82,4 +82,9 @@ public class CompanyDaoImplTest {
         }
     }
 
+    @Test
+    public void countTest() {
+        assertEquals(NB_COMPANY_IN_DB, CompanyDaoImpl.INSTANCE.count());
+    }
+
 }
