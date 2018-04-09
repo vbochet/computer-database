@@ -70,7 +70,7 @@ public enum CompanyDaoImpl implements CompanyDao {
         try {
             optCompany = executeReadRequest(connection, preparedStatement, resultSet, companyId);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in company reading\n{}", e);
+            LOGGER.error("SQL error in company reading\n", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -83,7 +83,8 @@ public enum CompanyDaoImpl implements CompanyDao {
         preparedStatement.setLong(1, id);
         resultSet = preparedStatement.executeQuery();
 
-        if (resultSet.first()) {
+        if (resultSet.next()) {
+            LOGGER.error("Found company matching id {}\n", id);
             return Optional.of(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
         }
 
@@ -102,7 +103,7 @@ public enum CompanyDaoImpl implements CompanyDao {
         try {
             optCompany = executeFindByNameRequest(connection, preparedStatement, resultSet, companyName);
         } catch (SQLException e) {
-            LOGGER.error("SQL error in company reading\n{}", e);
+            LOGGER.error("SQL error in company reading\n", e);
         } finally {
             ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
         }
@@ -115,7 +116,7 @@ public enum CompanyDaoImpl implements CompanyDao {
         preparedStatement.setString(1, name);
         resultSet = preparedStatement.executeQuery();
 
-        if (resultSet.first()) {
+        if (resultSet.next()) {
             return Optional.of(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
         }
 
@@ -134,7 +135,7 @@ public enum CompanyDaoImpl implements CompanyDao {
         try {
             statement = connection.createStatement();
             resultSet = statement.executeQuery(COUNT_REQUEST);
-            if(resultSet.first()) {
+            if(resultSet.next()) {
                 count = resultSet.getLong(1);
             }
         } catch (SQLException e) {
