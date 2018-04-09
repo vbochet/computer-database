@@ -55,7 +55,7 @@ public class CompanyDaoImplTest {
     }
 
     @Test
-    public void readTest() {
+    public void readTest() throws DaoException {
         Company companyExpected = null;
         Company companyRead = null;
         for(int i = 0; i < NB_COMPANY_IN_DB; i++) {
@@ -68,7 +68,7 @@ public class CompanyDaoImplTest {
     }
 
     @Test
-    public void findByNameTest() {
+    public void findByNameTest() throws DaoException {
         String name;
         Company companyExpected;
         Company companyFound;
@@ -83,7 +83,7 @@ public class CompanyDaoImplTest {
     }
 
     @Test
-    public void countTest() {
+    public void countTest() throws DaoException {
         assertEquals(NB_COMPANY_IN_DB, CompanyDaoImpl.INSTANCE.count());
     }
 

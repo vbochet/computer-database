@@ -54,13 +54,13 @@ public class ComputerDaoImplTest {
 
     @Test
     public void listTest() throws DaoException {
-        assertEquals(10, ComputerDaoImpl.INSTANCE.list(0, 10).size());
-        assertEquals(NB_COMPUTER_IN_DB, ComputerDaoImpl.INSTANCE.list(0, NB_COMPUTER_IN_DB).size());
-        assertEquals(NB_COMPUTER_IN_DB, ComputerDaoImpl.INSTANCE.list(0, 0).size());
+        assertEquals(10, ComputerDaoImpl.INSTANCE.list(0, 10, "id", false).size());
+        assertEquals(NB_COMPUTER_IN_DB, ComputerDaoImpl.INSTANCE.list(0, NB_COMPUTER_IN_DB, "id", false).size());
+        assertEquals(NB_COMPUTER_IN_DB, ComputerDaoImpl.INSTANCE.list(0, 0, "id", false).size());
     }
 
     @Test
-    public void readTest() {
+    public void readTest() throws DaoException {
         Computer computerExpected = null;
         Computer computerRead = null;
         for(int i = 0; i < NB_COMPUTER_IN_DB; i++) {
@@ -77,8 +77,8 @@ public class ComputerDaoImplTest {
     }
 
     @Test
-    public void createTest() {
-        Computer computer = new Computer(42, "computer 42", null, null, new Company(1, "company 1"));
+    public void createTest() throws DaoException {
+        Computer computer = new Computer(420000, "computer 420000", null, null, new Company(1, "company 1"));
         Computer computerCreated = ComputerDaoImpl.INSTANCE.create(computer);
 
         assertEquals(computer.getId(), computerCreated.getId());
@@ -92,7 +92,7 @@ public class ComputerDaoImplTest {
     }
 
     @Test
-    public void updateTest() {
+    public void updateTest() throws DaoException {
         Computer computer = new Computer(1, "computer 100", null, null, new Company(10, "company 10"));
         Computer computerUpdated = ComputerDaoImpl.INSTANCE.update(computer);
 
@@ -108,7 +108,7 @@ public class ComputerDaoImplTest {
     }
 
     @Test
-    public void deleteTest() {
+    public void deleteTest() throws DaoException {
         ComputerDaoImpl.INSTANCE.delete(5);
         NB_COMPUTER_IN_DB++;
         
@@ -117,7 +117,7 @@ public class ComputerDaoImplTest {
     }
 
     @Test
-    public void countTest() {
+    public void countTest() throws DaoException {
         assertEquals(NB_COMPUTER_IN_DB, ComputerDaoImpl.INSTANCE.count());
     }
 
