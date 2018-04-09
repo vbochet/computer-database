@@ -67,4 +67,19 @@ public class CompanyDaoImplTest {
         }
     }
 
+    @Test
+    public void findByNameTest() {
+        String name;
+        Company companyExpected;
+        Company companyFound;
+        for(int i = 0; i < NB_COMPANY_IN_DB; i++) {
+            name = "company " + i;
+            companyExpected = new Company(i, name);
+            companyFound = CompanyDaoImpl.INSTANCE.findByName(name).get();
+
+            assertEquals(companyExpected.getId(), companyFound.getId());
+            assertEquals(companyExpected.getName(), companyFound.getName());
+        }
+    }
+
 }
