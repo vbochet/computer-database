@@ -19,25 +19,16 @@ public class ConnectionManagerTest {
     }
 
     @Test
-    public void closeElementsTest() {
+    public void closeElementsTest() throws SQLException {
         Connection conn = ConnectionManager.INSTANCE.getConnection();
-        Statement st = null;
-        ResultSet rs = null;
-        try {
-            st = conn.createStatement();
-            rs = st.executeQuery("SELECT 1 AS nb;");
-        } catch (SQLException e) {
-            assertTrue(false);
-        }
-        
+
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery("SELECT 1 AS nb;");
+    
         ConnectionManager.INSTANCE.closeElements(conn, st, rs);
-        try {
-            assertTrue(rs.isClosed());
-            assertTrue(st.isClosed());
-            assertTrue(conn.isClosed());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        assertTrue(rs.isClosed());
+        assertTrue(st.isClosed());
+        assertTrue(conn.isClosed());
     }
 
 }
