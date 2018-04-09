@@ -3,7 +3,6 @@ package com.excilys.formation.cdb.persistence;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,6 +11,9 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 public enum ConnectionManager {
 
     INSTANCE;
@@ -19,21 +21,20 @@ public enum ConnectionManager {
     private final Logger LOGGER = LoggerFactory.getLogger(ConnectionManager.class);
 
     private String CONFIG_FILE = "db.properties";
-
-    private Properties properties;
-    private InputStream file;
-    private String driver;
     private String url;
-    private String username;
-    private String password;
 
-    private Connection connection;
+    private HikariDataSource ds;
+    
+    private final String SQL_ERROR = "SQL error";
 
     ConnectionManager() {
-        properties = new Properties();
-        LOGGER.info("Loading DB configuration from file " + CONFIG_FILE);
+        InputStream file = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE);
+        Properties properties = new Properties();
+        String driver, username, password;
+        int maxPoolSize;
+        HikariConfig config = new HikariConfig();
 
-        file = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE);
+        LOGGER.debug("Loading DB configuration from file {}", CONFIG_FILE);
 
         try {
             properties.load(file);
@@ -59,14 +60,22 @@ public enum ConnectionManager {
         url = properties.getProperty("jdbc.url");
         username = properties.getProperty("jdbc.username");
         password = properties.getProperty("jdbc.password");
+        maxPoolSize = Integer.parseInt(properties.getProperty("jdbc.maxPoolSize"));
+        
+        config.setJdbcUrl(url);
+        config.setUsername(username);
+        config.setPassword(password);
+        config.setMaximumPoolSize(maxPoolSize);
+        ds = new HikariDataSource(config);
     }
 
     public Connection getConnection() {
+        Connection connection = null;
         try {
-            connection = DriverManager.getConnection(url, username, password);
-            LOGGER.info("New connection created to DB " + url);
+            connection = ds.getConnection();
+            LOGGER.debug("New connection created to DB {}", url);
         } catch (SQLException e) {
-            LOGGER.error("SQL error", e);
+            LOGGER.error(SQL_ERROR, e);
         }
 
         return connection;
@@ -74,31 +83,35 @@ public enum ConnectionManager {
 
 
     public void closeElements(Connection connection, Statement statement, ResultSet resultSet) {
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+                LOGGER.debug("Closed ResultSet {}", resultSet);
+            } catch (SQLException e) {
+                LOGGER.error(SQL_ERROR, e);
+            }
+        }
+
         if (statement != null) {
             try {
                 statement.close();
-                LOGGER.info("Closed Statement " + statement);
+                LOGGER.debug("Closed Statement {}", statement);
             } catch (SQLException e) {
-                LOGGER.error("SQL error", e);
+                LOGGER.error(SQL_ERROR, e);
             }
         }
 
         if (connection != null) {
             try {
                 connection.close();
-                LOGGER.info("Closed Connection " + connection);
+                LOGGER.debug("Closed Connection {}", connection);
             } catch (SQLException e) {
-                LOGGER.error("SQL error", e);
+                LOGGER.error(SQL_ERROR, e);
             }
         }
+    }
 
-        if (resultSet != null) {
-            try {
-                resultSet.close();
-                LOGGER.info("Closed ResultSet " + resultSet);
-            } catch (SQLException e) {
-                LOGGER.error("SQL error", e);
-            }
-        }
+    public void closeConnection(Connection connection) {
+        closeElements(connection, null, null);
     }
 }

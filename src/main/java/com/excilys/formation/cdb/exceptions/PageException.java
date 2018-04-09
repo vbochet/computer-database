@@ -2,7 +2,7 @@ package com.excilys.formation.cdb.exceptions;
 
 public class PageException extends Exception {
 
-    private static final long serialVersionUID = -4277715960883395165L;
+    private static final long serialVersionUID = -6230142790094543246L;
 
     public PageException() {
     }

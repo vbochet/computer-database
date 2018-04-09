@@ -21,13 +21,17 @@
 
     <section id="main">
         <div class="container">
+			<c:if test = "${deletionSuccess}">
+            <div class="alert alert-success">
+                Computer(s) were deleted successfully
+            </div>
+            </c:if>
             <h1 id="homeTitle">
                 ${page.nbTotal} Computers found
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
-                    <form id="searchForm" action="#" method="GET" class="form-inline">
-
+                    <form id="searchForm" action="<t:links target='dashboardSearch' pagenb='${page.currentPage}' displayBy='${page.nbPerPage}' orderBy='${page.orderBy}' orderDesc='${page.orderDesc}' />" method="GET" class="form-inline">
                         <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" />
                         <input type="submit" id="searchsubmit" value="Filter by name"
                         class="btn btn-primary" />
@@ -35,7 +39,7 @@
                 </div>
                 <div class="pull-right">
                     <a class="btn btn-success" id="addComputer" href="<t:links target='addComputer' />">Add Computer</a> 
-                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Edit</a>
+                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Delete</a>
                 </div>
             </div>
         </div>
@@ -59,16 +63,16 @@
                             </span>
                         </th>
                         <th>
-                            Computer name
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='name' orderDesc='${page.orderBy == "name" && !page.orderDesc}' search='${page.search}' />">Computer name</a>
                         </th>
                         <th>
-                            Introduced date
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='introduced' orderDesc='${page.orderBy == "introduced" && !page.orderDesc}' search='${page.search}' />">Introduced date</a>
                         </th>
                         <th>
-                            Discontinued date
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='discontinued' orderDesc='${page.orderBy == "discontinued" && !page.orderDesc}' search='${page.search}' />">Discontinued date</a>
                         </th>
                         <th>
-                            Company
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='company_name' orderDesc='${page.orderBy == "company_name" && !page.orderDesc}' search='${page.search}' />">Company</a>
                         </th>
 
                     </tr>
@@ -98,12 +102,12 @@
 
     <footer class="navbar-fixed-bottom">
         <div class="container text-center">
-            <t:pagination maxPage="${page.maxPage}" currentPage="${page.currentPage}" displayBy="${page.nbPerPage}"></t:pagination>
+            <t:pagination maxPage="${page.maxPage}" currentPage="${page.currentPage}" displayBy="${page.nbPerPage}" orderBy="${page.orderBy}" orderDesc="${page.orderDesc}" search="${page.search}" ></t:pagination>
 
             <div class="btn-group btn-group-sm pull-right" role="group" >
-                <a href="<t:links target='displayBy' displayBy='10' page='${page.currentPage}' />"><button type="button" class="btn btn-default">10</button></a>
-                <a href="<t:links target='displayBy' displayBy='50' page='${page.currentPage}' />"><button type="button" class="btn btn-default">50</button></a>
-                <a href="<t:links target='displayBy' displayBy='100' page='${page.currentPage}' />"><button type="button" class="btn btn-default">100</button></a>
+                <a href="<t:links target='dashboardOther' displayBy='10' pagenb='${page.currentPage}' orderBy='${page.orderBy}' orderDesc='${page.orderDesc}' search='${page.search}' />"><button type="button" class="btn btn-default">10</button></a>
+                <a href="<t:links target='dashboardOther' displayBy='50' pagenb='${page.currentPage}' orderBy='${page.orderBy}' orderDesc='${page.orderDesc}' search='${page.search}' />"><button type="button" class="btn btn-default">50</button></a>
+                <a href="<t:links target='dashboardOther' displayBy='100' pagenb='${page.currentPage}' orderBy='${page.orderBy}' orderDesc='${page.orderDesc}' search='${page.search}' />"><button type="button" class="btn btn-default">100</button></a>
             </div>
 		</div>
     </footer>

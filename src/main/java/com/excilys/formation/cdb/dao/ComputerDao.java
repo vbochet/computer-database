@@ -12,7 +12,9 @@ public interface ComputerDao {
     Optional<Computer> read(long id) throws DaoException;
     Computer update(Computer computer) throws DaoException;
     void delete(long id) throws DaoException;
-    List<Computer> list(int offset, int nbToPrint) throws DaoException;
+    List<Computer> list(int offset, int nbToPrint, String order, boolean desc) throws DaoException;
     public long count() throws DaoException;
+    void deleteMany(List<Long> id) throws DaoException;
+    List<Computer> listSearch(int offset, int nbToPrint, String order, boolean desc, String search) throws DaoException;
 
 }

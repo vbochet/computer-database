@@ -19,7 +19,7 @@ public class ComputerPage extends Page<Computer> {
     @Override
     protected void refreshContent() throws PageException {
         try {
-            setContent(ComputerService.INSTANCE.getList(getOffset(), getNbPerPage()));
+            setContent(ComputerService.INSTANCE.getList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc()));
         } catch (ServiceException e) {
             LOGGER.error("Error while refreshing page content", e);
             throw(new PageException("Error while refreshing page content", e));
