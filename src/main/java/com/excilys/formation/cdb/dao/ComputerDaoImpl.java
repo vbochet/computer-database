@@ -105,7 +105,7 @@ public enum ComputerDaoImpl implements ComputerDao {
             preparedStatement.executeUpdate();
 
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
-                if (resultSet.first()) {
+                if (resultSet.next()) {
                     computer.setId(resultSet.getLong(1));
                 }
             }
@@ -137,7 +137,7 @@ public enum ComputerDaoImpl implements ComputerDao {
             preparedStatement.setLong(1, id);
 
             try (ResultSet resultSet = preparedStatement.executeQuery();) {
-                if (resultSet.first()) {
+                if (resultSet.next()) {
                     optComputer = Optional.of(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
                 }
             }
@@ -348,7 +348,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         try {
             statement = connection.createStatement();
             resultSet = statement.executeQuery(COUNT_REQUEST);
-            if(resultSet.first()) {
+            if(resultSet.next()) {
                 count = resultSet.getLong(1);
             }
         } catch (SQLException e) {
