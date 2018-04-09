@@ -53,4 +53,18 @@ public class CompanyDaoImplTest {
         assertEquals(NB_COMPANY_IN_DB, CompanyDaoImpl.INSTANCE.list(0, NB_COMPANY_IN_DB).size());
         assertEquals(NB_COMPANY_IN_DB, CompanyDaoImpl.INSTANCE.list(0, 0).size());
     }
+
+    @Test
+    public void readTest() {
+        Company companyExpected = null;
+        Company companyRead = null;
+        for(int i = 0; i < NB_COMPANY_IN_DB; i++) {
+            companyExpected = new Company(i, "company " + i);
+            companyRead = CompanyDaoImpl.INSTANCE.read(i).get();
+
+            assertEquals(companyExpected.getId(), companyRead.getId());
+            assertEquals(companyExpected.getName(), companyRead.getName());
+        }
+    }
+
 }
