@@ -7,6 +7,7 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.cdb.exceptions.PageException;
@@ -24,12 +25,13 @@ public class Cli {
     @Autowired
     private CompanyService companyService;
     @Autowired
-    private ComputerService computerService = new ComputerService();
+    private ComputerService computerService;
 
     static Logger LOGGER = LoggerFactory.getLogger(Cli.class);
 
     public static void main(String[] args) throws ServiceException, PageException {
-        Cli cli = new Cli();
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("application-context.xml");
+        Cli cli = context.getBean(Cli.class);
         LOGGER.debug("Starting Computer-Database command line interface");
 
         System.out.println("COMPUTER DATABASE\n-----------------\n");
@@ -99,6 +101,7 @@ public class Cli {
         System.out.println("Terminating...");
         LOGGER.debug("Stopping Computer-Database command line interface");
         scanner.close();
+        context.close();
     }
 
     private void printMenu() {
@@ -128,6 +131,7 @@ public class Cli {
         LOGGER.debug("User choice: List computers");
         ComputerPage page;
         page = new ComputerPage();
+        page.setComputerService(computerService);
         page.setNbTotal(computerService.getNbFound());
         int nbToPrint = getNbToPrint(scanner);
         page.setNbPerPage(nbToPrint);
@@ -146,6 +150,7 @@ public class Cli {
     private void caseListCompany(Scanner scanner) throws PageException, ServiceException {
         LOGGER.debug("User choice: List companies");
         CompanyPage page = new CompanyPage();
+        page.setCompanyService(companyService);
         page.setNbTotal(companyService.getNbFound());
         int nbToPrint = getNbToPrint(scanner);
         page.setNbPerPage(nbToPrint);
