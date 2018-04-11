@@ -11,16 +11,15 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.persistence.ConnectionManager;
 
-public enum CompanyDaoImpl implements CompanyDao {
-
-    INSTANCE;
-
+@Repository("companyDaoBean")
+public class CompanyDaoImpl implements CompanyDao {
     static final Logger LOGGER = LoggerFactory.getLogger(CompanyDaoImpl.class);
 
     private final String LIST_REQUEST = "SELECT id, name FROM company LIMIT ? OFFSET ?;";

@@ -6,6 +6,8 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.excilys.formation.cdb.dto.ComputerDto;
 import com.excilys.formation.cdb.exceptions.PageException;
@@ -15,6 +17,12 @@ import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.ComputerService;
 
 public class ComputerDtoPage extends Page<ComputerDto> {
+
+    private ComputerService computerService;
+
+    public void setComputerService(ComputerService computerService) {
+        this.computerService = computerService;
+    }
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDtoPage.class);
 
@@ -29,10 +37,10 @@ public class ComputerDtoPage extends Page<ComputerDto> {
         
         try {
             if (!getSearch().isEmpty()) {
-                computerList = ComputerService.INSTANCE.getSearchList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc(), getSearch());
-                nb = ComputerService.INSTANCE.getNbSearch(getSearch());
+                computerList = computerService.getSearchList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc(), getSearch());
+                nb = computerService.getNbSearch(getSearch());
             } else {
-                computerList = ComputerService.INSTANCE.getList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc());
+                computerList = computerService.getList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc());
             }
 
             LOGGER.debug("refreshContentOrderBy: {}", orderBy);

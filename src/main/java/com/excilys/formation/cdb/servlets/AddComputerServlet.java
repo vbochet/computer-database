@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.model.Computer;
@@ -18,11 +22,20 @@ import com.excilys.formation.cdb.service.ComputerService;
 
 
 @WebServlet("/addComputer")
+@Component("addComputerServletBean")
 public class AddComputerServlet extends ManageComputerServlet {
+    @Autowired
+    private ComputerService computerService;
 
     static final Logger LOGGER = LoggerFactory.getLogger(AddComputerServlet.class);
 
     private static final long serialVersionUID = 4171669005687350388L;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -33,7 +46,7 @@ public class AddComputerServlet extends ManageComputerServlet {
 
         Computer res;
         try {
-            res = ComputerService.INSTANCE.createComputer(computer);
+            res = computerService.createComputer(computer);
         } catch (ServiceException e) {
             LOGGER.error("Error while creating computer", e);
             throw(new ServletException("Error while creating computer", e));

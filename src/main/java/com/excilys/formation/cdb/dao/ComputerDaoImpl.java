@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.mapper.ComputerMapper;
@@ -20,9 +21,8 @@ import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.persistence.ConnectionManager;
 
-public enum ComputerDaoImpl implements ComputerDao {
-
-    INSTANCE;
+@Repository("computerDaoBean")
+public class ComputerDaoImpl implements ComputerDao {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
 
@@ -360,6 +360,7 @@ public enum ComputerDaoImpl implements ComputerDao {
         return count;
     }
 
+    @Override
     public long countSearch(String search) throws DaoException {
         LOGGER.debug("Counting search results");
 

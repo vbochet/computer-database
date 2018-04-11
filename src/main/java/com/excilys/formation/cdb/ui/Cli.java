@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.excilys.formation.cdb.exceptions.PageException;
 import com.excilys.formation.cdb.exceptions.ServiceException;
@@ -17,11 +19,17 @@ import com.excilys.formation.cdb.paginator.Page;
 import com.excilys.formation.cdb.service.CompanyService;
 import com.excilys.formation.cdb.service.ComputerService;
 
+@Component("cliBean")
 public class Cli {
+    @Autowired
+    private CompanyService companyService;
+    @Autowired
+    private ComputerService computerService = new ComputerService();
 
     static Logger LOGGER = LoggerFactory.getLogger(Cli.class);
 
     public static void main(String[] args) throws ServiceException, PageException {
+        Cli cli = new Cli();
         LOGGER.debug("Starting Computer-Database command line interface");
 
         System.out.println("COMPUTER DATABASE\n-----------------\n");
@@ -32,7 +40,7 @@ public class Cli {
 
         while (!stop) {
             try {
-                printMenu();
+                cli.printMenu();
                 System.out.print("Your choice: ");
                 i = scanner.nextInt();
                 if (i < CliMenuChoices.values().length) {
@@ -43,31 +51,31 @@ public class Cli {
                         break;
 
                     case LIST_COMPUTERS:
-                        caseListComputer(scanner);
+                        cli.caseListComputer(scanner);
                         break;
 
                     case LIST_COMPANIES:
-                        caseListCompany(scanner);
+                        cli.caseListCompany(scanner);
                         break;
 
                     case READ_COMPUTER:
-                        caseShowComputer(scanner);
+                        cli.caseShowComputer(scanner);
                         break;
 
                     case CREATE_COMPUTER:
-                        caseCreateComputer(scanner);
+                        cli.caseCreateComputer(scanner);
                         break;
 
                     case UPDATE_COMPUTER:
-                        caseUpdateComputer(scanner);
+                        cli.caseUpdateComputer(scanner);
                         break;
 
                     case DELETE_COMPUTER:
-                        caseDeleteComputer(scanner);
+                        cli.caseDeleteComputer(scanner);
                         break;
 
                     case DELETE_COMPANY:
-                        caseDeleteCompany(scanner);
+                        cli.caseDeleteCompany(scanner);
                         break;
 
                     default:
@@ -93,7 +101,7 @@ public class Cli {
         scanner.close();
     }
 
-    private static void printMenu() {
+    private void printMenu() {
         System.out.println("Select the action you want to perform in the list below:");
 
         StringBuilder sb = new StringBuilder();
@@ -116,11 +124,11 @@ public class Cli {
         System.out.println(sb.toString());
     }
 
-    private static void caseListComputer(Scanner scanner) throws ServiceException, PageException {
+    private void caseListComputer(Scanner scanner) throws ServiceException, PageException {
         LOGGER.debug("User choice: List computers");
         ComputerPage page;
         page = new ComputerPage();
-        page.setNbTotal(ComputerService.INSTANCE.getNbFound());
+        page.setNbTotal(computerService.getNbFound());
         int nbToPrint = getNbToPrint(scanner);
         page.setNbPerPage(nbToPrint);
         LOGGER.debug("(print {} computers per page)", nbToPrint);
@@ -135,10 +143,10 @@ public class Cli {
         LOGGER.debug("End of computer listing");
     }
 
-    private static void caseListCompany(Scanner scanner) throws PageException, ServiceException {
+    private void caseListCompany(Scanner scanner) throws PageException, ServiceException {
         LOGGER.debug("User choice: List companies");
         CompanyPage page = new CompanyPage();
-        page.setNbTotal(CompanyService.INSTANCE.getNbFound());
+        page.setNbTotal(companyService.getNbFound());
         int nbToPrint = getNbToPrint(scanner);
         page.setNbPerPage(nbToPrint);
         LOGGER.debug("(print {} companies per page)", nbToPrint);
@@ -153,7 +161,7 @@ public class Cli {
         LOGGER.debug("End of company listing");
     }
 
-    private static boolean getAction(Scanner scanner, Page page) throws PageException {
+    private boolean getAction(Scanner scanner, Page page) throws PageException {
         System.out.println("Type 'n' to go to next page, 'p' to go to previous page, 'g 42' to go to page 42, and 'q' to quit.");
         boolean loop = true, ret = true;
         String action;
@@ -190,7 +198,7 @@ public class Cli {
         return ret;
     }
 
-    private static void caseShowComputer(Scanner scanner) throws ServiceException {
+    private void caseShowComputer(Scanner scanner) throws ServiceException {
         LOGGER.debug("User choice: Show computer info");
         long id;
         Optional<Computer> optComputer = Optional.empty();
@@ -198,7 +206,7 @@ public class Cli {
         id = getId(scanner);
         LOGGER.debug("Computer's id: {}", id);
 
-        optComputer = ComputerService.INSTANCE.getById(id);
+        optComputer = computerService.getById(id);
         if (optComputer.isPresent()) {
             System.out.println(optComputer.get().toString());
         } else {
@@ -207,7 +215,7 @@ public class Cli {
         LOGGER.debug("End of computer info");
     }
 
-    private static void caseCreateComputer(Scanner scanner) throws ParseException, ServiceException {
+    private void caseCreateComputer(Scanner scanner) throws ParseException, ServiceException {
         LOGGER.debug("User choice: Create new computer");
         String name, intro, discont, companyIdStr = null;
         long companyId;
@@ -217,16 +225,16 @@ public class Cli {
 
         name = getName(scanner);
         LOGGER.debug("Name: {}", name);
-        ComputerService.INSTANCE.setName(name, computer);
+        computerService.setName(name, computer);
 
         intro = getIntroDate(scanner);
-        while (!ComputerService.INSTANCE.setIntroDate(intro, computer)) {
+        while (!computerService.setIntroDate(intro, computer)) {
             intro = getIntroDate(scanner);
         }
         LOGGER.debug("Introduced: {}", intro);
 
         discont = getDiscontDate(scanner);
-        while (!ComputerService.INSTANCE.setDiscontDate(discont, computer)) {
+        while (!computerService.setDiscontDate(discont, computer)) {
             discont = getDiscontDate(scanner);
         }
         LOGGER.debug("Discontinued: {}", discont);
@@ -237,7 +245,7 @@ public class Cli {
                 companyIdStr = scanner.nextLine();
                 if (!companyIdStr.isEmpty()) {
                     companyId = Integer.parseInt(companyIdStr);
-                    Optional<Company> optCompany = CompanyService.INSTANCE.getById(companyId);
+                    Optional<Company> optCompany = companyService.getById(companyId);
                     LOGGER.debug("Company id: {}", companyId);
                     if (optCompany.isPresent()) {
                         computer.setCompany(optCompany.get());
@@ -255,12 +263,12 @@ public class Cli {
                 LOGGER.error("Input error: Unexpected value \"{}\" received", companyIdStr);
             }
         }
-        computer = ComputerService.INSTANCE.createComputer(computer);
+        computer = computerService.createComputer(computer);
         System.out.println(computer);
         LOGGER.debug("End of computer creation");
     }
 
-    private static void caseUpdateComputer(Scanner scanner) throws ParseException, ServiceException {
+    private void caseUpdateComputer(Scanner scanner) throws ParseException, ServiceException {
         LOGGER.debug("User choice: Update computer");
         long id;
         Computer computer;
@@ -268,7 +276,7 @@ public class Cli {
 
         id = getId(scanner);
         LOGGER.debug("Computer's id: {}", id);
-        optComputer = ComputerService.INSTANCE.getById(id);
+        optComputer = computerService.getById(id);
         if (!optComputer.isPresent()) {
             System.out.println("No computer matching this id");
             LOGGER.warn("No computer matching id {}", id);
@@ -282,12 +290,12 @@ public class Cli {
         updateComputerDiscontinued(scanner, computer);
         updateComputerCompany(scanner, computer);
 
-        computer = ComputerService.INSTANCE.updateComputer(computer);
+        computer = computerService.updateComputer(computer);
         System.out.println(computer);
         LOGGER.debug("End of computer update");
     }
 
-    private static void updateComputerName(Scanner scanner, Computer computer) {
+    private void updateComputerName(Scanner scanner, Computer computer) {
         String answer = "", name;
         System.out.println("Current name: [" + computer.getName() + "].");
 
@@ -295,11 +303,11 @@ public class Cli {
 
         if (answer.equals("y")) {
             name = getName(scanner);
-            ComputerService.INSTANCE.setName(name, computer);
+            computerService.setName(name, computer);
         }
     }
 
-    private static void updateComputerIntroduced(Scanner scanner, Computer computer) {
+    private void updateComputerIntroduced(Scanner scanner, Computer computer) {
         String answer = "", intro;
         System.out.println("Current introduction date: [" + computer.getIntroduced() + "].");
 
@@ -307,13 +315,13 @@ public class Cli {
 
         if (answer.equals("y")) {
             intro = getIntroDate(scanner);
-            while (!ComputerService.INSTANCE.setIntroDate(intro, computer)) {
+            while (!computerService.setIntroDate(intro, computer)) {
                 intro = getIntroDate(scanner);
             }
         }
     }
 
-    private static void updateComputerDiscontinued(Scanner scanner, Computer computer) {
+    private void updateComputerDiscontinued(Scanner scanner, Computer computer) {
         String answer = "", discont;
         System.out.println("Current discontinuation date: [" + computer.getDiscontinued() + "].");
 
@@ -321,13 +329,13 @@ public class Cli {
 
         if (answer.equals("y")) {
             discont = getDiscontDate(scanner);
-            while (!ComputerService.INSTANCE.setDiscontDate(discont, computer)) {
+            while (!computerService.setDiscontDate(discont, computer)) {
                 discont = getDiscontDate(scanner);
             }
         }
     }
 
-    private static void updateComputerCompany(Scanner scanner, Computer computer) throws ServiceException {
+    private void updateComputerCompany(Scanner scanner, Computer computer) throws ServiceException {
         String answer = "", companyIdStr = null;
         boolean loop = true;
         long companyId;
@@ -343,7 +351,7 @@ public class Cli {
                     companyIdStr = scanner.nextLine();
                     if (!companyIdStr.isEmpty()) {
                         companyId = Integer.parseInt(companyIdStr);
-                        Optional<Company> optCompany = CompanyService.INSTANCE.getById(companyId);
+                        Optional<Company> optCompany = companyService.getById(companyId);
                         if (optCompany.isPresent()) {
                             company = optCompany.get();
                         }
@@ -358,7 +366,7 @@ public class Cli {
         }
     }
 
-    private static String chooseUpdate(Scanner scanner, String nameOfThingToUpdate) {
+    private String chooseUpdate(Scanner scanner, String nameOfThingToUpdate) {
         String answer = "";
         while (!(answer.equals("y") || answer.equals("n"))) {
             System.out.print("Update " + nameOfThingToUpdate + " (y/n)? ");
@@ -367,14 +375,14 @@ public class Cli {
         return answer;
     }
 
-    private static void caseDeleteComputer(Scanner scanner) throws ServiceException {
+    private void caseDeleteComputer(Scanner scanner) throws ServiceException {
         LOGGER.debug("User choice: Delete computer");
         long id;
 
         id = getId(scanner);
         LOGGER.debug("Computer's id: {}", id);
 
-        if (ComputerService.INSTANCE.deleteById(id)) {
+        if (computerService.deleteById(id)) {
             System.out.println("Computer n°" + id + " has been successfully deleted");
             LOGGER.debug("Computer {} has been deleted", id);
         } else {
@@ -384,14 +392,14 @@ public class Cli {
         LOGGER.debug("End of computer deletion");
     }
 
-    private static void caseDeleteCompany(Scanner scanner) throws ServiceException {
+    private void caseDeleteCompany(Scanner scanner) throws ServiceException {
         LOGGER.debug("User choice: Delete company");
         long id;
 
         id = getId(scanner);
         LOGGER.debug("Company's id: {}", id);
 
-        if (CompanyService.INSTANCE.deleteById(id)) {
+        if (companyService.deleteById(id)) {
             System.out.println("Company n°" + id + " and its related computers have been successfully deleted");
             LOGGER.debug("Company {} and its related computers have been deleted", id);
         } else {
@@ -401,7 +409,7 @@ public class Cli {
         LOGGER.debug("End of computer deletion");
     }
 
-    private static int getNbToPrint(Scanner scanner) {
+    private int getNbToPrint(Scanner scanner) {
         int nbToPrint = 0;
         boolean stop = false;
 
@@ -418,7 +426,7 @@ public class Cli {
         return nbToPrint;
     }
 
-    private static long getId(Scanner scanner) {
+    private long getId(Scanner scanner) {
         long inputId = 0;
         boolean stop = false;
 
@@ -436,7 +444,7 @@ public class Cli {
         return inputId;
     }
 
-    private static String getName(Scanner scanner) {
+    private String getName(Scanner scanner) {
         String name = "";
 
         while (name.isEmpty()) {
@@ -447,12 +455,12 @@ public class Cli {
         return name;
     }
 
-    private static String getIntroDate(Scanner scanner) {
+    private String getIntroDate(Scanner scanner) {
         System.out.print("Company's introduction date, with yyyy-MM-dd formatting (if none, leave empty): ");
         return scanner.nextLine();
     }
 
-    private static String getDiscontDate(Scanner scanner) {
+    private String getDiscontDate(Scanner scanner) {
         System.out.print("Company's discontinuation date, with yyyy-MM-dd formatting (if none, leave empty): ");
         return scanner.nextLine();
     }

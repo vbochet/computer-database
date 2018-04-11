@@ -10,10 +10,14 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.formation.cdb.dto.CompanyDto;
 import com.excilys.formation.cdb.exceptions.ServiceException;
@@ -23,9 +27,18 @@ import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.CompanyService;
 
+@Component("manageComputerServletBean")
 public class ManageComputerServlet extends HttpServlet {
+    @Autowired
+    private CompanyService companyService;
 
     private static final long serialVersionUID = 3330375264799217747L;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
+    }
 
     protected void requestToComputer(final Logger LOGGER, HttpServletRequest request, Computer computer, DateTimeFormatter formatter) throws ServletException {
         String name = request.getParameter("computerName");
@@ -56,7 +69,7 @@ public class ManageComputerServlet extends HttpServlet {
             long companyId = Long.parseLong(request.getParameter("companyId"));
 
             Optional<Company> optCompany;
-                optCompany = CompanyService.INSTANCE.getById(companyId);
+                optCompany = companyService.getById(companyId);
 
             if (optCompany.isPresent()) {
                 computer.setCompany(optCompany.get());
@@ -78,7 +91,7 @@ public class ManageComputerServlet extends HttpServlet {
     protected void setCompanyDtoListInRequest(Logger logger, HttpServletRequest request) throws ServletException {
         List<Company> companyList;
         try {
-            companyList = CompanyService.INSTANCE.getList(0, (int)CompanyService.INSTANCE.getNbFound());
+            companyList = companyService.getList(0, (int)companyService.getNbFound());
         } catch (ServiceException e) {
             logger.error("Error while getting company list", e);
             throw(new ServletException("Error while getting company list", e));

@@ -16,5 +16,6 @@ public interface ComputerDao {
     public long count() throws DaoException;
     void deleteMany(List<Long> id) throws DaoException;
     List<Computer> listSearch(int offset, int nbToPrint, String order, boolean desc, String search) throws DaoException;
+    long countSearch(String search) throws DaoException;
 
 }
