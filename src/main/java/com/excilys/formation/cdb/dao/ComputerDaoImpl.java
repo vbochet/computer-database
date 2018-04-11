@@ -11,8 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.cdb.exceptions.DaoException;
@@ -25,6 +28,8 @@ import com.excilys.formation.cdb.persistence.ConnectionManager;
 public class ComputerDaoImpl implements ComputerDao {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
+
+    private DataSource dataSource;
 
     private final String REQUEST_SELECT_FROM_JOIN = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ";
     
@@ -39,6 +44,12 @@ public class ComputerDaoImpl implements ComputerDao {
     private final String COUNT_SEARCH_REQUEST   = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.name LIKE ? OR company.name LIKE ?;";
 
     private final String DESC = " DESC";
+
+    @Autowired
+    public ComputerDaoImpl(DataSource dataSource) {
+        super();
+        this.dataSource = dataSource;
+    }
 
     private void DaoExceptionThrower(String errorMsg, Exception e) throws DaoException {
         LOGGER.error(errorMsg, e);
@@ -59,7 +70,7 @@ public class ComputerDaoImpl implements ComputerDao {
     public Computer create(Computer computer) throws DaoException {
         LOGGER.debug("Creating computer {}", computer);
 
-        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        Connection connection = getConnection();
 
         try {
             connection.setAutoCommit(false);
@@ -68,7 +79,7 @@ public class ComputerDaoImpl implements ComputerDao {
         } catch (SQLException e) {
             rollbackAndThrow(connection, "SQL error in computer creation", e);
         } finally {
-            ConnectionManager.INSTANCE.closeConnection(connection);
+            DaoUtils.closeConnection(connection);
         }
 
         return computer;
@@ -124,7 +135,7 @@ public class ComputerDaoImpl implements ComputerDao {
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in computer reading", e);
         } finally {
-            ConnectionManager.INSTANCE.closeConnection(connection);
+            DaoUtils.closeConnection(connection);
         }
 
         return optComputer;
@@ -159,7 +170,7 @@ public class ComputerDaoImpl implements ComputerDao {
         } catch (SQLException e) {
             rollbackAndThrow(connection, "SQL error in computer update", e);
         } finally {
-            ConnectionManager.INSTANCE.closeConnection(connection);
+            DaoUtils.closeConnection(connection);
         }
 
         return computer;
@@ -211,7 +222,7 @@ public class ComputerDaoImpl implements ComputerDao {
         } catch (SQLException e) {
             rollbackAndThrow(connection, "SQL error in computer deletion", e);
         } finally {
-            ConnectionManager.INSTANCE.closeConnection(connection);
+            DaoUtils.closeConnection(connection);
         }
     }
 
@@ -233,7 +244,7 @@ public class ComputerDaoImpl implements ComputerDao {
         } catch (SQLException e) {
             rollbackAndThrow(connection, "SQL error in computer list deletion", e);
         } finally {
-            ConnectionManager.INSTANCE.closeConnection(connection);
+            DaoUtils.closeConnection(connection);
         }
     }
 
@@ -256,7 +267,7 @@ public class ComputerDaoImpl implements ComputerDao {
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in computer listing", e);
         } finally {
-            ConnectionManager.INSTANCE.closeConnection(connection);
+            DaoUtils.closeConnection(connection);
         }
 
         return computersList;
@@ -301,7 +312,7 @@ public class ComputerDaoImpl implements ComputerDao {
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in search result listing", e);
         } finally {
-            ConnectionManager.INSTANCE.closeConnection(connection);
+            DaoUtils.closeConnection(connection);
         }
 
         return computersList;
@@ -354,7 +365,7 @@ public class ComputerDaoImpl implements ComputerDao {
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in computer counting", e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, statement, resultSet);
+            DaoUtils.closeElements(connection, statement, resultSet);
         }
 
         return count;
@@ -382,9 +393,19 @@ public class ComputerDaoImpl implements ComputerDao {
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in search results counting", e);
         } finally {
-            ConnectionManager.INSTANCE.closeElements(connection, preparedStatement, resultSet);
+            DaoUtils.closeElements(connection, preparedStatement, resultSet);
         }
 
         return count;
+    }
+    
+    private Connection getConnection() throws DaoException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
+        } catch (SQLException e) {
+            DaoExceptionThrower("Error while getting connection", e);
+        }
+        return connection;
     }
 }
