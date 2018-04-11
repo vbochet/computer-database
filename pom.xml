@@ -20,6 +20,7 @@
         <!-- general versions -->
         <java.version>1.8</java.version>
         <maven-compiler.version>3.1</maven-compiler.version>
+        <mojo.version>1.2.1</mojo.version>
         <tomcat.version>2.2</tomcat.version>
         <checkstyle.version>3.0.0</checkstyle.version>
         <apache-commons.version>3.7</apache-commons.version>
@@ -58,6 +59,23 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <!-- Enables launching the CLI via command line using Maven -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${mojo.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>com.excilys.formation.cdb.ui.Cli</mainClass>
                 </configuration>
             </plugin>
 
