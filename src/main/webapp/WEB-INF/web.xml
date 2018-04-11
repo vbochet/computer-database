@@ -26,10 +26,10 @@
         <error-code>404</error-code>
         <location>/WEB-INF/JSP/404.jsp</location>
     </error-page>
-<!--     <error-page> -->
+    <error-page>
 <!--         Uncaught exception -->
-<!--         <error-code>500</error-code> -->
-<!--         <location>/WEB-INF/JSP/500.jsp</location> -->
-<!--     </error-page> -->
+        <error-code>500</error-code>
+        <location>/WEB-INF/JSP/500.jsp</location>
+    </error-page>
 
 </web-app>
