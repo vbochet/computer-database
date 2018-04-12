@@ -14,13 +14,18 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.model.Company;
 
 @Repository("companyDaoBean")
+@EnableTransactionManagement
 public class CompanyDaoImpl implements CompanyDao {
     static final Logger LOGGER = LoggerFactory.getLogger(CompanyDaoImpl.class);
 
@@ -141,26 +146,29 @@ public class CompanyDaoImpl implements CompanyDao {
     }
 
     @Override
+    @Transactional(rollbackFor=DaoException.class)
     public void deleteById(long companyId) throws DaoException {
         LOGGER.debug("Deleting company n°{}", companyId);
+        ConnectionHolder connHolder = null;
 
-        Connection connection = getConnection();
+        if (!TransactionSynchronizationManager.getResourceMap().values().isEmpty()) {
+            Object obj = TransactionSynchronizationManager.getResourceMap().values().iterator().next();
+            if (!(obj instanceof ConnectionHolder)) {
+                throw new DaoException("Error in computer list deletion : couldn't get connection to SQL DataBase");
+            }
+            else {
+                connHolder = (ConnectionHolder) obj;
+            }
+        }
+
+        Connection connection = connHolder.getConnection();
 
         try {
-            connection.setAutoCommit(false);
             executeDeleteComputerRequest(connection, companyId);
             executeDeleteCompanyRequest(connection, companyId);
-            connection.commit();
         } catch (SQLException e) {
             String errorMsg = "SQL error in company deletion";
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                DaoExceptionThrower(errorMsg, e1);
-            }
             DaoExceptionThrower(errorMsg, e);
-        } finally {
-            DaoUtils.closeConnection(connection);
         }
     }
 
