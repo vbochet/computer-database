@@ -16,15 +16,19 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
-import com.excilys.formation.cdb.persistence.ConnectionManager;
 
 @Repository("computerDaoBean")
+@EnableTransactionManagement
 public class ComputerDaoImpl implements ComputerDao {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
@@ -55,16 +59,6 @@ public class ComputerDaoImpl implements ComputerDao {
         LOGGER.error(errorMsg, e);
         throw(new DaoException(errorMsg, e));
     }
-    
-    private void rollbackAndThrow(Connection connection, String errorMsg, Exception e) throws DaoException {
-        try {
-            connection.rollback();
-        } catch (SQLException e1) {
-            DaoExceptionThrower(errorMsg, e1);
-        }
-
-        DaoExceptionThrower(errorMsg, e);
-    }
 
     @Override
     public Computer create(Computer computer) throws DaoException {
@@ -73,11 +67,9 @@ public class ComputerDaoImpl implements ComputerDao {
         Connection connection = getConnection();
 
         try {
-            connection.setAutoCommit(false);
             executeCreateRequest(connection, computer);
-            connection.commit();
         } catch (SQLException e) {
-            rollbackAndThrow(connection, "SQL error in computer creation", e);
+            DaoExceptionThrower("SQL error in computer creation", e);
         } finally {
             DaoUtils.closeConnection(connection);
         }
@@ -127,7 +119,7 @@ public class ComputerDaoImpl implements ComputerDao {
     public Optional<Computer> read(long id) throws DaoException {
         LOGGER.debug("Showing info from computer n°{}", id);
 
-        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        Connection connection = getConnection();
         Optional<Computer> optComputer = Optional.empty();
 
         try {
@@ -161,14 +153,12 @@ public class ComputerDaoImpl implements ComputerDao {
     public Computer update(Computer computer) throws DaoException {
         LOGGER.debug("Updating computer {}", computer);
 
-        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        Connection connection = getConnection();
 
         try {
-            connection.setAutoCommit(false);
             executeUpdateRequest(connection, computer);
-            connection.commit();
         } catch (SQLException e) {
-            rollbackAndThrow(connection, "SQL error in computer update", e);
+            DaoExceptionThrower("SQL error in computer update", e);
         } finally {
             DaoUtils.closeConnection(connection);
         }
@@ -213,38 +203,43 @@ public class ComputerDaoImpl implements ComputerDao {
     public void delete(long id) throws DaoException {
         LOGGER.debug("Deleting computer n°{}", id);
 
-        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        Connection connection = getConnection();
 
         try {
-            connection.setAutoCommit(false);
             executeDeleteRequest(connection, id);
-            connection.commit();
         } catch (SQLException e) {
-            rollbackAndThrow(connection, "SQL error in computer deletion", e);
+            DaoExceptionThrower("SQL error in computer deletion", e);
         } finally {
             DaoUtils.closeConnection(connection);
         }
     }
 
     @Override
+    @Transactional(rollbackFor=DaoException.class)
     public void deleteMany(List<Long> ids) throws DaoException {
         LOGGER.debug("Deleting computers n°{}", ids);
+        ConnectionHolder connHolder = null;
 
-        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        if (!TransactionSynchronizationManager.getResourceMap().values().isEmpty()) {
+            Object obj = TransactionSynchronizationManager.getResourceMap().values().iterator().next();
+            if (!(obj instanceof ConnectionHolder)) {
+                throw new DaoException("Error in computer list deletion : couldn't get connection to SQL DataBase");
+            }
+            else {
+                connHolder = (ConnectionHolder) obj;
+            }
+        }
+
+        Connection connection = connHolder.getConnection();
 
         try {
-            connection.setAutoCommit(false);
-
             for (long id : ids) {
                 executeDeleteRequest(connection, id);
                 LOGGER.debug("Deletion of computers n°{}", id);
+                if (id == 17) { throw new DaoException("This is a test, guys! :)"); }
             }
-
-            connection.commit();
         } catch (SQLException e) {
-            rollbackAndThrow(connection, "SQL error in computer list deletion", e);
-        } finally {
-            DaoUtils.closeConnection(connection);
+            DaoExceptionThrower("SQL error in computer list deletion", e);
         }
     }
 
@@ -259,7 +254,7 @@ public class ComputerDaoImpl implements ComputerDao {
     public List<Computer> list(int offset, int nbToPrint, String order, boolean desc) throws DaoException {
         LOGGER.debug("Listing computers from {} ({} per page) ordered by {}", offset, nbToPrint, order);
 
-        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        Connection connection = getConnection();
         List<Computer> computersList = new ArrayList<>();
 
         try {
@@ -304,7 +299,7 @@ public class ComputerDaoImpl implements ComputerDao {
     public List<Computer> listSearch(int offset, int nbToPrint, String order, boolean desc, String search) throws DaoException {
         LOGGER.debug("Listing search result from search \"{}\" beginning at {} ({} per page) ordered by {}", search, offset, nbToPrint, order);
 
-        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        Connection connection = getConnection();
         List<Computer> computersList = new ArrayList<>();
 
         try {
@@ -351,7 +346,7 @@ public class ComputerDaoImpl implements ComputerDao {
     public long count() throws DaoException {
         LOGGER.debug("Counting computers");
 
-        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        Connection connection = getConnection();
         Statement statement = null;
         ResultSet resultSet = null;
         long count = -1;
@@ -375,7 +370,7 @@ public class ComputerDaoImpl implements ComputerDao {
     public long countSearch(String search) throws DaoException {
         LOGGER.debug("Counting search results");
 
-        Connection connection = ConnectionManager.INSTANCE.getConnection();
+        Connection connection = getConnection();
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         long count = -1;
