@@ -236,7 +236,6 @@ public class ComputerDaoImpl implements ComputerDao {
             for (long id : ids) {
                 executeDeleteRequest(connection, id);
                 LOGGER.debug("Deletion of computers n°{}", id);
-                if (id == 17) { throw new DaoException("This is a test, guys! :)"); }
             }
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in computer list deletion", e);
