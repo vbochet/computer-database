@@ -30,7 +30,7 @@ public class Cli {
     static Logger LOGGER = LoggerFactory.getLogger(Cli.class);
 
     public static void main(String[] args) throws ServiceException, PageException {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("application-context.xml");
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("cli-context.xml");
         Cli cli = context.getBean(Cli.class);
         LOGGER.debug("Starting Computer-Database command line interface");
 
