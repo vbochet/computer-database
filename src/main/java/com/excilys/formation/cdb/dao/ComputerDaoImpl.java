@@ -16,11 +16,11 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.ConnectionHolder;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.mapper.ComputerMapper;
@@ -218,19 +218,8 @@ public class ComputerDaoImpl implements ComputerDao {
     @Transactional(rollbackFor=DaoException.class)
     public void deleteMany(List<Long> ids) throws DaoException {
         LOGGER.debug("Deleting computers n°{}", ids);
-        ConnectionHolder connHolder = null;
 
-        if (!TransactionSynchronizationManager.getResourceMap().values().isEmpty()) {
-            Object obj = TransactionSynchronizationManager.getResourceMap().values().iterator().next();
-            if (!(obj instanceof ConnectionHolder)) {
-                throw new DaoException("Error in computer list deletion : couldn't get connection to SQL DataBase");
-            }
-            else {
-                connHolder = (ConnectionHolder) obj;
-            }
-        }
-
-        Connection connection = connHolder.getConnection();
+        Connection connection = getConnection();
 
         try {
             for (long id : ids) {
@@ -396,8 +385,8 @@ public class ComputerDaoImpl implements ComputerDao {
     private Connection getConnection() throws DaoException {
         Connection connection = null;
         try {
-            connection = dataSource.getConnection();
-        } catch (SQLException e) {
+            connection = DataSourceUtils.getConnection(dataSource);
+        } catch (CannotGetJdbcConnectionException e) {
             DaoExceptionThrower("Error while getting connection", e);
         }
         return connection;
