@@ -303,21 +303,12 @@ public class ComputerDaoImpl implements ComputerDao {
     public long count() throws DaoException {
         LOGGER.debug("Counting computers");
 
-        Connection connection = getConnection();
-        Statement statement = null;
-        ResultSet resultSet = null;
         long count = -1;
 
         try {
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery(COUNT_REQUEST);
-            if(resultSet.next()) {
-                count = resultSet.getLong(1);
-            }
-        } catch (SQLException e) {
+            count = jdbcTemplate.queryForObject(COUNT_REQUEST, Long.class).longValue();
+        } catch (DataAccessException e) {
             DaoExceptionThrower("SQL error in computer counting", e);
-        } finally {
-            DaoUtils.closeElements(connection, statement, resultSet);
         }
 
         return count;
@@ -327,25 +318,13 @@ public class ComputerDaoImpl implements ComputerDao {
     public long countSearch(String search) throws DaoException {
         LOGGER.debug("Counting search results");
 
-        Connection connection = getConnection();
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
         long count = -1;
 
         try {
-            preparedStatement = connection.prepareStatement(COUNT_SEARCH_REQUEST);
-
-            preparedStatement.setString(1, search + "%");
-            preparedStatement.setString(2, search + "%");
-            resultSet = preparedStatement.executeQuery();
-
-            if(resultSet.first()) {
-                count = resultSet.getLong(1);
-            }
-        } catch (SQLException e) {
+            Object[] params = new Object[] {search + "%", search + "%"};
+            count = jdbcTemplate.queryForObject(COUNT_SEARCH_REQUEST, params, Long.class).longValue();
+        } catch (DataAccessException e) {
             DaoExceptionThrower("SQL error in search results counting", e);
-        } finally {
-            DaoUtils.closeElements(connection, preparedStatement, resultSet);
         }
 
         return count;

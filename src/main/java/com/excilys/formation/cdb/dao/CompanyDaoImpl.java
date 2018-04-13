@@ -2,10 +2,7 @@ package com.excilys.formation.cdb.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +20,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.cdb.exceptions.DaoException;
-import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.mapper.RowCompanyMapper;
-import com.excilys.formation.cdb.mapper.RowComputerMapper;
 import com.excilys.formation.cdb.model.Company;
 
 @Repository("companyDaoBean")
@@ -153,21 +148,12 @@ public class CompanyDaoImpl implements CompanyDao {
     public long count() throws DaoException {
         LOGGER.debug("Counting companies");
 
-        Connection connection = getConnection();
-        Statement statement = null;
-        ResultSet resultSet = null;
         long count = -1;
 
         try {
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery(COUNT_REQUEST);
-            if(resultSet.next()) {
-                count = resultSet.getLong(1);
-            }
-        } catch (SQLException e) {
+            count = jdbcTemplate.queryForObject(COUNT_REQUEST, Long.class).longValue();
+        } catch (DataAccessException e) {
             DaoExceptionThrower("SQL error in companies counting", e);
-        } finally {
-            DaoUtils.closeElements(connection, statement, resultSet);
         }
 
         return count;
