@@ -1,8 +1,5 @@
 package com.excilys.formation.cdb.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,9 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +22,6 @@ import com.excilys.formation.cdb.model.Company;
 @EnableTransactionManagement
 public class CompanyDaoImpl implements CompanyDao {
     static final Logger LOGGER = LoggerFactory.getLogger(CompanyDaoImpl.class);
-
-    private DataSource dataSource;
     
     private final String LIST_REQUEST = "SELECT id, name FROM company LIMIT ? OFFSET ?;";
     private final String READ_REQUEST = "SELECT id, name FROM company WHERE id = ?;";
@@ -42,7 +35,6 @@ public class CompanyDaoImpl implements CompanyDao {
     @Autowired
     public CompanyDaoImpl(DataSource dataSource) {
         super();
-        this.dataSource = dataSource;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
@@ -119,28 +111,12 @@ public class CompanyDaoImpl implements CompanyDao {
     public void deleteById(long companyId) throws DaoException {
         LOGGER.debug("Deleting company n°{}", companyId);
 
-        Connection connection = getConnection();
-
         try {
-            executeDeleteComputerRequest(connection, companyId);
-            executeDeleteCompanyRequest(connection, companyId);
-        } catch (SQLException e) {
+            jdbcTemplate.update(DELETE_COMPUTER_REQUEST, companyId);
+            jdbcTemplate.update(DELETE_COMPANY_REQUEST, companyId);
+        } catch (DataAccessException e) {
             String errorMsg = "SQL error in company deletion";
             DaoExceptionThrower(errorMsg, e);
-        }
-    }
-
-    private void executeDeleteCompanyRequest(Connection connection, Long id) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_COMPANY_REQUEST);) {
-            preparedStatement.setLong(1, id);
-            preparedStatement.executeUpdate();
-        }
-    }
-
-    private void executeDeleteComputerRequest(Connection connection, Long id) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_COMPUTER_REQUEST);) {
-            preparedStatement.setLong(1, id);
-            preparedStatement.executeUpdate();
         }
     }
 
@@ -157,15 +133,5 @@ public class CompanyDaoImpl implements CompanyDao {
         }
 
         return count;
-    }
-    
-    private Connection getConnection() throws DaoException {
-        Connection connection = null;
-        try {
-            connection = DataSourceUtils.getConnection(dataSource);
-        } catch (CannotGetJdbcConnectionException e) {
-            DaoExceptionThrower("Error while getting connection", e);
-        }
-        return connection;
     }
 }
