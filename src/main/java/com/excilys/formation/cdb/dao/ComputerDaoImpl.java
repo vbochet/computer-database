@@ -194,14 +194,10 @@ public class ComputerDaoImpl implements ComputerDao {
     public void delete(long id) throws DaoException {
         LOGGER.debug("Deleting computer n°{}", id);
 
-        Connection connection = getConnection();
-
         try {
-            executeDeleteRequest(connection, id);
-        } catch (SQLException e) {
+            jdbcTemplate.update(DELETE_REQUEST, id);
+        } catch (DataAccessException e) {
             DaoExceptionThrower("SQL error in computer deletion", e);
-        } finally {
-            DaoUtils.closeConnection(connection);
         }
     }
 
@@ -210,22 +206,13 @@ public class ComputerDaoImpl implements ComputerDao {
     public void deleteMany(List<Long> ids) throws DaoException {
         LOGGER.debug("Deleting computers n°{}", ids);
 
-        Connection connection = getConnection();
-
         try {
             for (long id : ids) {
-                executeDeleteRequest(connection, id);
+                jdbcTemplate.update(DELETE_REQUEST, id);
                 LOGGER.debug("Deletion of computers n°{}", id);
             }
-        } catch (SQLException e) {
+        } catch (DataAccessException e) {
             DaoExceptionThrower("SQL error in computer list deletion", e);
-        }
-    }
-
-    private void executeDeleteRequest(Connection connection, Long id) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_REQUEST);) {
-            preparedStatement.setLong(1, id);
-            preparedStatement.executeUpdate();
         }
     }
 
