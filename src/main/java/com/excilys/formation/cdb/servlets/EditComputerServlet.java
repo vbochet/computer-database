@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.formation.cdb.dto.CompanyDto;
 import com.excilys.formation.cdb.dto.ComputerDto;
@@ -23,11 +27,20 @@ import com.excilys.formation.cdb.service.ComputerService;
 
 
 @WebServlet("/editComputer")
+@Component("editComputerBean")
 public class EditComputerServlet extends ManageComputerServlet {
+    @Autowired
+    private ComputerService computerService;
 
     static final Logger LOGGER = LoggerFactory.getLogger(EditComputerServlet.class);
 
     private static final long serialVersionUID = -9075918957449353325L;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -48,7 +61,7 @@ public class EditComputerServlet extends ManageComputerServlet {
 
         Computer res;
         try {
-            res = ComputerService.INSTANCE.updateComputer(computer);
+            res = computerService.updateComputer(computer);
         } catch (ServiceException e) {
             String errorMsg = "Error while getting computer details";
             LOGGER.error(errorMsg, e);
@@ -73,7 +86,7 @@ public class EditComputerServlet extends ManageComputerServlet {
         }
 
         try {
-            Optional<Computer> optCpt = ComputerService.INSTANCE.getById(id);
+            Optional<Computer> optCpt = computerService.getById(id);
 
             if (optCpt.isPresent()) {
                 computer = optCpt.get();

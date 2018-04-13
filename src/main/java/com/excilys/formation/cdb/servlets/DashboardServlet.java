@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,6 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.formation.cdb.exceptions.PageException;
 import com.excilys.formation.cdb.exceptions.ServiceException;
@@ -20,11 +24,20 @@ import com.excilys.formation.cdb.paginator.ComputerDtoPage;
 import com.excilys.formation.cdb.service.ComputerService;
 
 @WebServlet("/dashboard")
+@Component("dashboardServletBean")
 public class DashboardServlet extends HttpServlet {
+    @Autowired
+    private ComputerService computerService;
 
     static final Logger LOGGER = LoggerFactory.getLogger(DashboardServlet.class);
 
     private static final long serialVersionUID = -8941279631510488886L;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -45,7 +58,7 @@ public class DashboardServlet extends HttpServlet {
         }
 
         try {
-            ComputerService.INSTANCE.deleteManyById(ids);
+            computerService.deleteManyById(ids);
         } catch (ServiceException e) {
             String errorMsg = "Error while deleting computers";
             LOGGER.error(errorMsg, e);
@@ -62,6 +75,7 @@ public class DashboardServlet extends HttpServlet {
         ComputerDtoPage page;
         try {
             page = new ComputerDtoPage();
+            page.setComputerService(computerService);
         } catch (PageException e) {
             String errorMsg = "Error while constructing page";
             LOGGER.error(errorMsg, e);
@@ -79,7 +93,7 @@ public class DashboardServlet extends HttpServlet {
         }
 
         try {
-            page.setNbTotal(ComputerService.INSTANCE.getNbFound());
+            page.setNbTotal(computerService.getNbFound());
         } catch (ServiceException e) {
             String errorMsg = "Error while retrieving the number of computers in database";
             LOGGER.error(errorMsg, e);

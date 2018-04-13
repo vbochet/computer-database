@@ -8,22 +8,26 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import com.excilys.formation.cdb.dao.ComputerDaoImpl;
+import com.excilys.formation.cdb.dao.ComputerDao;
 import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.validator.ComputerValidator;
 
-public enum ComputerService {
-    INSTANCE;
+@Service("computerServiceBean")
+public class ComputerService {
+    @Autowired
+    private ComputerDao computerDao;
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerService.class);
 
     public List<Computer> getList(int offset, int nbToPrint, String order, boolean desc) throws ServiceException {
         if (nbToPrint >= 1) {
             try {
-                return ComputerDaoImpl.INSTANCE.list(offset, nbToPrint, order, desc);
+                return computerDao.list(offset, nbToPrint, order, desc);
             } catch (DaoException e) {
                 LOGGER.error("Error while listing computers from {} to {}", offset, offset + nbToPrint, e);
                 throw(new ServiceException("Error while listing computers from " + offset + " to " + (offset + nbToPrint), e));
@@ -36,7 +40,7 @@ public enum ComputerService {
     public List<Computer> getSearchList(int offset, int nbToPrint, String order, boolean desc, String search) throws ServiceException {
         if (nbToPrint >= 1) {
             try {
-                return ComputerDaoImpl.INSTANCE.listSearch(offset, nbToPrint, order, desc, search);
+                return computerDao.listSearch(offset, nbToPrint, order, desc, search);
             } catch (DaoException e) {
                 LOGGER.error("Error while listing search results from {} to {}", offset, offset + nbToPrint, e);
                 throw(new ServiceException("Error while listing search results from " + offset + " to " + (offset + nbToPrint), e));
@@ -49,7 +53,7 @@ public enum ComputerService {
     public Optional<Computer> getById(long id) throws ServiceException {
         if (id > 0) {
             try {
-                return ComputerDaoImpl.INSTANCE.read(id);
+                return computerDao.read(id);
             } catch (DaoException e) {
                 LOGGER.error("Error while reading details of computer n°{} ", id, e);
                 throw(new ServiceException("Error while reading details of computer n°" + id, e));
@@ -61,7 +65,7 @@ public enum ComputerService {
 
     public long getNbFound() throws ServiceException {
         try {
-            return ComputerDaoImpl.INSTANCE.count();
+            return computerDao.count();
         } catch (DaoException e) {
             LOGGER.error("Error while counting computers in database", e);
             throw(new ServiceException("Error while counting computers in database", e));
@@ -70,7 +74,7 @@ public enum ComputerService {
 
     public long getNbSearch(String search) throws ServiceException {
         try {
-            return ComputerDaoImpl.INSTANCE.countSearch(search);
+            return computerDao.countSearch(search);
         } catch (DaoException e) {
             LOGGER.error("Error while counting search results in database", e);
             throw(new ServiceException("Error while counting search results in database", e));
@@ -80,7 +84,7 @@ public enum ComputerService {
     public boolean deleteById(long id) throws ServiceException {
         if (id > 0) {
             try {
-                ComputerDaoImpl.INSTANCE.delete(id);
+                computerDao.delete(id);
             } catch (DaoException e) {
                 LOGGER.error("Error while deleting company n°{}", id, e);
                 throw(new ServiceException("Error while deleting company n°" + id, e));
@@ -133,7 +137,7 @@ public enum ComputerService {
         }
 
         try {
-            return ComputerDaoImpl.INSTANCE.create(computer);
+            return computerDao.create(computer);
         } catch (DaoException e) {
             LOGGER.error("Error while creating a new computer", e);
             throw(new ServiceException("Error while creating a new computer", e));
@@ -146,7 +150,7 @@ public enum ComputerService {
         }
 
         try {
-            return ComputerDaoImpl.INSTANCE.update(computer);
+            return computerDao.update(computer);
         } catch (DaoException e) {
             LOGGER.error("Error while updating computer", e);
             throw(new ServiceException("Error while updating computer", e));
@@ -161,7 +165,7 @@ public enum ComputerService {
         
         if (elementsValid) {
             try {
-                ComputerDaoImpl.INSTANCE.deleteMany(ids);
+                computerDao.deleteMany(ids);
             } catch (DaoException e) {
                 LOGGER.error("Error while deleting companies {}", ids, e);
                 throw(new ServiceException("Error while deleting companies "+ ids, e));

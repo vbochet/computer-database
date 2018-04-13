@@ -16,6 +16,12 @@ import com.excilys.formation.cdb.service.ComputerService;
 
 public class ComputerDtoPage extends Page<ComputerDto> {
 
+    private ComputerService computerService;
+
+    public void setComputerService(ComputerService computerService) {
+        this.computerService = computerService;
+    }
+
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDtoPage.class);
 
     public ComputerDtoPage() throws PageException {
@@ -29,10 +35,10 @@ public class ComputerDtoPage extends Page<ComputerDto> {
         
         try {
             if (!getSearch().isEmpty()) {
-                computerList = ComputerService.INSTANCE.getSearchList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc(), getSearch());
-                nb = ComputerService.INSTANCE.getNbSearch(getSearch());
+                computerList = computerService.getSearchList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc(), getSearch());
+                nb = computerService.getNbSearch(getSearch());
             } else {
-                computerList = ComputerService.INSTANCE.getList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc());
+                computerList = computerService.getList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc());
             }
 
             LOGGER.debug("refreshContentOrderBy: {}", orderBy);

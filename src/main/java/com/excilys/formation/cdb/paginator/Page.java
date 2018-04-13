@@ -7,7 +7,7 @@ import com.excilys.formation.cdb.exceptions.PageException;
 public abstract class Page<T> {
 
     public Page() throws PageException {
-        this.refreshContent();
+//        this.refreshContent();
     }
 
     private List<T> content;

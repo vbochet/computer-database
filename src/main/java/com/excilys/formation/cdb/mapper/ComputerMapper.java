@@ -4,17 +4,13 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.formation.cdb.dto.ComputerDto;
-import com.excilys.formation.cdb.exceptions.MapperException;
-import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
-import com.excilys.formation.cdb.service.CompanyService;
 
 public enum ComputerMapper {
 
@@ -61,40 +57,5 @@ public enum ComputerMapper {
 
         return computerDto;
     }
-    
-    public Computer computerDtoToComputer(ComputerDto computerDto) throws MapperException {
-        Computer computer = new Computer();
-        LocalDate intro = null, discont = null;
-        
-        try {
-            intro = Date.valueOf(computerDto.getComputerIntroduced()).toLocalDate();
-        } catch (IllegalArgumentException e) {
-            // do nothing
-        }
-        
-        try {
-            discont = Date.valueOf(computerDto.getComputerDiscontinued()).toLocalDate();
-        } catch (IllegalArgumentException e) {
-            // do nothing
-        }
 
-        computer.setId(computerDto.getComputerId());
-        computer.setName(computerDto.getComputerName());
-        computer.setIntroduced(intro);
-        computer.setDiscontinued(discont);
-        Optional<Company> optCompany;
-        try {
-            optCompany = CompanyService.INSTANCE.getByName(computerDto.getComputerCompanyName());
-        } catch (ServiceException e) {
-            LOGGER.error("Error in computer mapping", e);
-            throw(new MapperException("Error in computer mapping", e));
-        }
-        if (optCompany.isPresent()) {
-            computer.setCompany(optCompany.get());
-        } else {
-            computer.setCompany(null);
-        }
-
-        return computer;
-    }
 }
