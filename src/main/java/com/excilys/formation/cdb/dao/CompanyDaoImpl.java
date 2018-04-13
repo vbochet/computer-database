@@ -14,7 +14,9 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -22,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.mapper.CompanyMapper;
+import com.excilys.formation.cdb.mapper.RowCompanyMapper;
+import com.excilys.formation.cdb.mapper.RowComputerMapper;
 import com.excilys.formation.cdb.model.Company;
 
 @Repository("companyDaoBean")
@@ -38,10 +42,13 @@ public class CompanyDaoImpl implements CompanyDao {
     private final String DELETE_COMPUTER_REQUEST  = "DELETE FROM computer WHERE company_id = ?;";
     private final String COUNT_REQUEST  = "SELECT COUNT(company.id) FROM company;";
 
+    private JdbcTemplate jdbcTemplate;
+
     @Autowired
     public CompanyDaoImpl(DataSource dataSource) {
         super();
         this.dataSource = dataSource;
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     private void DaoExceptionThrower(String errorMsg, Exception e) throws DaoException {
@@ -53,96 +60,63 @@ public class CompanyDaoImpl implements CompanyDao {
     public List<Company> list(int offset, int nbToPrint) throws DaoException {
         LOGGER.debug("Listing companies from {} ({} per page)", offset, nbToPrint);
 
-        Connection connection = getConnection();
-        List<Company> companiesList = new ArrayList<>();
+        List<Company> companiesList = null;
 
         try {
-            executeListRequest(connection, offset, nbToPrint, companiesList);
-        } catch (SQLException e) {
+            String query = LIST_REQUEST;
+            Object[] params = new Object[] {nbToPrint, offset};
+
+            LOGGER.debug("Execution of the SQL query {} with arguments {}", query, params);
+            companiesList =  jdbcTemplate.query(query, params, new RowCompanyMapper());
+        } catch (DataAccessException e) {
             DaoExceptionThrower("SQL error in companies listing" ,e);
-        } finally {
-            DaoUtils.closeConnection(connection);
         }
 
         return companiesList;
-    }
-
-    private void executeListRequest(Connection connection, int offset, int nbToPrint, List<Company> companiesList) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(LIST_REQUEST);) {
-            preparedStatement.setInt(1, nbToPrint);
-            preparedStatement.setInt(2, offset);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery();) {
-                while (resultSet.next()) {
-                    companiesList.add(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
-                }
-            }
-        }
     }
 
     @Override
     public Optional<Company> read(long companyId) throws DaoException {
         LOGGER.debug("Showing info from company n°{}", companyId);
 
-        Connection connection = getConnection();
         Optional<Company> optCompany = Optional.empty();
 
         try {
-            optCompany = executeReadRequest(connection, companyId);
-        } catch (SQLException e) {
+            String query = READ_REQUEST;
+            Object[] params = new Object[] {companyId};
+            LOGGER.debug("Execution of the SQL query {} with arguments {}", query, params);
+            List<Company> companyList = jdbcTemplate.query(query, params, new RowCompanyMapper());
+            if (companyList.size() == 1) {
+                optCompany = Optional.of(companyList.get(0));
+            }
+        } catch (DataAccessException e) {
             DaoExceptionThrower("SQL error in company reading", e);
             LOGGER.error("SQL error in company reading\n", e);
-        } finally {
-            DaoUtils.closeConnection(connection);
         }
 
         return optCompany;
-    }
-
-    private Optional<Company> executeReadRequest(Connection connection, long id) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(READ_REQUEST);) {
-            preparedStatement.setLong(1, id);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery();) {
-                if (resultSet.next()) {
-                    LOGGER.error("Found company matching id {}\n", id);
-                    return Optional.of(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
-                }
-            }
-            return Optional.empty();
-        }
     }
 
     @Override
     public Optional<Company> findByName(String companyName) throws DaoException {
         LOGGER.debug("Showing info from company {}", companyName);
 
-        Connection connection = getConnection();
         Optional<Company> optCompany = Optional.empty();
 
         try {
-            optCompany = executeFindByNameRequest(connection, companyName);
-        } catch (SQLException e) {
+            String query = FIND_BY_NAME_REQUEST;
+            Object[] params = new Object[] {companyName};
+            LOGGER.debug("Execution of the SQL query {} with arguments {}", query, params);
+            List<Company> companyList = jdbcTemplate.query(query, params, new RowCompanyMapper());
+            if (companyList.size() == 1) {
+                optCompany = Optional.of(companyList.get(0));
+            }
+        } catch (DataAccessException e) {
             DaoExceptionThrower("SQL error in company reading", e);
             LOGGER.error("SQL error in company reading\n", e);
-        } finally {
-            DaoUtils.closeConnection(connection);
         }
 
         return optCompany;
-    }
-
-    private Optional<Company> executeFindByNameRequest(Connection connection, String name) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NAME_REQUEST);) {
-            preparedStatement.setString(1, name);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery();) {
-                if (resultSet.next()) {
-                    return Optional.of(CompanyMapper.INSTANCE.resultSetToCompany(resultSet));
-                }
-            }
-            return Optional.empty();
-        }
     }
 
     @Override
