@@ -16,7 +16,9 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.mapper.ComputerMapper;
+import com.excilys.formation.cdb.mapper.RowComputerMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 
@@ -49,10 +52,13 @@ public class ComputerDaoImpl implements ComputerDao {
 
     private final String DESC = " DESC";
 
+    private JdbcTemplate jdbcTemplate;
+
     @Autowired
     public ComputerDaoImpl(DataSource dataSource) {
         super();
         this.dataSource = dataSource;
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     private void DaoExceptionThrower(String errorMsg, Exception e) throws DaoException {
@@ -119,31 +125,18 @@ public class ComputerDaoImpl implements ComputerDao {
     public Optional<Computer> read(long id) throws DaoException {
         LOGGER.debug("Showing info from computer n°{}", id);
 
-        Connection connection = getConnection();
         Optional<Computer> optComputer = Optional.empty();
 
         try {
-            optComputer = executeReadRequest(connection, id);
-        } catch (SQLException e) {
-            DaoExceptionThrower("SQL error in computer reading", e);
-        } finally {
-            DaoUtils.closeConnection(connection);
-        }
-
-        return optComputer;
-    }
-
-    private Optional<Computer> executeReadRequest(Connection connection, long id) throws SQLException {
-        Optional<Computer> optComputer = Optional.empty();
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(REQUEST_SELECT_FROM_JOIN + READ_REQUEST);) {
-            preparedStatement.setLong(1, id);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery();) {
-                if (resultSet.next()) {
-                    optComputer = Optional.of(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
-                }
+            String query = REQUEST_SELECT_FROM_JOIN + READ_REQUEST;
+            Object[] params = new Object[] {id};
+            LOGGER.debug("Execution of the SQL query {} with arguments {}", query, params);
+            List<Computer> computerList = jdbcTemplate.query(query, params, new RowComputerMapper());
+            if (computerList.size() == 1) {
+                optComputer = Optional.of(computerList.get(0));
             }
+        } catch (DataAccessException e) {
+            DaoExceptionThrower("SQL error in computer reading", e);
         }
 
         return optComputer;
