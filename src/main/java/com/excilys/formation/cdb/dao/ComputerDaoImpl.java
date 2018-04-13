@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +24,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.cdb.exceptions.DaoException;
-import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.mapper.RowComputerMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
@@ -235,21 +233,18 @@ public class ComputerDaoImpl implements ComputerDao {
     public List<Computer> list(int offset, int nbToPrint, String order, boolean desc) throws DaoException {
         LOGGER.debug("Listing computers from {} ({} per page) ordered by {}", offset, nbToPrint, order);
 
-        Connection connection = getConnection();
-        List<Computer> computersList = new ArrayList<>();
+        List<Computer> computersList = null;
 
         try {
-            executeListRequest(connection, offset, nbToPrint, order, desc, computersList);
+            computersList = executeListRequest(offset, nbToPrint, order, desc);
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in computer listing", e);
-        } finally {
-            DaoUtils.closeConnection(connection);
         }
 
         return computersList;
     }
 
-    private void executeListRequest(Connection connection, int offset, int nbToPrint, String order, boolean desc, List<Computer> computersList) throws SQLException {
+    private List<Computer> executeListRequest(int offset, int nbToPrint, String order, boolean desc) throws SQLException {
         String field;
         StringBuilder req = new StringBuilder();
 
@@ -263,38 +258,28 @@ public class ComputerDaoImpl implements ComputerDao {
         }
 
         req.append(REQUEST_SELECT_FROM_JOIN).append("ORDER BY ").append(field).append(LIST_REQUEST);
+        Object[] params = new Object[] {nbToPrint, offset};
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(req.toString());) {
-            preparedStatement.setInt(1, nbToPrint);
-            preparedStatement.setLong(2, offset);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery();) {
-                while (resultSet.next()) {
-                    computersList.add(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
-                }
-            }
-        }
+        LOGGER.debug("Execution of the SQL query {} with arguments {}", req.toString(), params);
+        return jdbcTemplate.query(req.toString(), params, new RowComputerMapper());
     }
 
     @Override
     public List<Computer> listSearch(int offset, int nbToPrint, String order, boolean desc, String search) throws DaoException {
         LOGGER.debug("Listing search result from search \"{}\" beginning at {} ({} per page) ordered by {}", search, offset, nbToPrint, order);
 
-        Connection connection = getConnection();
-        List<Computer> computersList = new ArrayList<>();
+        List<Computer> computersList = null;
 
         try {
-            executeListSearchRequest(connection, offset, nbToPrint, order, desc, search, computersList);
+            computersList = executeListSearchRequest(offset, nbToPrint, order, desc, search);
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in search result listing", e);
-        } finally {
-            DaoUtils.closeConnection(connection);
         }
 
         return computersList;
     }
 
-    private void executeListSearchRequest(Connection connection, int offset, int nbToPrint, String order, boolean desc, String search, List<Computer> computersList) throws SQLException {
+    private List<Computer> executeListSearchRequest(int offset, int nbToPrint, String order, boolean desc, String search) throws SQLException {
         String field;
         StringBuilder req = new StringBuilder();
         
@@ -309,18 +294,9 @@ public class ComputerDaoImpl implements ComputerDao {
 
         req.append(REQUEST_SELECT_FROM_JOIN).append(" WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY ").append(field).append(LIST_REQUEST);
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(req.toString());) {
-            preparedStatement.setString(1, search + "%");
-            preparedStatement.setString(2, search + "%");
-            preparedStatement.setInt(3, nbToPrint);
-            preparedStatement.setLong(4, offset);
-            
-            try (ResultSet resultSet = preparedStatement.executeQuery();) {
-                while (resultSet.next()) {
-                    computersList.add(ComputerMapper.INSTANCE.resultSetToComputer(resultSet));
-                }
-            }
-        }
+        Object[] params = new Object[] {search + "%", search + "%", nbToPrint, offset};
+        LOGGER.debug("Execution of the SQL query {} with arguments {}", req.toString(), params);
+        return jdbcTemplate.query(req.toString(), params, new RowComputerMapper());
     }
 
     @Override
