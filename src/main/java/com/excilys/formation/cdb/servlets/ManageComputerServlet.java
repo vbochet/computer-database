@@ -2,8 +2,8 @@ package com.excilys.formation.cdb.servlets;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +12,9 @@ import java.util.function.Consumer;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.formation.cdb.dto.CompanyDto;
-import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Company;
@@ -79,23 +80,15 @@ public class ManageComputerServlet extends HttpServlet {
                 LOGGER.debug("Company set to null");
             }
 
-        } catch (ServiceException e) {
-            LOGGER.error("Error while getting company details", e);
-            throw(new ServletException("Error while getting company details", e));
         } catch (NumberFormatException e) {
             computer.setCompany(null);
             LOGGER.debug("Company set to null (received value \"{}\")", request.getParameter("companyId"));
         }
     }
 
-    protected void setCompanyDtoListInRequest(Logger logger, HttpServletRequest request) throws ServletException {
+    protected void setCompanyDtoListInRequest(Logger logger, HttpServletRequest request) {
         List<Company> companyList;
-        try {
-            companyList = companyService.getList(0, (int)companyService.getNbFound());
-        } catch (ServiceException e) {
-            logger.error("Error while getting company list", e);
-            throw(new ServletException("Error while getting company list", e));
-        }
+        companyList = companyService.getList(0, (int)companyService.getNbFound());
         List<CompanyDto> companyDtoList = new ArrayList<>();
         Consumer<Company> companyConsumer = x -> companyDtoList.add(CompanyMapper.INSTANCE.companyToCompanyDto(x));
         companyList.forEach(companyConsumer);

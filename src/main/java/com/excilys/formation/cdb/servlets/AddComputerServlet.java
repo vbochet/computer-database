@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.ComputerService;
 
@@ -44,13 +43,7 @@ public class AddComputerServlet extends ManageComputerServlet {
 
         requestToComputer(LOGGER, request, computer, formatter);
 
-        Computer res;
-        try {
-            res = computerService.createComputer(computer);
-        } catch (ServiceException e) {
-            LOGGER.error("Error while creating computer", e);
-            throw(new ServletException("Error while creating computer", e));
-        }
+        Computer res = computerService.createComputer(computer);
 
         checkAndRedirect(request, response, computer, res, "/WEB-INF/JSP/addComputer.jsp");
     }

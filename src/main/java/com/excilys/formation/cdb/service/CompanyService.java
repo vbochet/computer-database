@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.excilys.formation.cdb.dao.CompanyDao;
-import com.excilys.formation.cdb.exceptions.DaoException;
-import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.model.Company;
 
 @Service("companyServiceBean")
@@ -21,67 +19,42 @@ public class CompanyService {
 
     static final Logger LOGGER = LoggerFactory.getLogger(CompanyService.class);
 
-    public List<Company> getList(int offset, int nbToPrint) throws ServiceException {
+    public List<Company> getList(int offset, int nbToPrint) {
         if (nbToPrint >= 1) {
-            try {
-                return companyDao.list(offset, nbToPrint);
-            } catch (DaoException e) {
-                LOGGER.error("Error while listing companies from {} to {}", offset, offset + nbToPrint, e);
-                throw(new ServiceException("Error while listing companies from " + offset + " to " + (offset + nbToPrint), e));
-            }
+            return companyDao.list(offset, nbToPrint);
         }
 
         return new ArrayList<>();
     }
 
-    public Optional<Company> getById(long companyId) throws ServiceException {
+    public Optional<Company> getById(long companyId) {
         Optional<Company> ret = Optional.empty();
         if (companyId > 0) {
-            try {
-                ret = companyDao.read(companyId);
-            } catch (DaoException e) {
-                LOGGER.error("Error while reading details of company n°{} ", companyId, e);
-                throw(new ServiceException("Error while reading details of company n°" + companyId, e));
-            }
+            ret = companyDao.read(companyId);
         }
 
         return ret;
     }
 
-    public Optional<Company> getByName(String companyName) throws ServiceException {
+    public Optional<Company> getByName(String companyName) {
         Optional<Company> ret = Optional.empty();
         if (companyName != null && !companyName.isEmpty()) {
-            try {
-                ret = companyDao.findByName(companyName);
-            } catch (DaoException e) {
-                LOGGER.error("Error while counting computers in database", e);
-                throw(new ServiceException("Error while counting computers in database", e));
-            }
+            ret = companyDao.findByName(companyName);
         }
 
         return ret;
     }
 
-    public boolean deleteById(long id) throws ServiceException {
+    public boolean deleteById(long id) {
         if (id > 0) {
-            try {
-                companyDao.deleteById(id);
-            } catch (DaoException e) {
-                LOGGER.error("Error while deleting company n°{}", id, e);
-                throw(new ServiceException("Error while deleting company n°" + id, e));
-            }
+            companyDao.deleteById(id);
             return true;
         }
 
         return false;
     }
 
-    public long getNbFound() throws ServiceException {
-        try {
-            return companyDao.count();
-        } catch (DaoException e) {
-            LOGGER.error("Error while counting companies in database", e);
-            throw(new ServiceException("Error while counting companies in database", e));
-        }
+    public long getNbFound() {
+        return companyDao.count();
     }
 }
