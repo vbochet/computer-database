@@ -3,7 +3,6 @@ package com.excilys.formation.cdb.dao;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
@@ -18,7 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,55 +70,56 @@ public class ComputerDaoImpl implements ComputerDao {
     public Computer create(Computer computer) throws DaoException {
         LOGGER.debug("Creating computer {}", computer);
 
-        Connection connection = getConnection();
 
         try {
-            executeCreateRequest(connection, computer);
+            executeCreateRequest(computer);
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in computer creation", e);
-        } finally {
-            DaoUtils.closeConnection(connection);
         }
 
         return computer;
     }
 
-    private void executeCreateRequest(Connection connection, Computer computer) throws SQLException {
+    private void executeCreateRequest(Computer computer) throws SQLException {
         Company company = computer.getCompany();
-        LocalDate intro, discont;
+        KeyHolder generatedKeyHolder = new GeneratedKeyHolder();
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(CREATE_REQUEST, Statement.RETURN_GENERATED_KEYS); ) {
-    
-            preparedStatement.setString(1, computer.getName());
-    
-            intro = computer.getIntroduced();
-            if (intro == null) {
-                preparedStatement.setNull(2, java.sql.Types.DATE);
-            } else {
-                preparedStatement.setDate(2, Date.valueOf(intro));
-            }
-    
-            discont = computer.getDiscontinued();
-            if (discont == null) {
-                preparedStatement.setNull(3, java.sql.Types.DATE);
-            } else {
-                preparedStatement.setDate(3, Date.valueOf(discont));
-            }
-    
-            if (company == null) {
-                preparedStatement.setNull(4, java.sql.Types.BIGINT);
-            } else {
-                preparedStatement.setLong(4, company.getId());
-            }
-    
-            preparedStatement.executeUpdate();
+        PreparedStatementCreator psc = new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                LocalDate intro, discont;
+                PreparedStatement preparedStatement = connection.prepareStatement(CREATE_REQUEST, Statement.RETURN_GENERATED_KEYS);
 
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
-                if (resultSet.next()) {
-                    computer.setId(resultSet.getLong(1));
+                preparedStatement.setString(1, computer.getName());
+
+                intro = computer.getIntroduced();
+                if (intro == null) {
+                    preparedStatement.setNull(2, java.sql.Types.DATE);
+                } else {
+                    preparedStatement.setDate(2, Date.valueOf(intro));
                 }
+        
+                discont = computer.getDiscontinued();
+                if (discont == null) {
+                    preparedStatement.setNull(3, java.sql.Types.DATE);
+                } else {
+                    preparedStatement.setDate(3, Date.valueOf(discont));
+                }
+        
+                if (company == null) {
+                    preparedStatement.setNull(4, java.sql.Types.BIGINT);
+                } else {
+                    preparedStatement.setLong(4, company.getId());
+                }
+                
+                return preparedStatement;
             }
-        }
+        };
+
+        LOGGER.debug("Execution of the PreparedStatementCreator {}", psc.toString());
+        jdbcTemplate.update(psc, generatedKeyHolder);
+        
+        computer.setId(generatedKeyHolder.getKey().longValue());
     }
 
     @Override
