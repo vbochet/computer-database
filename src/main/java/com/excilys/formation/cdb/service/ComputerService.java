@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.excilys.formation.cdb.dao.ComputerDao;
-import com.excilys.formation.cdb.exceptions.DaoException;
-import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.validator.ComputerValidator;
 
@@ -24,71 +22,41 @@ public class ComputerService {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerService.class);
 
-    public List<Computer> getList(int offset, int nbToPrint, String order, boolean desc) throws ServiceException {
+    public List<Computer> getList(int offset, int nbToPrint, String order, boolean desc) {
         if (nbToPrint >= 1) {
-            try {
-                return computerDao.list(offset, nbToPrint, order, desc);
-            } catch (DaoException e) {
-                LOGGER.error("Error while listing computers from {} to {}", offset, offset + nbToPrint, e);
-                throw(new ServiceException("Error while listing computers from " + offset + " to " + (offset + nbToPrint), e));
-            }
+            return computerDao.list(offset, nbToPrint, order, desc);
         }
 
         return new ArrayList<>();
     }
 
-    public List<Computer> getSearchList(int offset, int nbToPrint, String order, boolean desc, String search) throws ServiceException {
+    public List<Computer> getSearchList(int offset, int nbToPrint, String order, boolean desc, String search) {
         if (nbToPrint >= 1) {
-            try {
-                return computerDao.listSearch(offset, nbToPrint, order, desc, search);
-            } catch (DaoException e) {
-                LOGGER.error("Error while listing search results from {} to {}", offset, offset + nbToPrint, e);
-                throw(new ServiceException("Error while listing search results from " + offset + " to " + (offset + nbToPrint), e));
-            }
+            return computerDao.listSearch(offset, nbToPrint, order, desc, search);
         }
 
         return new ArrayList<>();
     }
 
-    public Optional<Computer> getById(long id) throws ServiceException {
+    public Optional<Computer> getById(long id) {
         if (id > 0) {
-            try {
-                return computerDao.read(id);
-            } catch (DaoException e) {
-                LOGGER.error("Error while reading details of computer n°{} ", id, e);
-                throw(new ServiceException("Error while reading details of computer n°" + id, e));
-            }
+            return computerDao.read(id);
         }
 
         return Optional.empty();
     }
 
-    public long getNbFound() throws ServiceException {
-        try {
-            return computerDao.count();
-        } catch (DaoException e) {
-            LOGGER.error("Error while counting computers in database", e);
-            throw(new ServiceException("Error while counting computers in database", e));
-        }
+    public long getNbFound() {
+        return computerDao.count();
     }
 
-    public long getNbSearch(String search) throws ServiceException {
-        try {
-            return computerDao.countSearch(search);
-        } catch (DaoException e) {
-            LOGGER.error("Error while counting search results in database", e);
-            throw(new ServiceException("Error while counting search results in database", e));
-        }
+    public long getNbSearch(String search) {
+        return computerDao.countSearch(search);
     }
 
-    public boolean deleteById(long id) throws ServiceException {
+    public boolean deleteById(long id) {
         if (id > 0) {
-            try {
-                computerDao.delete(id);
-            } catch (DaoException e) {
-                LOGGER.error("Error while deleting company n°{}", id, e);
-                throw(new ServiceException("Error while deleting company n°" + id, e));
-            }
+            computerDao.delete(id);
             return true;
         }
 
@@ -131,45 +99,30 @@ public class ComputerService {
         return true;
     }
 
-    public Computer createComputer(Computer computer) throws ServiceException {
+    public Computer createComputer(Computer computer) {
         if (!ComputerValidator.INSTANCE.validateComputer(computer)) {
             return null;
         }
 
-        try {
-            return computerDao.create(computer);
-        } catch (DaoException e) {
-            LOGGER.error("Error while creating a new computer", e);
-            throw(new ServiceException("Error while creating a new computer", e));
-        }
+        return computerDao.create(computer);
     }
 
-    public Computer updateComputer(Computer computer) throws ServiceException {
+    public Computer updateComputer(Computer computer) {
         if (!ComputerValidator.INSTANCE.validateComputer(computer)) {
             return null;
         }
 
-        try {
-            return computerDao.update(computer);
-        } catch (DaoException e) {
-            LOGGER.error("Error while updating computer", e);
-            throw(new ServiceException("Error while updating computer", e));
-        }
+        return computerDao.update(computer);
     }
 
-    public boolean deleteManyById(List<Long> ids) throws ServiceException {
+    public boolean deleteManyById(List<Long> ids) {
         boolean elementsValid = true;
         for(Long id : ids) {
             elementsValid = elementsValid && (id > 0);
         }
         
         if (elementsValid) {
-            try {
-                computerDao.deleteMany(ids);
-            } catch (DaoException e) {
-                LOGGER.error("Error while deleting companies {}", ids, e);
-                throw(new ServiceException("Error while deleting companies "+ ids, e));
-            }
+            computerDao.deleteMany(ids);
             return true;
         }
 

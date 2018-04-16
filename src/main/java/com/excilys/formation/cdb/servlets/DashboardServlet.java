@@ -18,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.excilys.formation.cdb.exceptions.PageException;
-import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.paginator.ComputerDtoPage;
 import com.excilys.formation.cdb.service.ComputerService;
 
@@ -57,13 +55,7 @@ public class DashboardServlet extends HttpServlet {
             }
         }
 
-        try {
-            computerService.deleteManyById(ids);
-        } catch (ServiceException e) {
-            String errorMsg = "Error while deleting computers";
-            LOGGER.error(errorMsg, e);
-            throw(new ServletException(errorMsg, e));
-        }
+        computerService.deleteManyById(ids);
     
         request.setAttribute("deletionSuccess", true);
         
@@ -73,32 +65,16 @@ public class DashboardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ComputerDtoPage page;
-        try {
-            page = new ComputerDtoPage();
-            page.setComputerService(computerService);
-        } catch (PageException e) {
-            String errorMsg = "Error while constructing page";
-            LOGGER.error(errorMsg, e);
-            throw(new ServletException(errorMsg, e));
-        }
+        page = new ComputerDtoPage();
+        page.setComputerService(computerService);
 
         try {
             page.setNbPerPage(Integer.parseInt(request.getParameter("displayBy")));
         } catch (NumberFormatException e) {
             // do nothing
-        } catch (PageException e) {
-            String errorMsg = "Error while setting number of computers to display per page";
-            LOGGER.error(errorMsg, e);
-            throw(new ServletException(errorMsg, e));
         }
 
-        try {
-            page.setNbTotal(computerService.getNbFound());
-        } catch (ServiceException e) {
-            String errorMsg = "Error while retrieving the number of computers in database";
-            LOGGER.error(errorMsg, e);
-            throw(new ServletException(errorMsg, e));
-        }
+        page.setNbTotal(computerService.getNbFound());
         
         if (request.getParameter("search") != null) {
             page.setSearch(request.getParameter("search"));
@@ -108,45 +84,17 @@ public class DashboardServlet extends HttpServlet {
             page.setCurrentPage(Integer.parseInt(request.getParameter("npage")));
         } catch (NumberFormatException e) {
             // do nothing 
-        } catch (PageException e) {
-            String errorMsg = "Error while setting current page number";
-            LOGGER.error(errorMsg, e);
-            throw(new ServletException(errorMsg, e));
         }
 
-        String errorMsgOrder = "Error while setting ordering parameter";
-        try {
-            page.setOrderBy(request.getParameter("orderBy"));
-        } catch (PageException e) {
-            LOGGER.error(errorMsgOrder, e);
-            throw(new ServletException(errorMsgOrder, e));
-        }
-
-        try {
-            page.setOrderDesc(Boolean.valueOf(request.getParameter("orderDesc")));
-        } catch (PageException e) {
-            LOGGER.error(errorMsgOrder, e);
-            throw(new ServletException(errorMsgOrder, e));
-        }
+        page.setOrderBy(request.getParameter("orderBy"));
+        page.setOrderDesc(Boolean.valueOf(request.getParameter("orderDesc")));
 
 
         if (request.getParameter("next") != null) {
-            try {
-                page.next();
-            } catch (PageException e) {
-                String errorMsg = "Error while going to next page";
-                LOGGER.error(errorMsg, e);
-                throw(new ServletException(errorMsg, e));
-            }
+            page.next();
         }
         else if (request.getParameter("prev") != null) {
-            try {
-                page.prev();
-            } catch (PageException e) {
-                String errorMsg = "Error while going to previous page";
-                LOGGER.error(errorMsg, e);
-                throw(new ServletException(errorMsg, e));
-            }
+            page.prev();
         }
 
 

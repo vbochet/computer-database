@@ -19,7 +19,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.formation.cdb.dto.CompanyDto;
 import com.excilys.formation.cdb.dto.ComputerDto;
-import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Computer;
@@ -60,13 +59,7 @@ public class EditComputerServlet extends ManageComputerServlet {
         requestToComputer(LOGGER, request, computer, formatter);
 
         Computer res;
-        try {
-            res = computerService.updateComputer(computer);
-        } catch (ServiceException e) {
-            String errorMsg = "Error while getting computer details";
-            LOGGER.error(errorMsg, e);
-            throw(new ServletException(errorMsg, e));
-        }
+        res = computerService.updateComputer(computer);
 
         checkAndRedirect(request, response, computer, res, "/WEB-INF/JSP/editComputer.jsp");
     }
@@ -85,20 +78,15 @@ public class EditComputerServlet extends ManageComputerServlet {
             throw(new ServletException("Bad id format", e));
         }
 
-        try {
-            Optional<Computer> optCpt = computerService.getById(id);
+        Optional<Computer> optCpt = computerService.getById(id);
 
-            if (optCpt.isPresent()) {
-                computer = optCpt.get();
-            } else {
-                LOGGER.error("No computer matching id {}", id);
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/404.jsp");
-                rd.forward(request,response);
-                return;
-            }
-        } catch (ServiceException e) {
-            LOGGER.error("Error while retrieving computer n°{}", id, e);
-            throw(new ServletException("Error while retrieving computer n°" + id, e));
+        if (optCpt.isPresent()) {
+            computer = optCpt.get();
+        } else {
+            LOGGER.error("No computer matching id {}", id);
+            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/404.jsp");
+            rd.forward(request,response);
+            return;
         }
 
         ComputerDto computerDto = ComputerMapper.INSTANCE.computerToComputerDto(computer);

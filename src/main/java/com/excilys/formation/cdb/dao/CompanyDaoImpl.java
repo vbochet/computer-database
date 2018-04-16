@@ -8,7 +8,6 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -23,12 +22,12 @@ import com.excilys.formation.cdb.model.Company;
 public class CompanyDaoImpl implements CompanyDao {
     static final Logger LOGGER = LoggerFactory.getLogger(CompanyDaoImpl.class);
     
-    private final String LIST_REQUEST = "SELECT id, name FROM company LIMIT ? OFFSET ?;";
-    private final String READ_REQUEST = "SELECT id, name FROM company WHERE id = ?;";
-    private final String FIND_BY_NAME_REQUEST = "SELECT id, name FROM company WHERE name = ?;";
-    private final String DELETE_COMPANY_REQUEST  = "DELETE FROM company WHERE id = ?;";
-    private final String DELETE_COMPUTER_REQUEST  = "DELETE FROM computer WHERE company_id = ?;";
-    private final String COUNT_REQUEST  = "SELECT COUNT(company.id) FROM company;";
+    private static final String LIST_REQUEST = "SELECT id, name FROM company LIMIT ? OFFSET ?;";
+    private static final String READ_REQUEST = "SELECT id, name FROM company WHERE id = ?;";
+    private static final String FIND_BY_NAME_REQUEST = "SELECT id, name FROM company WHERE name = ?;";
+    private static final String DELETE_COMPANY_REQUEST  = "DELETE FROM company WHERE id = ?;";
+    private static final String DELETE_COMPUTER_REQUEST  = "DELETE FROM computer WHERE company_id = ?;";
+    private static final String COUNT_REQUEST  = "SELECT COUNT(company.id) FROM company;";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -38,69 +37,46 @@ public class CompanyDaoImpl implements CompanyDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    private void DaoExceptionThrower(String errorMsg, Exception e) throws DaoException {
-        LOGGER.error(errorMsg, e);
-        throw(new DaoException(errorMsg, e));
-    }
-
     @Override
-    public List<Company> list(int offset, int nbToPrint) throws DaoException {
+    public List<Company> list(int offset, int nbToPrint) {
         LOGGER.debug("Listing companies from {} ({} per page)", offset, nbToPrint);
 
-        List<Company> companiesList = null;
+        String query = LIST_REQUEST;
+        Object[] params = new Object[] {nbToPrint, offset};
 
-        try {
-            String query = LIST_REQUEST;
-            Object[] params = new Object[] {nbToPrint, offset};
-
-            LOGGER.debug("Execution of the SQL query {} with arguments {}", query, params);
-            companiesList =  jdbcTemplate.query(query, params, new RowCompanyMapper());
-        } catch (DataAccessException e) {
-            DaoExceptionThrower("SQL error in companies listing" ,e);
-        }
-
-        return companiesList;
+        LOGGER.debug("Execution of the SQL query {} with parameter(s) {}", query, params);
+        return jdbcTemplate.query(query, params, new RowCompanyMapper());
     }
 
     @Override
-    public Optional<Company> read(long companyId) throws DaoException {
+    public Optional<Company> read(long companyId) {
         LOGGER.debug("Showing info from company n°{}", companyId);
 
         Optional<Company> optCompany = Optional.empty();
 
-        try {
-            String query = READ_REQUEST;
-            Object[] params = new Object[] {companyId};
-            LOGGER.debug("Execution of the SQL query {} with arguments {}", query, params);
-            List<Company> companyList = jdbcTemplate.query(query, params, new RowCompanyMapper());
-            if (companyList.size() == 1) {
-                optCompany = Optional.of(companyList.get(0));
-            }
-        } catch (DataAccessException e) {
-            DaoExceptionThrower("SQL error in company reading", e);
-            LOGGER.error("SQL error in company reading\n", e);
+        String query = READ_REQUEST;
+        Object[] params = new Object[] {companyId};
+        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", query, params);
+        List<Company> companyList = jdbcTemplate.query(query, params, new RowCompanyMapper());
+        if (companyList.size() == 1) {
+            optCompany = Optional.of(companyList.get(0));
         }
 
         return optCompany;
     }
 
     @Override
-    public Optional<Company> findByName(String companyName) throws DaoException {
+    public Optional<Company> findByName(String companyName) {
         LOGGER.debug("Showing info from company {}", companyName);
 
         Optional<Company> optCompany = Optional.empty();
 
-        try {
-            String query = FIND_BY_NAME_REQUEST;
-            Object[] params = new Object[] {companyName};
-            LOGGER.debug("Execution of the SQL query {} with arguments {}", query, params);
-            List<Company> companyList = jdbcTemplate.query(query, params, new RowCompanyMapper());
-            if (companyList.size() == 1) {
-                optCompany = Optional.of(companyList.get(0));
-            }
-        } catch (DataAccessException e) {
-            DaoExceptionThrower("SQL error in company reading", e);
-            LOGGER.error("SQL error in company reading\n", e);
+        String query = FIND_BY_NAME_REQUEST;
+        Object[] params = new Object[] {companyName};
+        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", query, params);
+        List<Company> companyList = jdbcTemplate.query(query, params, new RowCompanyMapper());
+        if (companyList.size() == 1) {
+            optCompany = Optional.of(companyList.get(0));
         }
 
         return optCompany;
@@ -108,30 +84,20 @@ public class CompanyDaoImpl implements CompanyDao {
 
     @Override
     @Transactional(rollbackFor=DaoException.class)
-    public void deleteById(long companyId) throws DaoException {
+    public void deleteById(long companyId) {
         LOGGER.debug("Deleting company n°{}", companyId);
 
-        try {
-            jdbcTemplate.update(DELETE_COMPUTER_REQUEST, companyId);
-            jdbcTemplate.update(DELETE_COMPANY_REQUEST, companyId);
-        } catch (DataAccessException e) {
-            String errorMsg = "SQL error in company deletion";
-            DaoExceptionThrower(errorMsg, e);
-        }
+        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", DELETE_COMPUTER_REQUEST, companyId);
+        jdbcTemplate.update(DELETE_COMPUTER_REQUEST, companyId);
+        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", DELETE_COMPANY_REQUEST, companyId);
+        jdbcTemplate.update(DELETE_COMPANY_REQUEST, companyId);
     }
 
     @Override
-    public long count() throws DaoException {
+    public long count() {
         LOGGER.debug("Counting companies");
 
-        long count = -1;
-
-        try {
-            count = jdbcTemplate.queryForObject(COUNT_REQUEST, Long.class).longValue();
-        } catch (DataAccessException e) {
-            DaoExceptionThrower("SQL error in companies counting", e);
-        }
-
-        return count;
+        LOGGER.debug("Execution of the SQL query \"{}\"", COUNT_REQUEST);
+        return jdbcTemplate.queryForObject(COUNT_REQUEST, Long.class).longValue();
     }
 }

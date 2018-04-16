@@ -2,12 +2,9 @@ package com.excilys.formation.cdb.paginator;
 
 import java.util.List;
 
-import com.excilys.formation.cdb.exceptions.PageException;
-
 public abstract class Page<T> {
 
-    public Page() throws PageException {
-//        this.refreshContent();
+    public Page() {
     }
 
     private List<T> content;
@@ -55,12 +52,12 @@ public abstract class Page<T> {
         this.content = content;
     }
 
-    public void setOrderDesc(boolean orderDesc) throws PageException {
+    public void setOrderDesc(boolean orderDesc) {
         this.orderDesc = orderDesc;
         this.refreshContent();
     }
 
-    public void setNbPerPage(int nb) throws PageException {
+    public void setNbPerPage(int nb) {
         if (nb > 0) {
             this.nbPerPage = nb;
 
@@ -86,14 +83,14 @@ public abstract class Page<T> {
         }
     }
 
-    public void setCurrentPage(int newPage) throws PageException {
+    public void setCurrentPage(int newPage) {
         if (newPage > 0 && (newPage - 1) * nbPerPage <= nbTotal) {
             this.currentPage = newPage;
             this.refreshContent();
         }
     }
 
-    public void setOrderBy(String orderBy) throws PageException {
+    public void setOrderBy(String orderBy) {
         this.orderBy = orderBy;
         this.refreshContent();
     }
@@ -107,14 +104,14 @@ public abstract class Page<T> {
         }
     }
 
-    public void next() throws PageException {
+    public void next() {
         this.setCurrentPage(currentPage + 1);
         if (content.isEmpty()) {
             this.setCurrentPage(currentPage - 1);
         }
     }
 
-    public void prev() throws PageException {
+    public void prev() {
         if(currentPage > 1) {
             this.setCurrentPage(currentPage - 1);
         } else {
@@ -126,6 +123,6 @@ public abstract class Page<T> {
         return nbPerPage * (currentPage - 1);
     }
 
-    protected abstract void refreshContent() throws PageException;
+    protected abstract void refreshContent();
 
 }
