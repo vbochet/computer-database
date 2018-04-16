@@ -6,7 +6,7 @@
 
     <groupId>com.excilys.formation.cdb</groupId>
     <artifactId>computer-database</artifactId>
-    <version>4.3.3</version>
+    <version>4.5.1</version>
 
     <packaging>war</packaging>
 
@@ -20,9 +20,11 @@
         <!-- general versions -->
         <java.version>1.8</java.version>
         <maven-compiler.version>3.1</maven-compiler.version>
+        <mojo.version>1.2.1</mojo.version>
         <tomcat.version>2.2</tomcat.version>
         <checkstyle.version>3.0.0</checkstyle.version>
         <apache-commons.version>3.7</apache-commons.version>
+        <spring.version>5.0.5.RELEASE</spring.version>
 
         <!-- test plugins versions -->
         <junit.version>4.12</junit.version>
@@ -44,8 +46,6 @@
         <apache-taglibs.version>1.2.5</apache-taglibs.version>
         <taglibs-c.version>1.1.2</taglibs-c.version>
         <taglibs-fmt.version>1.1.2</taglibs-fmt.version>
-
-        <hikaricp.version>2.7.8</hikaricp.version>
     </properties>
 
     <build>
@@ -57,6 +57,23 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <!-- Enables launching the CLI via command line using Maven -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${mojo.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>com.excilys.formation.cdb.ui.Cli</mainClass>
                 </configuration>
             </plugin>
 
@@ -90,12 +107,50 @@
         </plugins>
     </reporting>
 
+
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${apache-commons.version}</version>
         </dependency>
+
+        <!-- Spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+         </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+         </dependency>
 
         <!-- tests -->
         <dependency>
@@ -104,12 +159,14 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
@@ -118,19 +175,15 @@
 
         <!-- logging -->
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <!-- mysql -->
@@ -146,18 +199,21 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>${javax-servlet.version}</version>
         </dependency>
+
         <dependency>
             <groupId>javax.servlet.jsp.jstl</groupId>
             <artifactId>jstl-api</artifactId>
             <version>${jstl.version}</version>
             <scope>runtime</scope>
         </dependency>
+
         <dependency>
             <groupId>org.apache.taglibs</groupId>
             <artifactId>taglibs-standard-impl</artifactId>
             <version>${apache-taglibs.version}</version>
             <scope>runtime</scope>
         </dependency>
+
         <dependency>
             <groupId>taglibs</groupId>
             <artifactId>c</artifactId>
@@ -165,6 +221,7 @@
             <scope>runtime</scope>
             <type>tld</type>
         </dependency>
+
         <dependency>
             <groupId>taglibs</groupId>
             <artifactId>fmt</artifactId>
@@ -173,12 +230,5 @@
             <type>tld</type>
         </dependency>
 
-
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>${hikaricp.version}</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 </project>

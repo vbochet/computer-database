@@ -9,6 +9,11 @@ import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.service.CompanyService;
 
 public class CompanyPage extends Page<Company> {
+    private CompanyService companyService;
+
+    public void setCompanyService(CompanyService companyService) {
+        this.companyService = companyService;
+    }
 
     static final Logger LOGGER = LoggerFactory.getLogger(CompanyPage.class);
 
@@ -19,7 +24,7 @@ public class CompanyPage extends Page<Company> {
     @Override
     protected void refreshContent() throws PageException {
         try {
-            setContent(CompanyService.INSTANCE.getList(getOffset(), getNbPerPage()));
+            setContent(companyService.getList(getOffset(), getNbPerPage()));
         } catch (ServiceException e) {
             LOGGER.error("Error while refreshing page content", e);
             throw(new PageException("Error while refreshing page content", e));

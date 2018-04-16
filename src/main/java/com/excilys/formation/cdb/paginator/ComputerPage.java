@@ -10,6 +10,12 @@ import com.excilys.formation.cdb.service.ComputerService;
 
 public class ComputerPage extends Page<Computer> {
 
+    private ComputerService computerService;
+
+    public void setComputerService(ComputerService computerService) {
+        this.computerService = computerService;
+    }
+
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerPage.class);
 
     public ComputerPage() throws PageException {
@@ -19,7 +25,7 @@ public class ComputerPage extends Page<Computer> {
     @Override
     protected void refreshContent() throws PageException {
         try {
-            setContent(ComputerService.INSTANCE.getList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc()));
+            setContent(computerService.getList(getOffset(), getNbPerPage(), getOrderBy(), getOrderDesc()));
         } catch (ServiceException e) {
             LOGGER.error("Error while refreshing page content", e);
             throw(new PageException("Error while refreshing page content", e));
