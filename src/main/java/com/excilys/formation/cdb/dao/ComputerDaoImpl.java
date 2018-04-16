@@ -15,10 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -35,8 +33,6 @@ import com.excilys.formation.cdb.model.Computer;
 public class ComputerDaoImpl implements ComputerDao {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
-
-    private DataSource dataSource;
 
     private final String REQUEST_SELECT_FROM_JOIN = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ";
     
@@ -57,7 +53,6 @@ public class ComputerDaoImpl implements ComputerDao {
     @Autowired
     public ComputerDaoImpl(DataSource dataSource) {
         super();
-        this.dataSource = dataSource;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
@@ -147,50 +142,23 @@ public class ComputerDaoImpl implements ComputerDao {
     public Computer update(Computer computer) throws DaoException {
         LOGGER.debug("Updating computer {}", computer);
 
-        Connection connection = getConnection();
-
         try {
-            executeUpdateRequest(connection, computer);
+            executeUpdateRequest(computer);
         } catch (SQLException e) {
             DaoExceptionThrower("SQL error in computer update", e);
-        } finally {
-            DaoUtils.closeConnection(connection);
         }
 
         return computer;
     }
 
-    private int executeUpdateRequest(Connection connection, Computer computer) throws SQLException {
+    private void executeUpdateRequest(Computer computer) throws SQLException {
         Company company = computer.getCompany();
-        LocalDate intro, discont;
+        Long companyId = company == null ? null : company.getId();
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_REQUEST);) {
-            preparedStatement.setString(1, computer.getName());
-    
-            intro = computer.getIntroduced();
-            if (intro == null) {
-                preparedStatement.setNull(2, java.sql.Types.DATE);
-            } else {
-                preparedStatement.setDate(2, Date.valueOf(intro));
-            }
-    
-            discont = computer.getDiscontinued();
-            if (discont == null) {
-                preparedStatement.setNull(3, java.sql.Types.DATE);
-            } else {
-                preparedStatement.setDate(3, Date.valueOf(discont));
-            }
-    
-            if (company == null) {
-                preparedStatement.setNull(4, java.sql.Types.BIGINT);
-            } else {
-                preparedStatement.setLong(4, company.getId());
-            }
-    
-            preparedStatement.setLong(5, computer.getId());
-    
-            return preparedStatement.executeUpdate();
-        }
+        String query = UPDATE_REQUEST;
+        Object[] params = new Object[] {computer.getName(), computer.getIntroduced(), computer.getDiscontinued(), companyId, computer.getId()};
+        LOGGER.debug("Execution of the SQL query {} with arguments {}", query, params);
+        jdbcTemplate.update(query, params);
     }
 
     @Override
@@ -318,15 +286,5 @@ public class ComputerDaoImpl implements ComputerDao {
         }
 
         return count;
-    }
-    
-    private Connection getConnection() throws DaoException {
-        Connection connection = null;
-        try {
-            connection = DataSourceUtils.getConnection(dataSource);
-        } catch (CannotGetJdbcConnectionException e) {
-            DaoExceptionThrower("Error while getting connection", e);
-        }
-        return connection;
     }
 }
