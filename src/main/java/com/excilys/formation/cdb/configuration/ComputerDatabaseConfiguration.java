@@ -11,7 +11,7 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "com.excilys.formation.cdb")
-public class DashboardConfiguration {
+public class ComputerDatabaseConfiguration {
 
     @Bean
     public ViewResolver viewResolver() {
