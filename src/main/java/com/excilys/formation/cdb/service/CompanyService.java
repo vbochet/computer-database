@@ -8,14 +8,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.cdb.dao.CompanyDao;
+import com.excilys.formation.cdb.dao.ComputerDao;
 import com.excilys.formation.cdb.model.Company;
 
 @Service("companyServiceBean")
+@EnableTransactionManagement
 public class CompanyService {
     @Autowired
     private CompanyDao companyDao;
+    @Autowired
+    private ComputerDao computerDao;
 
     static final Logger LOGGER = LoggerFactory.getLogger(CompanyService.class);
 
@@ -45,8 +51,10 @@ public class CompanyService {
         return ret;
     }
 
+    @Transactional
     public boolean deleteById(long id) {
         if (id > 0) {
+            computerDao.deleteByCompany(id);
             companyDao.deleteById(id);
             return true;
         }

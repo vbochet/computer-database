@@ -10,15 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.mapper.RowCompanyMapper;
 import com.excilys.formation.cdb.model.Company;
 
 @Repository("companyDaoBean")
-@EnableTransactionManagement
 public class CompanyDaoImpl implements CompanyDao {
     static final Logger LOGGER = LoggerFactory.getLogger(CompanyDaoImpl.class);
     
@@ -26,7 +22,6 @@ public class CompanyDaoImpl implements CompanyDao {
     private static final String READ_REQUEST = "SELECT id, name FROM company WHERE id = ?;";
     private static final String FIND_BY_NAME_REQUEST = "SELECT id, name FROM company WHERE name = ?;";
     private static final String DELETE_COMPANY_REQUEST  = "DELETE FROM company WHERE id = ?;";
-    private static final String DELETE_COMPUTER_REQUEST  = "DELETE FROM computer WHERE company_id = ?;";
     private static final String COUNT_REQUEST  = "SELECT COUNT(company.id) FROM company;";
 
     private JdbcTemplate jdbcTemplate;
@@ -83,12 +78,9 @@ public class CompanyDaoImpl implements CompanyDao {
     }
 
     @Override
-    @Transactional(rollbackFor=DaoException.class)
     public void deleteById(long companyId) {
         LOGGER.debug("Deleting company n°{}", companyId);
 
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", DELETE_COMPUTER_REQUEST, companyId);
-        jdbcTemplate.update(DELETE_COMPUTER_REQUEST, companyId);
         LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", DELETE_COMPANY_REQUEST, companyId);
         jdbcTemplate.update(DELETE_COMPANY_REQUEST, companyId);
     }

@@ -16,5 +16,6 @@ public interface ComputerDao {
     void deleteMany(List<Long> id);
     List<Computer> listSearch(int offset, int nbToPrint, String order, boolean desc, String search);
     long countSearch(String search);
+    void deleteByCompany(long companyId);
 
 }
