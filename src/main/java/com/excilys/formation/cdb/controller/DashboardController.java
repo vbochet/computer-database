@@ -1,49 +1,40 @@
-package com.excilys.formation.cdb.servlets;
+package com.excilys.formation.cdb.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.formation.cdb.paginator.ComputerDtoPage;
 import com.excilys.formation.cdb.service.ComputerService;
 
-@WebServlet("/dashboard")
+@Controller
 @Component("dashboardServletBean")
-public class DashboardServlet extends HttpServlet {
+public class DashboardController {
     @Autowired
     private ComputerService computerService;
 
-    static final Logger LOGGER = LoggerFactory.getLogger(DashboardServlet.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
 
-    private static final long serialVersionUID = -8941279631510488886L;
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @PostMapping("/dashboard")
+    public ModelAndView doPost(ServletRequest request, ServletResponse response) throws ServletException, IOException {
         List<Long> ids = new ArrayList<>();
 
         String idsString = request.getParameter("selection");
         LOGGER.debug("Ids received for deletion: {}", idsString);
-      
+
         String[] idsList = idsString.split(",");
         for (String idString : idsList) {
             try {
@@ -56,14 +47,13 @@ public class DashboardServlet extends HttpServlet {
         }
 
         computerService.deleteManyById(ids);
-    
         request.setAttribute("deletionSuccess", true);
-        
-        doGet(request, response);
+
+        return doGet(request, response);
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @GetMapping("/dashboard")
+    public ModelAndView doGet(ServletRequest request, ServletResponse response) throws ServletException, IOException {
         ComputerDtoPage page;
         page = new ComputerDtoPage();
         page.setComputerService(computerService);
@@ -97,8 +87,6 @@ public class DashboardServlet extends HttpServlet {
             page.prev();
         }
 
-
-        request.setAttribute("page", page);
         LOGGER.debug("Number of computers found in database : {}", page.getNbTotal());
         LOGGER.debug("Number of computers stored in computersList: {}", page.getContent().size());
         LOGGER.debug("Maximum page number: {}", page.getMaxPage());
@@ -107,8 +95,12 @@ public class DashboardServlet extends HttpServlet {
         LOGGER.debug("Page elements ordered by: {}", page.getOrderBy());
         LOGGER.debug("Page elements order desc: {}", page.getOrderDesc());
 
-        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/dashboard.jsp");
-        rd.forward(request,response);
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("dashboard");
+        mav.addObject("page", page);
+        mav.addObject("deletionSuccess", request.getAttribute("deletionSuccess"));
+
+        return new ModelAndView("dashboard", "page", page);
     }
 
 }
