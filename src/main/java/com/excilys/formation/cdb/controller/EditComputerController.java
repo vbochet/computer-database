@@ -2,11 +2,10 @@ package com.excilys.formation.cdb.controller;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.formation.cdb.dto.CompanyDto;
@@ -35,12 +35,12 @@ public class EditComputerController {
     static final Logger LOGGER = LoggerFactory.getLogger(EditComputerController.class);
 
     @PostMapping("/editComputer")
-    public ModelAndView doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public ModelAndView doPost(@RequestParam Map<String, String> parameters) throws ServletException, IOException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        Computer computer = manageComputerUtils.requestToComputer(LOGGER, request, formatter);
+        Computer computer = manageComputerUtils.requestToComputer(LOGGER, parameters, formatter);
 
         try {
-            String idString = request.getParameter("computerId");
+            String idString = parameters.get("computerId");
             long id = Long.parseLong(idString);
             computer.setId(id);
             LOGGER.debug("Computer id set to {}", id);
@@ -60,6 +60,7 @@ public class EditComputerController {
         } else {
             mav.setViewName("editComputer");
             mav.addObject("error", true);
+            manageComputerUtils.setCompanyDtoListInMAV(LOGGER, mav);
             mav.addObject("computer", ComputerMapper.INSTANCE.computerToComputerDto(computer));
         }
         
@@ -67,7 +68,7 @@ public class EditComputerController {
     }
 
     @GetMapping("/editComputer")
-    public ModelAndView doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public ModelAndView doGet(@RequestParam Map<String, String> parameters) throws ServletException, IOException {
         ModelAndView mav = new ModelAndView();        
         manageComputerUtils.setCompanyDtoListInMAV(LOGGER, mav);
         
@@ -75,7 +76,7 @@ public class EditComputerController {
         Computer computer;
 
         try {
-            id = Long.parseLong(request.getParameter("computerId"));
+            id = Long.parseLong(parameters.get("computerId"));
         } catch (NumberFormatException e) {
             LOGGER.error("Error while getting computer details", e);
             throw(new ServletException("Bad id format", e));

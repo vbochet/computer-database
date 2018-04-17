@@ -2,10 +2,9 @@ package com.excilys.formation.cdb.controller;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.formation.cdb.mapper.ComputerMapper;
@@ -31,9 +31,9 @@ public class AddComputerController {
     static final Logger LOGGER = LoggerFactory.getLogger(AddComputerController.class);
 
     @PostMapping("/addComputer")
-    public ModelAndView doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public ModelAndView doPost(@RequestParam Map<String, String> parameters) throws ServletException, IOException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        Computer computer = manageComputerUtils.requestToComputer(LOGGER, request, formatter);
+        Computer computer = manageComputerUtils.requestToComputer(LOGGER, parameters, formatter);
 
         Computer res = computerService.createComputer(computer);
 
@@ -52,7 +52,7 @@ public class AddComputerController {
     }
 
     @GetMapping("/addComputer")
-    public ModelAndView doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public ModelAndView doGet(@RequestParam Map<String, String> parameters) throws ServletException, IOException {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("addComputer");
         

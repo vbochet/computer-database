@@ -5,10 +5,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,35 +27,35 @@ public class ManageComputerUtils {
     private CompanyService companyService;
 
 
-    public Computer requestToComputer(final Logger LOGGER, HttpServletRequest request, DateTimeFormatter formatter)  {
+    public Computer requestToComputer(final Logger LOGGER, Map<String, String> parameters, DateTimeFormatter formatter)  {
         Computer computer = new Computer();
         
-        String name = request.getParameter("computerName");
+        String name = parameters.get("computerName");
         computer.setName(name);
         LOGGER.debug("Name set to \"{}\"", name);
 
         try {
-            String introString = request.getParameter("introduced");
+            String introString = parameters.get("introduced");
             LocalDate introLD = LocalDate.parse(introString, formatter);
             computer.setIntroduced(introLD);
             LOGGER.debug("Introduction date set to {}", introLD);
         } catch (DateTimeParseException e) {
             computer.setIntroduced(null);
-            LOGGER.debug("Introduction date set to null (received value \"{}\")", request.getParameter("introduced"));
+            LOGGER.debug("Introduction date set to null (received value \"{}\")", parameters.get("introduced"));
         }
 
         try {
-            String discontString = request.getParameter("discontinued");
+            String discontString = parameters.get("discontinued");
             LocalDate discontLD = LocalDate.parse(discontString, formatter);
             computer.setDiscontinued(discontLD);
             LOGGER.debug("Discontinuation date set to {}", discontLD);
         } catch (DateTimeParseException e) {
             computer.setDiscontinued(null);
-            LOGGER.debug("Discontinuation date set to null (received value \"{}\")", request.getParameter("discontinued"));
+            LOGGER.debug("Discontinuation date set to null (received value \"{}\")", parameters.get("discontinued"));
         }
 
         try {
-            long companyId = Long.parseLong(request.getParameter("companyId"));
+            long companyId = Long.parseLong(parameters.get("companyId"));
 
             Optional<Company> optCompany;
                 optCompany = companyService.getById(companyId);
@@ -71,7 +70,7 @@ public class ManageComputerUtils {
 
         } catch (NumberFormatException e) {
             computer.setCompany(null);
-            LOGGER.debug("Company set to null (received value \"{}\")", request.getParameter("companyId"));
+            LOGGER.debug("Company set to null (received value \"{}\")", parameters.get("companyId"));
         }
         
         return computer;

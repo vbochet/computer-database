@@ -3,10 +3,9 @@ package com.excilys.formation.cdb.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.formation.cdb.paginator.ComputerDtoPage;
@@ -29,10 +29,10 @@ public class DashboardController {
     static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
 
     @PostMapping("/dashboard")
-    public ModelAndView doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public ModelAndView doPost(@RequestParam Map<String, String> parameters) throws ServletException, IOException {
         List<Long> ids = new ArrayList<>();
 
-        String idsString = request.getParameter("selection");
+        String idsString = parameters.get("selection");
         LOGGER.debug("Ids received for deletion: {}", idsString);
 
         String[] idsList = idsString.split(",");
@@ -47,43 +47,43 @@ public class DashboardController {
         }
 
         computerService.deleteManyById(ids);
-        request.setAttribute("deletionSuccess", true);
+        parameters.put("deletionSuccess", "true");
 
-        return doGet(request, response);
+        return doGet(parameters);
     }
 
     @GetMapping("/dashboard")
-    public ModelAndView doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public ModelAndView doGet(@RequestParam Map<String, String> parameters) throws ServletException, IOException {
         ComputerDtoPage page;
         page = new ComputerDtoPage();
         page.setComputerService(computerService);
 
         try {
-            page.setNbPerPage(Integer.parseInt(request.getParameter("displayBy")));
+            page.setNbPerPage(Integer.parseInt(parameters.get("displayBy")));
         } catch (NumberFormatException e) {
             // do nothing
         }
 
         page.setNbTotal(computerService.getNbFound());
         
-        if (request.getParameter("search") != null) {
-            page.setSearch(request.getParameter("search"));
+        if (parameters.get("search") != null) {
+            page.setSearch(parameters.get("search"));
         }
 
         try {
-            page.setCurrentPage(Integer.parseInt(request.getParameter("npage")));
+            page.setCurrentPage(Integer.parseInt(parameters.get("npage")));
         } catch (NumberFormatException e) {
             // do nothing 
         }
 
-        page.setOrderBy(request.getParameter("orderBy"));
-        page.setOrderDesc(Boolean.valueOf(request.getParameter("orderDesc")));
+        page.setOrderBy(parameters.get("orderBy"));
+        page.setOrderDesc(Boolean.valueOf(parameters.get("orderDesc")));
 
 
-        if (request.getParameter("next") != null) {
+        if (parameters.get("next") != null) {
             page.next();
         }
-        else if (request.getParameter("prev") != null) {
+        else if (parameters.get("prev") != null) {
             page.prev();
         }
 
@@ -98,7 +98,7 @@ public class DashboardController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("dashboard");
         mav.addObject("page", page);
-        mav.addObject("deletionSuccess", request.getAttribute("deletionSuccess"));
+        mav.addObject("deletionSuccess", parameters.get("deletionSuccess"));
 
         return new ModelAndView("dashboard", "page", page);
     }
