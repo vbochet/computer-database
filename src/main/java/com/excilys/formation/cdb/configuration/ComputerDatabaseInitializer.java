@@ -22,6 +22,7 @@ public class ComputerDatabaseInitializer implements WebApplicationInitializer {
         servlet.setLoadOnStartup(1);
         servlet.addMapping("/dashboard");
         servlet.addMapping("/addComputer");
+        servlet.addMapping("/editComputer");
     }
 
 }

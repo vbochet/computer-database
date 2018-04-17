@@ -1,13 +1,10 @@
-package com.excilys.formation.cdb.servlets;
+package com.excilys.formation.cdb.controller;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,7 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.formation.cdb.dto.CompanyDto;
 import com.excilys.formation.cdb.dto.ComputerDto;
@@ -24,27 +24,20 @@ import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.ComputerService;
 
-
-@WebServlet("/editComputer")
-@Component("editComputerBean")
-public class EditComputerServlet extends ManageComputerServlet {
+@Controller
+@Component("editComputerControllerBean")
+public class EditComputerController {
     @Autowired
     private ComputerService computerService;
+    @Autowired
+    private ManageComputerUtils manageComputerUtils;
 
-    static final Logger LOGGER = LoggerFactory.getLogger(EditComputerServlet.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(EditComputerController.class);
 
-    private static final long serialVersionUID = -9075918957449353325L;
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @PostMapping("/editComputer")
+    public ModelAndView doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        Computer computer = new Computer();
+        Computer computer = manageComputerUtils.requestToComputer(LOGGER, request, formatter);
 
         try {
             String idString = request.getParameter("computerId");
@@ -56,18 +49,28 @@ public class EditComputerServlet extends ManageComputerServlet {
             throw(new ServletException("Error: invalid computer id. Update cancelled", e));
         }
 
-        requestToComputer(LOGGER, request, computer, formatter);
+        Computer res = computerService.updateComputer(computer);
 
-        Computer res;
-        res = computerService.updateComputer(computer);
 
-        checkAndRedirect(request, response, computer, res, "/WEB-INF/JSP/editComputer.jsp");
+        ModelAndView mav = new ModelAndView();
+
+        if (res != null) {
+            mav.setViewName("computerAdded");
+            mav.addObject("computer", ComputerMapper.INSTANCE.computerToComputerDto(res));
+        } else {
+            mav.setViewName("editComputer");
+            mav.addObject("error", true);
+            mav.addObject("computer", ComputerMapper.INSTANCE.computerToComputerDto(computer));
+        }
+        
+        return mav;
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        setCompanyDtoListInRequest(LOGGER, request);
-
+    @GetMapping("/editComputer")
+    public ModelAndView doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ModelAndView mav = new ModelAndView();        
+        manageComputerUtils.setCompanyDtoListInMAV(LOGGER, mav);
+        
         long id;
         Computer computer;
 
@@ -84,17 +87,18 @@ public class EditComputerServlet extends ManageComputerServlet {
             computer = optCpt.get();
         } else {
             LOGGER.error("No computer matching id {}", id);
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/404.jsp");
-            rd.forward(request,response);
-            return;
+            mav.setViewName("404");
+            return mav;
         }
 
         ComputerDto computerDto = ComputerMapper.INSTANCE.computerToComputerDto(computer);
         CompanyDto companyDto = CompanyMapper.INSTANCE.companyToCompanyDto(computer.getCompany());
-        request.setAttribute("computer", computerDto);
-        request.setAttribute("company", companyDto);
+        
+        mav.addObject("computer", computerDto);
+        mav.addObject("company", companyDto);
+        mav.setViewName("editComputer");
 
-        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/JSP/editComputer.jsp");
-        rd.forward(request,response);
+        return mav;
     }
+
 }
