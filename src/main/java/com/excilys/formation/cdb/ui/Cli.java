@@ -7,9 +7,12 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.excilys.formation.cdb.configuration.CliConfig;
 import com.excilys.formation.cdb.exceptions.PageException;
 import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.model.Company;
@@ -30,7 +33,7 @@ public class Cli {
     static Logger LOGGER = LoggerFactory.getLogger(Cli.class);
 
     public static void main(String[] args) throws ServiceException, PageException {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("cli-context.xml");
+        ApplicationContext context = new AnnotationConfigApplicationContext(CliConfig.class);
         Cli cli = context.getBean(Cli.class);
         LOGGER.debug("Starting Computer-Database command line interface");
 
@@ -101,7 +104,6 @@ public class Cli {
         System.out.println("Terminating...");
         LOGGER.debug("Stopping Computer-Database command line interface");
         scanner.close();
-        context.close();
     }
 
     private void printMenu() {
