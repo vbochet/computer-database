@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.excilys.formation.cdb.configuration.TestConfig;
+import com.excilys.formation.cdb.configuration.CliConfig;
 import com.excilys.formation.cdb.exceptions.PageException;
 import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.model.Company;
@@ -32,7 +32,7 @@ public class Cli {
     static Logger LOGGER = LoggerFactory.getLogger(Cli.class);
 
     public static void main(String[] args) throws ServiceException, PageException {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(TestConfig.class);
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(CliConfig.class);
         Cli cli = context.getBean(Cli.class);
         LOGGER.debug("Starting Computer-Database command line interface");
 
