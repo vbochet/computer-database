@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -38,6 +39,7 @@ public class ComputerDaoImpl implements ComputerDao {
     private final static String CREATE_REQUEST  = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
     private final static String UPDATE_REQUEST  = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
     private final static String DELETE_REQUEST  = "DELETE FROM computer WHERE id = ?;";
+    private static final String DELETE_COMPANY_REQUEST  = "DELETE FROM computer WHERE company_id = ?;";
 
     private final static String READ_REQUEST    = " WHERE computer.id = ?;";
     private final static String LIST_REQUEST = " LIMIT ? OFFSET ?;";
@@ -159,6 +161,15 @@ public class ComputerDaoImpl implements ComputerDao {
             jdbcTemplate.update(DELETE_REQUEST, id);
             LOGGER.debug("Deletion of computer n°{} successful", id);
         }
+    }
+
+    @Override
+    public void deleteByCompany(long companyId) {
+        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", DELETE_COMPANY_REQUEST, companyId);
+        jdbcTemplate.update(DELETE_COMPANY_REQUEST, companyId);
+        throw new DataAccessException(null) {
+            private static final long serialVersionUID = 5905365942880896750L;
+        };
     }
 
     @Override

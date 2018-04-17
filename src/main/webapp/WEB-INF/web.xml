@@ -7,15 +7,6 @@
 
     <display-name>Computer-Database Web Application</display-name>
 
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:./webapp-context.xml</param-value>
-    </context-param>
-
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-
     <error-page>
 <!--         Forbidden directory listing -->
         <error-code>403</error-code>
