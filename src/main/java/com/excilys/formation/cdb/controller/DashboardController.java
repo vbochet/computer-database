@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ import com.excilys.formation.cdb.paginator.ComputerDtoPage;
 import com.excilys.formation.cdb.service.ComputerService;
 
 @Controller
-@Component("dashboardServletBean")
+@Component("dashboardControllerBean")
 public class DashboardController {
     @Autowired
     private ComputerService computerService;
@@ -29,7 +29,7 @@ public class DashboardController {
     static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
 
     @PostMapping("/dashboard")
-    public ModelAndView doPost(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+    public ModelAndView doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Long> ids = new ArrayList<>();
 
         String idsString = request.getParameter("selection");
@@ -53,7 +53,7 @@ public class DashboardController {
     }
 
     @GetMapping("/dashboard")
-    public ModelAndView doGet(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+    public ModelAndView doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ComputerDtoPage page;
         page = new ComputerDtoPage();
         page.setComputerService(computerService);
