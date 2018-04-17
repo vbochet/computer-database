@@ -15,12 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.excilys.formation.cdb.configuration.TestConfig;
 import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/test-context.xml"})
+@ContextConfiguration(classes = {TestConfig.class})
 public class ComputerDaoImplTest {
     
     static int NB_COMPUTER_IN_DB = 25;
