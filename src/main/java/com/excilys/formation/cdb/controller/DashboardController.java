@@ -3,6 +3,7 @@ package com.excilys.formation.cdb.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -10,6 +11,7 @@ import javax.servlet.ServletException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +31,7 @@ public class DashboardController {
     static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
 
     @PostMapping("/dashboard")
-    public ModelAndView doPost(@RequestParam Map<String, String> parameters) throws ServletException, IOException {
+    public ModelAndView doPost(Locale locale, @RequestParam Map<String, String> parameters) throws ServletException, IOException {
         List<Long> ids = new ArrayList<>();
 
         String idsString = parameters.get("selection");
@@ -49,11 +51,11 @@ public class DashboardController {
         computerService.deleteManyById(ids);
         parameters.put("deletionSuccess", "true");
 
-        return doGet(parameters);
+        return doGet(locale, parameters);
     }
 
     @GetMapping("/dashboard")
-    public ModelAndView doGet(@RequestParam Map<String, String> parameters) throws ServletException, IOException {
+    public ModelAndView doGet(Locale locale, @RequestParam Map<String, String> parameters) throws ServletException, IOException {
         ComputerDtoPage page;
         page = new ComputerDtoPage();
         page.setComputerService(computerService);
@@ -99,6 +101,10 @@ public class DashboardController {
         mav.setViewName("dashboard");
         mav.addObject("page", page);
         mav.addObject("deletionSuccess", parameters.get("deletionSuccess"));
+
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        mav.addObject("locale", currentLocale);
+
 
         return new ModelAndView("dashboard", "page", page);
     }
