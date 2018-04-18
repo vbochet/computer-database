@@ -1,3 +1,4 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ taglib tagdir = "/WEB-INF/tags" prefix = "t" %>
 
@@ -24,37 +25,37 @@
                     <div class="label label-default pull-right">
                         id: ${computer.computerId}
                     </div>
-                    <h1>Edit Computer</h1>
+                    <h1><spring:message code="edit_computer" /></h1>
 
                     <form action="<t:links target='editComputerPost' />" method="POST">
                         <input type="hidden" value="${computer.computerId}" id="id" name="computerId" />
                         <fieldset>
                             <div class="form-group">
-                                <label for="computerName">Computer name</label>
-                                <input type="text" class="form-control" id="computerName" name="computerName" placeholder="Computer name" 
+                                <label for="computerName"><spring:message code="computer_name" /></label>
+                                <input type="text" class="form-control" id="computerName" name="computerName" placeholder="<spring:message code="computer_name" />" 
 		                                value="${computer.computerName}"
 		                                data-validation="custom"
 		                                data-validation-regexp="^([^\s<>]+(\s)*)+$"
-		                                data-validation-error-msg="This computer name is not allowed">
+		                                data-validation-error-msg="<spring:message code="computer_name_not_allowed" />">
                             </div>
                             <div class="form-group">
-                                <label for="introduced">Introduced date</label>
-                                <input type="date" class="form-control" id="introduced" name="introduced" placeholder="Introduced date" 
-                                		value="${computer.computerIntroduced}"
+                                <label for="introduced"><spring:message code="computer_introduced" /></label>
+                                <input type="date" class="form-control" id="introduced" name="introduced" 
+                                   		value="${computer.computerIntroduced}"
                                         data-validation="date" 
                                         data-validation-format="yyyy-mm-dd"
                                         data-validation-depends-on="discontinued" >
                             </div>
                             <div class="form-group">
-                                <label for="discontinued">Discontinued date</label>
-                                <input type="date" class="form-control" id="discontinued" name="discontinued" placeholder="Discontinued date" 
+                                <label for="discontinued"><spring:message code="computer_discontinued" /></label>
+                                <input type="date" class="form-control" id="discontinued" name="discontinued" 
                                 		value="${computer.computerDiscontinued}"
                                         data-validation="date"
                                         data-validation-format="yyyy-mm-dd"
                                         data-validation-optional="true" >
                             </div>
                             <div class="form-group">
-                                <label for="companyId">Company</label>
+                                <label for="companyId"><spring:message code="company" /></label>
                                 <select class="form-control" id="companyId" name="companyId">
                                     <option value="0">--</option>
                                     <c:forEach items="${companyList}" var="companyl">
@@ -69,9 +70,9 @@
                             </div>            
                         </fieldset>
                         <div class="actions pull-right">
-                            <input type="submit" value="Edit" class="btn btn-primary">
-                            or
-                            <a href="<c:url value="/"/>dashboard" class="btn btn-default">Cancel</a>
+                            <input type="submit" value="<spring:message code="edit" />" class="btn btn-primary">
+                            <spring:message code="or" />
+                            <a href="<c:url value="/"/>dashboard" class="btn btn-default"><spring:message code="cancel" /></a>
                         </div>
                     </form>
                 </div>

@@ -1,3 +1,4 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ taglib tagdir = "/WEB-INF/tags" prefix = "t" %>
 
@@ -22,7 +23,7 @@
     <section id="main">
         <div class="container">
             <h1 id="homeTitle">
-                Computer saved
+                <spring:message code="computer_saved" />
             </h1>
         </div>
 
@@ -33,16 +34,16 @@
                         <!-- Variable declarations for passing labels as parameters -->
 
                         <th>
-                            Computer name
+                            <spring:message code="computer_name" />
                         </th>
                         <th>
-                            Introduced date
+                            <spring:message code="computer_introduced" />
                         </th>
                         <th>
-                            Discontinued date
+                            <spring:message code="computer_discontinued" />
                         </th>
                         <th>
-                            Company
+                            <spring:message code="company" />
                         </th>
 
                     </tr>
