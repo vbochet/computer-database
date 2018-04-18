@@ -6,7 +6,7 @@
 
     <groupId>com.excilys.formation.cdb</groupId>
     <artifactId>computer-database</artifactId>
-    <version>4.5.1</version>
+    <version>4.5.4</version>
 
     <packaging>war</packaging>
 
@@ -20,6 +20,7 @@
         <!-- general versions -->
         <java.version>1.8</java.version>
         <maven-compiler.version>3.1</maven-compiler.version>
+        <maven-war.version>3.2.0</maven-war.version>
         <mojo.version>1.2.1</mojo.version>
         <tomcat.version>2.2</tomcat.version>
         <checkstyle.version>3.0.0</checkstyle.version>
@@ -60,6 +61,14 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${maven-war.version}</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
             <!-- Enables launching the CLI via command line using Maven -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

@@ -9,10 +9,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
+@EnableWebMvc
 @PropertySource("classpath:db.properties")
-@ComponentScan({"com.excilys.formation.cdb.dao", "com.excilys.formation.cdb.service", "com.excilys.formation.cdb.servlets"})
+@ComponentScan(basePackages = {"com.excilys.formation.cdb.controller", 
+                               "com.excilys.formation.cdb.dao", 
+                               "com.excilys.formation.cdb.service", 
+                               "com.excilys.formation.cdb.servlets"})
 public class WebappConfig {
 
     @Value("${jdbc.driver}")
@@ -38,5 +46,15 @@ public class WebappConfig {
     public DataSourceTransactionManager txManager() {
         return new DataSourceTransactionManager(dataSource());
     }
-    
+
+  @Bean
+  public ViewResolver viewResolver() {
+      InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+      viewResolver.setViewClass(JstlView.class);
+      viewResolver.setPrefix("/WEB-INF/JSP/");
+      viewResolver.setSuffix(".jsp");
+
+      return viewResolver;
+  }
+
 }

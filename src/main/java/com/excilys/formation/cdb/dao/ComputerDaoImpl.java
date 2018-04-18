@@ -102,7 +102,7 @@ public class ComputerDaoImpl implements ComputerDao {
             }
         };
 
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameters [{}, {}, {}, {}]", CREATE_REQUEST, computer.getName(), computer.getIntroduced(), computer.getDiscontinued(), company.getId());
+        LOGGER.debug("Execution of the SQL query \"{}\" with parameters [{}, {}, {}, {}]", CREATE_REQUEST, computer.getName(), computer.getIntroduced(), computer.getDiscontinued(), company == null ? null : company.getId());
         jdbcTemplate.update(psc, generatedKeyHolder);
         
         computer.setId(generatedKeyHolder.getKey().longValue());

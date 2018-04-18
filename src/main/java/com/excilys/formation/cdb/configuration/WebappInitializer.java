@@ -5,7 +5,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 import org.springframework.web.WebApplicationInitializer;
-import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -13,14 +12,17 @@ public class WebappInitializer implements WebApplicationInitializer {
 
     @Override
     public void onStartup(ServletContext container) throws ServletException {
-        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.setConfigLocation("com.excilys.formation.cdb.configuration");
 
-        container.addListener(new ContextLoaderListener(context));
+        AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+        ctx.register(WebappConfig.class);
+        ctx.setServletContext(container);
 
-        ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", new DispatcherServlet(context));
+        ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(ctx));
 
-        dispatcher.setLoadOnStartup(1);
+        servlet.setLoadOnStartup(1);
+        servlet.addMapping("/dashboard");
+        servlet.addMapping("/addComputer");
+        servlet.addMapping("/editComputer");
     }
 
 }
