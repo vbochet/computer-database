@@ -1,10 +1,11 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ taglib tagdir = "/WEB-INF/tags" prefix = "t" %>
 
 <!DOCTYPE html>
 <html>
 <head>
-<title>Computer Database</title>
+<title>Computer Database - <spring:message code="dashboard.lang" /></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
 <!-- Bootstrap -->
@@ -15,7 +16,18 @@
 <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="<t:links target='dashboard' />"> Application - Computer Database </a>
+        <a class="navbar-brand" href="<t:links target='dashboard' />"> Application - Computer Database </a>
+        
+	    <div class="collapse navbar-collapse" id="navbarNav">
+	        <ul class="navbar-nav">
+	            <li class="nav-item">
+		            <a class="navbar" href="?lang=en"> English </a>
+	            </li>
+	            <li class="nav-item">
+		            <a class="navbar" href="?lang=fr"> Français </a>
+	            </li>
+	      </ul>
+        </div>
         </div>
     </header>
 
@@ -23,11 +35,11 @@
         <div class="container">
 			<c:if test = "${deletionSuccess}">
             <div class="alert alert-success">
-                Computer(s) were deleted successfully
+                <spring:message code="dashboard.computers_deletion_successful" />
             </div>
             </c:if>
             <h1 id="homeTitle">
-                ${page.nbTotal} Computers found
+                ${page.nbTotal} <spring:message code="dashboard.computers_found" />
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
@@ -38,8 +50,8 @@
                     </form>
                 </div>
                 <div class="pull-right">
-                    <a class="btn btn-success" id="addComputer" href="<t:links target='addComputer' />">Add Computer</a> 
-                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Delete</a>
+                    <a class="btn btn-success" id="addComputer" href="<t:links target='addComputer' />"><spring:message code="dashboard.add_computer" /></a> 
+                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message code="dashboard.delete" /></a>
                 </div>
             </div>
         </div>
@@ -63,16 +75,16 @@
                             </span>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='name' orderDesc='${page.orderBy == "name" && !page.orderDesc}' search='${page.search}' />">Computer name</a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='name' orderDesc='${page.orderBy == "name" && !page.orderDesc}' search='${page.search}' />"><spring:message code="dashboard.computer_name" /></a>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='introduced' orderDesc='${page.orderBy == "introduced" && !page.orderDesc}' search='${page.search}' />">Introduced date</a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='introduced' orderDesc='${page.orderBy == "introduced" && !page.orderDesc}' search='${page.search}' />"><spring:message code="dashboard.computer_introduced" /></a>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='discontinued' orderDesc='${page.orderBy == "discontinued" && !page.orderDesc}' search='${page.search}' />">Discontinued date</a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='discontinued' orderDesc='${page.orderBy == "discontinued" && !page.orderDesc}' search='${page.search}' />"><spring:message code="dashboard.computer_discontinued" /></a>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='company_name' orderDesc='${page.orderBy == "company_name" && !page.orderDesc}' search='${page.search}' />">Company</a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='company_name' orderDesc='${page.orderBy == "company_name" && !page.orderDesc}' search='${page.search}' />"><spring:message code="dashboard.company" /></a>
                         </th>
 
                     </tr>
