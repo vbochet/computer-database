@@ -1,9 +1,6 @@
 package com.excilys.formation.cdb.controller;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -146,58 +143,6 @@ public class ComputerController {
         return mav;
     }
 
-
-
-
-
-    private Computer requestToComputer(final Logger LOGGER, Map<String, String> parameters, DateTimeFormatter formatter)  {
-        Computer computer = new Computer();
-        
-        String name = parameters.get("computerName");
-        computer.setName(name);
-        LOGGER.debug("Name set to \"{}\"", name);
-
-        try {
-            String introString = parameters.get("introduced");
-            LocalDate introLD = LocalDate.parse(introString, formatter);
-            computer.setIntroduced(introLD);
-            LOGGER.debug("Introduction date set to {}", introLD);
-        } catch (DateTimeParseException e) {
-            computer.setIntroduced(null);
-            LOGGER.debug("Introduction date set to null (received value \"{}\")", parameters.get("introduced"));
-        }
-
-        try {
-            String discontString = parameters.get("discontinued");
-            LocalDate discontLD = LocalDate.parse(discontString, formatter);
-            computer.setDiscontinued(discontLD);
-            LOGGER.debug("Discontinuation date set to {}", discontLD);
-        } catch (DateTimeParseException e) {
-            computer.setDiscontinued(null);
-            LOGGER.debug("Discontinuation date set to null (received value \"{}\")", parameters.get("discontinued"));
-        }
-
-        try {
-            long companyId = Long.parseLong(parameters.get("companyId"));
-
-            Optional<Company> optCompany;
-                optCompany = companyService.getById(companyId);
-
-            if (optCompany.isPresent()) {
-                computer.setCompany(optCompany.get());
-                LOGGER.debug("Company set to {}", optCompany.get().toString());
-            } else {
-                computer.setCompany(null);
-                LOGGER.debug("Company set to null");
-            }
-
-        } catch (NumberFormatException e) {
-            computer.setCompany(null);
-            LOGGER.debug("Company set to null (received value \"{}\")", parameters.get("companyId"));
-        }
-        
-        return computer;
-    }
 
     private void setCompanyDtoListInMAV(Logger logger, ModelAndView mav) {
         List<Company> companyList;
