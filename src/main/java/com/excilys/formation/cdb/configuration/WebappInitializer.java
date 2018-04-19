@@ -21,8 +21,8 @@ public class WebappInitializer implements WebApplicationInitializer {
 
         servlet.setLoadOnStartup(1);
         servlet.addMapping("/dashboard");
-        servlet.addMapping("/addComputer");
-        servlet.addMapping("/editComputer");
+        servlet.addMapping("/computer/add");
+        servlet.addMapping("/computer/edit");
     }
 
 }

@@ -16,8 +16,7 @@
     <c:when test="${target == 'dashboardNext'}"><c:url value="/dashboard?next&npage=${pagenb}&displayBy=${displayBy}&orderBy=${orderBy}&orderDesc=${orderDesc}&search=${search}"/></c:when>
     <c:when test="${target == 'dashboardOther'}"><c:url value="/dashboard?npage=${pagenb}&displayBy=${displayBy}&orderBy=${orderBy}&orderDesc=${orderDesc}&search=${search}"/></c:when>
     <c:when test="${target == 'dashboardSearch'}"><c:url value="/dashboard?npage=${pagenb}&displayBy=${displayBy}&orderBy=${orderBy}&orderDesc=${orderDesc}"/></c:when>
-    <c:when test="${target == 'editComputer'}"><c:url value="/editComputer?computerId="/>${computerId}</c:when>
-    <c:when test="${target == 'editComputerPost'}"><c:url value="/editComputer"/></c:when>
-    <c:when test="${target == 'addComputer'}"><c:url value="/addComputer"/></c:when>
-    <c:when test="${target == 'deleteComputer'}"><c:url value="/deleteComputer"/></c:when>
+    <c:when test="${target == 'editComputer'}"><c:url value="/computer/edit?computerId="/>${computerId}</c:when>
+    <c:when test="${target == 'editComputerPost'}"><c:url value="/computer/edit"/></c:when>
+    <c:when test="${target == 'addComputer'}"><c:url value="/computer/add"/></c:when>
 </c:choose>
