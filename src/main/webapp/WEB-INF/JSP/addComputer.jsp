@@ -38,12 +38,13 @@
                             <div class="form-group">
                             	<c:set var="cptName"><c:if test="${error}">${computer.computerName}</c:if></c:set>
                             	<c:set var="cptNamePlaceholder"><spring:message code="computer_name" /></c:set>
+                            	<c:set var="error_msg"><spring:message code="computer_name_not_allowed" /></c:set>
                                 <form:label path="computerName" for="computerName"><spring:message code="computer_name" /></form:label>
                                 <form:input path="computerName" type="text" class="form-control" id="computerName" name="computerName" placeholder="${cptNamePlaceholder }"
                                         value="${cptName}"
                                         data-validation="custom"
                                         data-validation-regexp="^([^\s<>]+(\s)*)+$"
-                                        data-validation-error-msg="<spring:message code='computer_name_not_allowed' />" />
+                                        data-validation-error-msg="${error_msg}" />
                             </div>
                             <div class="form-group">
                                 <form:label path="computerIntroduced" for="introduced"><spring:message code="computer_introduced" /></form:label>
