@@ -85,20 +85,14 @@ public class ComputerController {
     }
 
     @PostMapping("/edit")
-    public ModelAndView editPost(@RequestParam Map<String, String> parameters) throws ServletException, IOException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        Computer computer = requestToComputer(LOGGER, parameters, formatter);
-
+    public ModelAndView editPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) throws ServletException, IOException {
+        Computer computer;
         try {
-            String idString = parameters.get("computerId");
-            long id = Long.parseLong(idString);
-            computer.setId(id);
-            LOGGER.debug("Computer id set to {}", id);
-        } catch (NumberFormatException e) {
-            LOGGER.error("Error: invalid computer id. Update cancelled", e);
-            throw(new ServletException("Error: invalid computer id. Update cancelled", e));
+            computer = computerMapper.computerDtoToComputer(computerDto);
+        } catch (MapperException e) {
+            throw new ServletException(e);
         }
-
+        
         Computer res = computerService.updateComputer(computer);
 
 
@@ -145,7 +139,7 @@ public class ComputerController {
         ComputerDto computerDto = computerMapper.computerToComputerDto(computer);
         CompanyDto companyDto = CompanyMapper.INSTANCE.companyToCompanyDto(computer.getCompany());
         
-        mav.addObject("computer", computerDto);
+        mav.addObject("computerDto", computerDto);
         mav.addObject("company", companyDto);
         mav.setViewName("editComputer");
 
