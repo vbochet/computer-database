@@ -24,7 +24,7 @@
             <div class="row">
                 <div class="col-xs-8 col-xs-offset-2 box">
                     <div class="label label-default pull-right">
-                        id: ${computer.computerId}
+                        id: ${computerDto.computerId}
                     </div>
                     <h1><spring:message code="edit_computer" /></h1>
 
