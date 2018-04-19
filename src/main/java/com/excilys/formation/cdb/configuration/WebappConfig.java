@@ -27,9 +27,10 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @EnableWebMvc
 //@PropertySource("classpath:db.properties")
-@ComponentScan(basePackages = {"com.excilys.formation.cdb.controller", 
-                               "com.excilys.formation.cdb.dao", 
-                               "com.excilys.formation.cdb.service", 
+@ComponentScan(basePackages = {"com.excilys.formation.cdb.controller",
+                               "com.excilys.formation.cdb.dao",
+                               "com.excilys.formation.cdb.mapper",
+                               "com.excilys.formation.cdb.service",
                                "com.excilys.formation.cdb.servlets"})
 public class WebappConfig implements WebMvcConfigurer {
 //    @Value("${jdbc.driver}")

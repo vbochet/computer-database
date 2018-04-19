@@ -52,6 +52,9 @@ public class ComputerDaoImpl implements ComputerDao {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
+    private RowComputerMapper rowComputerMapper;
+    
+    @Autowired
     public ComputerDaoImpl(DataSource dataSource) {
         super();
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -117,7 +120,7 @@ public class ComputerDaoImpl implements ComputerDao {
         String query = REQUEST_SELECT_FROM_JOIN + READ_REQUEST;
         Object[] params = new Object[] {id};
         LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", query, params);
-        List<Computer> computerList = jdbcTemplate.query(query, params, new RowComputerMapper());
+        List<Computer> computerList = jdbcTemplate.query(query, params, rowComputerMapper);
         if (computerList.size() == 1) {
             optComputer = Optional.of(computerList.get(0));
         }
@@ -196,7 +199,7 @@ public class ComputerDaoImpl implements ComputerDao {
         Object[] params = new Object[] {nbToPrint, offset};
 
         LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", req.toString(), params);
-        return jdbcTemplate.query(req.toString(), params, new RowComputerMapper());
+        return jdbcTemplate.query(req.toString(), params, rowComputerMapper);
     }
 
     @Override
@@ -223,7 +226,7 @@ public class ComputerDaoImpl implements ComputerDao {
 
         Object[] params = new Object[] {search + "%", search + "%", nbToPrint, offset};
         LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", req.toString(), params);
-        return jdbcTemplate.query(req.toString(), params, new RowComputerMapper());
+        return jdbcTemplate.query(req.toString(), params, rowComputerMapper);
     }
 
     @Override

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.paginator.ComputerDtoPage;
 import com.excilys.formation.cdb.service.ComputerService;
 
@@ -27,6 +28,8 @@ import com.excilys.formation.cdb.service.ComputerService;
 public class DashboardController {
     @Autowired
     private ComputerService computerService;
+    @Autowired
+    private ComputerMapper computerMapper;
 
     static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
 
@@ -57,8 +60,7 @@ public class DashboardController {
     @GetMapping("/dashboard")
     public ModelAndView doGet(Locale locale, @RequestParam Map<String, String> parameters) throws ServletException, IOException {
         ComputerDtoPage page;
-        page = new ComputerDtoPage();
-        page.setComputerService(computerService);
+        page = new ComputerDtoPage(computerService, computerMapper);
 
         try {
             page.setNbPerPage(Integer.parseInt(parameters.get("displayBy")));

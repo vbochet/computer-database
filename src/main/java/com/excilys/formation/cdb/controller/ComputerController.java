@@ -17,7 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.formation.cdb.dto.CompanyDto;
 import com.excilys.formation.cdb.dto.ComputerDto;
+import com.excilys.formation.cdb.exceptions.MapperException;
 import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Company;
@@ -40,13 +43,19 @@ public class ComputerController {
     private CompanyService companyService;
     @Autowired
     private ComputerService computerService;
+    @Autowired
+    private ComputerMapper computerMapper;
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerController.class);
 
     @PostMapping("/add")
-    public ModelAndView addPost(@RequestParam Map<String, String> parameters) throws ServletException, IOException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        Computer computer = requestToComputer(LOGGER, parameters, formatter);
+    public ModelAndView addPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) throws ServletException, IOException {
+        Computer computer;
+        try {
+            computer = computerMapper.computerDtoToComputer(computerDto);
+        } catch (MapperException e) {
+            throw new ServletException(e);
+        }
 
         Computer res = computerService.createComputer(computer);
 
@@ -54,11 +63,11 @@ public class ComputerController {
 
         if (res != null) {
             mav.setViewName("computerAdded");
-            mav.addObject("computer", ComputerMapper.INSTANCE.computerToComputerDto(res));
+            mav.addObject("computer", computerMapper.computerToComputerDto(res));
         } else {
             mav.setViewName("addComputer");
             mav.addObject("error", true);
-            mav.addObject("computer", ComputerMapper.INSTANCE.computerToComputerDto(computer));
+            mav.addObject("computer", computerMapper.computerToComputerDto(computer));
         }
         
         return mav;
@@ -70,6 +79,7 @@ public class ComputerController {
         mav.setViewName("addComputer");
         
         setCompanyDtoListInMAV(LOGGER, mav);
+        mav.addObject("computerDto", new ComputerDto());
 
         return mav;
     }
@@ -96,12 +106,12 @@ public class ComputerController {
 
         if (res != null) {
             mav.setViewName("computerAdded");
-            mav.addObject("computer", ComputerMapper.INSTANCE.computerToComputerDto(res));
+            mav.addObject("computer", computerMapper.computerToComputerDto(res));
         } else {
             mav.setViewName("editComputer");
             mav.addObject("error", true);
             setCompanyDtoListInMAV(LOGGER, mav);
-            mav.addObject("computer", ComputerMapper.INSTANCE.computerToComputerDto(computer));
+            mav.addObject("computer", computerMapper.computerToComputerDto(computer));
         }
         
         return mav;
@@ -132,7 +142,7 @@ public class ComputerController {
             return mav;
         }
 
-        ComputerDto computerDto = ComputerMapper.INSTANCE.computerToComputerDto(computer);
+        ComputerDto computerDto = computerMapper.computerToComputerDto(computer);
         CompanyDto companyDto = CompanyMapper.INSTANCE.companyToCompanyDto(computer.getCompany());
         
         mav.addObject("computer", computerDto);

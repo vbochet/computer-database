@@ -15,15 +15,14 @@ import com.excilys.formation.cdb.service.ComputerService;
 public class ComputerDtoPage extends Page<ComputerDto> {
 
     private ComputerService computerService;
-
-    public void setComputerService(ComputerService computerService) {
-        this.computerService = computerService;
-    }
+    private ComputerMapper computerMapper;
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDtoPage.class);
 
-    public ComputerDtoPage() {
+    public ComputerDtoPage(ComputerService computerService, ComputerMapper computerMapper) {
         super();
+        this.computerService = computerService;
+        this.computerMapper = computerMapper;
     }
 
     @Override
@@ -40,7 +39,7 @@ public class ComputerDtoPage extends Page<ComputerDto> {
 
         LOGGER.debug("refreshContentOrderBy: {}", orderBy);
         List<ComputerDto> computerDtoList = new ArrayList<>();
-        Consumer<Computer> computerConsumer = x -> computerDtoList.add(ComputerMapper.INSTANCE.computerToComputerDto(x));
+        Consumer<Computer> computerConsumer = x -> computerDtoList.add(computerMapper.computerToComputerDto(x));
         computerList.forEach(computerConsumer);
         setContent(computerDtoList);
         setNbTotal(nb);
