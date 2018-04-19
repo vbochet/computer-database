@@ -1,28 +1,30 @@
 package com.excilys.formation.cdb.configuration;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-
-import org.springframework.web.WebApplicationInitializer;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-public class WebappInitializer implements WebApplicationInitializer {
+public class WebappInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
-    public void onStartup(ServletContext container) throws ServletException {
-
-        AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
-        ctx.register(WebappConfig.class);
-        ctx.setServletContext(container);
-
-        ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(ctx));
-
-        servlet.setLoadOnStartup(1);
-        servlet.addMapping("/dashboard");
-        servlet.addMapping("/addComputer");
-        servlet.addMapping("/editComputer");
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class<?>[]{WebappRootConfig.class};
     }
 
+    @Override
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class[]{WebappServletConfig.class};
+    }
+
+    @Override
+    protected String[] getServletMappings() {
+        return new String[]{"/"};
+    }
+
+    @Override
+    protected DispatcherServlet createDispatcherServlet(WebApplicationContext servletAppContext) {
+        final DispatcherServlet servlet = (DispatcherServlet) super.createDispatcherServlet(servletAppContext);
+        servlet.setThrowExceptionIfNoHandlerFound(true);
+        return servlet;
+    }
 }
