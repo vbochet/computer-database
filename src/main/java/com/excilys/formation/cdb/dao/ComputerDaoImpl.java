@@ -34,20 +34,20 @@ public class ComputerDaoImpl implements ComputerDao {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
 
-    private final static String REQUEST_SELECT_FROM_JOIN = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ";
+    private static final String REQUEST_SELECT_FROM_JOIN = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ";
 
-    private final static String CREATE_REQUEST  = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
-    private final static String UPDATE_REQUEST  = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
-    private final static String DELETE_REQUEST  = "DELETE FROM computer WHERE id = ?;";
+    private static final String CREATE_REQUEST  = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
+    private static final String UPDATE_REQUEST  = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
+    private static final String DELETE_REQUEST  = "DELETE FROM computer WHERE id = ?;";
     private static final String DELETE_COMPANY_REQUEST  = "DELETE FROM computer WHERE company_id = ?;";
 
-    private final static String READ_REQUEST    = " WHERE computer.id = ?;";
-    private final static String LIST_REQUEST = " LIMIT ? OFFSET ?;";
+    private static final String READ_REQUEST    = " WHERE computer.id = ?;";
+    private static final String LIST_REQUEST = " LIMIT ? OFFSET ?;";
 
-    private final static String COUNT_REQUEST   = "SELECT COUNT(computer.id) FROM computer;";
-    private final static String COUNT_SEARCH_REQUEST   = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.name LIKE ? OR company.name LIKE ?;";
+    private static final String COUNT_REQUEST   = "SELECT COUNT(computer.id) FROM computer;";
+    private static final String COUNT_SEARCH_REQUEST   = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.name LIKE ? OR company.name LIKE ?;";
 
-    private final static String DESC = " DESC";
+    private static final String DESC = " DESC";
 
     private JdbcTemplate jdbcTemplate;
 
