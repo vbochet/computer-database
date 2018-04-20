@@ -42,7 +42,8 @@ public class ComputerMapper {
     
     public ComputerDto computerToComputerDto(Computer computer) {
         ComputerDto computerDto = new ComputerDto();
-        String intro = null, discont = null;
+        String intro = null;
+        String discont = null;
         String companyName = null;
         long companyId = -1;
         if (computer.getIntroduced() != null) {
@@ -69,7 +70,8 @@ public class ComputerMapper {
 
     public Computer computerDtoToComputer(ComputerDto computerDto) {
         Computer computer = new Computer();
-        LocalDate intro = null, discont = null;
+        LocalDate intro = null;
+        LocalDate discont = null;
         
         try {
             intro = Date.valueOf(computerDto.getComputerIntroduced()).toLocalDate();

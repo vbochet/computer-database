@@ -163,7 +163,8 @@ public class Cli {
 
     private boolean getAction(Scanner scanner, Page page) {
         System.out.println("Type 'n' to go to next page, 'p' to go to previous page, 'g 42' to go to page 42, and 'q' to quit.");
-        boolean loop = true, ret = true;
+        boolean loop = true;
+        boolean ret = true;
         String action;
         while(loop) {
             action = scanner.next();
@@ -217,7 +218,10 @@ public class Cli {
 
     private void caseCreateComputer(Scanner scanner) {
         LOGGER.debug("User choice: Create new computer");
-        String name, intro, discont, companyIdStr = null;
+        String name;
+        String intro;
+        String discont;
+        String companyIdStr = null;
         long companyId;
         boolean loop = true;
         Computer computer = new Computer();
@@ -296,7 +300,8 @@ public class Cli {
     }
 
     private void updateComputerName(Scanner scanner, Computer computer) {
-        String answer = "", name;
+        String answer = "";
+        String name;
         System.out.println("Current name: [" + computer.getName() + "].");
 
         answer = chooseUpdate(scanner, "name");
@@ -308,7 +313,8 @@ public class Cli {
     }
 
     private void updateComputerIntroduced(Scanner scanner, Computer computer) {
-        String answer = "", intro;
+        String answer = "";
+        String intro;
         System.out.println("Current introduction date: [" + computer.getIntroduced() + "].");
 
         answer = chooseUpdate(scanner, "introduction date");
@@ -322,7 +328,8 @@ public class Cli {
     }
 
     private void updateComputerDiscontinued(Scanner scanner, Computer computer) {
-        String answer = "", discont;
+        String answer = "";
+        String discont;
         System.out.println("Current discontinuation date: [" + computer.getDiscontinued() + "].");
 
         answer = chooseUpdate(scanner, "discontinuation date");
@@ -336,7 +343,8 @@ public class Cli {
     }
 
     private void updateComputerCompany(Scanner scanner, Computer computer) {
-        String answer = "", companyIdStr = null;
+        String answer = "";
+        String companyIdStr = null;
         boolean loop = true;
         long companyId;
         Company company = null;

@@ -75,7 +75,8 @@ public class ComputerDaoImpl implements ComputerDao {
         PreparedStatementCreator psc = new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                LocalDate intro, discont;
+                LocalDate intro;
+                LocalDate discont;
                 PreparedStatement preparedStatement = connection.prepareStatement(CREATE_REQUEST, Statement.RETURN_GENERATED_KEYS);
 
                 preparedStatement.setString(1, computer.getName());
