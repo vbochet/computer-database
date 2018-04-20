@@ -12,8 +12,9 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 @Configuration
 @PropertySource("classpath:db.properties")
-@ComponentScan({"com.excilys.formation.cdb.dao", 
-                "com.excilys.formation.cdb.service", 
+@ComponentScan({"com.excilys.formation.cdb.dao",
+                "com.excilys.formation.cdb.mapper",
+                "com.excilys.formation.cdb.service",
                 "com.excilys.formation.cdb.ui"})
 public class CliConfig {
 
