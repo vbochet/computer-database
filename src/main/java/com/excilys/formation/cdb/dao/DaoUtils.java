@@ -10,9 +10,10 @@ import org.slf4j.LoggerFactory;
 
 public class DaoUtils {
 
-    
     private static final String SQL_ERROR = "SQL error";
     private static final Logger LOGGER = LoggerFactory.getLogger(DaoUtils.class);
+
+    private DaoUtils() {}
 
     public static void closeElements(Connection connection, Statement statement, ResultSet resultSet) {
         if (resultSet != null) {
