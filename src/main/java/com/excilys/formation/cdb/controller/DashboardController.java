@@ -57,7 +57,7 @@ public class DashboardController {
     }
 
     @GetMapping("/dashboard")
-    public ModelAndView doGet(Locale locale, @RequestParam Map<String, String> parameters) throws ServletException {
+    public ModelAndView doGet(Locale locale, @RequestParam Map<String, String> parameters) {
         ComputerDtoPage page;
         page = new ComputerDtoPage(computerService, computerMapper);
 
