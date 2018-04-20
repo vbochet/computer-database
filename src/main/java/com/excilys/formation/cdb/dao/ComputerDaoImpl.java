@@ -179,19 +179,8 @@ public class ComputerDaoImpl implements ComputerDao {
     }
 
     private List<Computer> executeListRequest(int offset, int nbToPrint, String order, boolean desc) {
-        String field;
-        StringBuilder req = new StringBuilder();
-
-        switch (ComputerOrderBy.parse(order)) {
-            case ID: field = ComputerOrderBy.ID.toString() + (desc ? DESC : ""); break;
-            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? DESC : ""); break;
-            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? DESC : ""); break;
-            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? DESC : ""); break;
-            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? DESC : ""); break;
-            default: field = ComputerOrderBy.ID.toString();
-        }
-
-        req.append(REQUEST_SELECT_FROM_JOIN).append("ORDER BY ").append(field).append(LIST_REQUEST);
+        String field = switchOrder(order, desc);
+        StringBuilder req = new StringBuilder().append(REQUEST_SELECT_FROM_JOIN).append("ORDER BY ").append(field).append(LIST_REQUEST);
         Object[] params = new Object[] {nbToPrint, offset};
 
         LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", req.toString(), params);
@@ -206,8 +195,16 @@ public class ComputerDaoImpl implements ComputerDao {
     }
 
     private List<Computer> executeListSearchRequest(int offset, int nbToPrint, String order, boolean desc, String search) {
+        String field = switchOrder(order, desc);
+        StringBuilder req = new StringBuilder().append(REQUEST_SELECT_FROM_JOIN).append(" WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY ").append(field).append(LIST_REQUEST);
+
+        Object[] params = new Object[] {search + "%", search + "%", nbToPrint, offset};
+        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", req.toString(), params);
+        return jdbcTemplate.query(req.toString(), params, rowComputerMapper);
+    }
+    
+    private String switchOrder(String order, boolean desc) {
         String field;
-        StringBuilder req = new StringBuilder();
 
         switch (ComputerOrderBy.parse(order)) {
             case ID: field = ComputerOrderBy.ID.toString() + (desc ? DESC : ""); break;
@@ -217,12 +214,8 @@ public class ComputerDaoImpl implements ComputerDao {
             case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? DESC : ""); break;
             default: field = ComputerOrderBy.ID.toString();
         }
-
-        req.append(REQUEST_SELECT_FROM_JOIN).append(" WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY ").append(field).append(LIST_REQUEST);
-
-        Object[] params = new Object[] {search + "%", search + "%", nbToPrint, offset};
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", req.toString(), params);
-        return jdbcTemplate.query(req.toString(), params, rowComputerMapper);
+        
+        return field;
     }
 
     @Override
