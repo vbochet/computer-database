@@ -23,7 +23,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.formation.cdb.dto.CompanyDto;
 import com.excilys.formation.cdb.dto.ComputerDto;
-import com.excilys.formation.cdb.exceptions.MapperException;
 import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Company;
@@ -47,11 +46,7 @@ public class ComputerController {
     @PostMapping("/add")
     public ModelAndView addPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) throws ServletException {
         Computer computer;
-        try {
-            computer = computerMapper.computerDtoToComputer(computerDto);
-        } catch (MapperException e) {
-            throw new ServletException(e);
-        }
+        computer = computerMapper.computerDtoToComputer(computerDto);
 
         Computer res = computerService.createComputer(computer);
 
@@ -83,11 +78,7 @@ public class ComputerController {
     @PostMapping("/edit")
     public ModelAndView editPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) throws ServletException {
         Computer computer;
-        try {
-            computer = computerMapper.computerDtoToComputer(computerDto);
-        } catch (MapperException e) {
-            throw new ServletException(e);
-        }
+        computer = computerMapper.computerDtoToComputer(computerDto);
         
         Computer res = computerService.updateComputer(computer);
 

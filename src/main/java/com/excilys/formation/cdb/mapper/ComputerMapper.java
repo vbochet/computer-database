@@ -68,7 +68,7 @@ public class ComputerMapper {
         return computerDto;
     }
 
-    public Computer computerDtoToComputer(ComputerDto computerDto) throws MapperException {
+    public Computer computerDtoToComputer(ComputerDto computerDto) {
         Computer computer = new Computer();
         LocalDate intro = null, discont = null;
         
