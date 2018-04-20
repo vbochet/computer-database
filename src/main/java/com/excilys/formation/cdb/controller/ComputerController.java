@@ -44,7 +44,7 @@ public class ComputerController {
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerController.class);
 
     @PostMapping("/add")
-    public ModelAndView addPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) throws ServletException {
+    public ModelAndView addPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) {
         Computer computer;
         computer = computerMapper.computerDtoToComputer(computerDto);
 
@@ -76,7 +76,7 @@ public class ComputerController {
     }
 
     @PostMapping("/edit")
-    public ModelAndView editPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) throws ServletException {
+    public ModelAndView editPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) {
         Computer computer;
         computer = computerMapper.computerDtoToComputer(computerDto);
         

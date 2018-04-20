@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.cdb.dto.ComputerDto;
-import com.excilys.formation.cdb.exceptions.MapperException;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.CompanyService;
