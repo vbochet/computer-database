@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.servlet.ServletException;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,8 +48,17 @@ public class ComputerController {
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerController.class);
 
     @PostMapping("/add")
-    public ModelAndView addPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) throws ServletException, IOException {
+    public ModelAndView addPost(@Valid @ModelAttribute("computerDto") ComputerDto computerDto, BindingResult bindingResult, Model model) throws ServletException, IOException {
         Computer computer;
+        ModelAndView mav = new ModelAndView();
+        if (bindingResult.hasErrors()) {
+            LOGGER.info("Error in ComputerDtoMapping, going back to add form.");
+            mav.setViewName("addComputer");
+            mav.addObject("error", true);
+            mav.addObject("computer", computerDto);
+            return mav;
+        }
+
         try {
             computer = computerMapper.computerDtoToComputer(computerDto);
         } catch (MapperException e) {
@@ -55,8 +66,6 @@ public class ComputerController {
         }
 
         Computer res = computerService.createComputer(computer);
-
-        ModelAndView mav = new ModelAndView();
 
         if (res != null) {
             mav.setViewName("computerAdded");

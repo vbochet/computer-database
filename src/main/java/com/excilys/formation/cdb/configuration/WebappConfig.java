@@ -29,6 +29,7 @@ import org.springframework.web.servlet.view.JstlView;
 //@PropertySource("classpath:db.properties")
 @ComponentScan(basePackages = {"com.excilys.formation.cdb.controller",
                                "com.excilys.formation.cdb.dao",
+                               "com.excilys.formation.cdb.dto",
                                "com.excilys.formation.cdb.mapper",
                                "com.excilys.formation.cdb.service",
                                "com.excilys.formation.cdb.servlets"})

@@ -26,6 +26,7 @@
         <checkstyle.version>3.0.0</checkstyle.version>
         <apache-commons.version>3.7</apache-commons.version>
         <spring.version>5.0.5.RELEASE</spring.version>
+        <javax-validation.version>2.0.0.Final</javax-validation.version>
 
         <!-- test plugins versions -->
         <junit.version>4.12</junit.version>
@@ -167,6 +168,11 @@
             <version>${spring.version}</version>
          </dependency>
 
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax-validation.version}</version>
+        </dependency>
         <!-- tests -->
         <dependency>
             <groupId>junit</groupId>
