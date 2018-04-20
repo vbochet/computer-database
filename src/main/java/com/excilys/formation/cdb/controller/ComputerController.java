@@ -1,6 +1,5 @@
 package com.excilys.formation.cdb.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,7 @@ public class ComputerController {
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerController.class);
 
     @PostMapping("/add")
-    public ModelAndView addPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) throws ServletException, IOException {
+    public ModelAndView addPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) throws ServletException {
         Computer computer;
         try {
             computer = computerMapper.computerDtoToComputer(computerDto);
@@ -71,18 +70,18 @@ public class ComputerController {
     }
 
     @GetMapping("/add")
-    public ModelAndView addGet(@RequestParam Map<String, String> parameters) throws ServletException, IOException {
+    public ModelAndView addGet(@RequestParam Map<String, String> parameters) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("addComputer");
         
-        setCompanyDtoListInMAV(LOGGER, mav);
+        setCompanyDtoListInMAV(mav);
         mav.addObject("computerDto", new ComputerDto());
 
         return mav;
     }
 
     @PostMapping("/edit")
-    public ModelAndView editPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) throws ServletException, IOException {
+    public ModelAndView editPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) throws ServletException {
         Computer computer;
         try {
             computer = computerMapper.computerDtoToComputer(computerDto);
@@ -101,7 +100,7 @@ public class ComputerController {
         } else {
             mav.setViewName("editComputer");
             mav.addObject("error", true);
-            setCompanyDtoListInMAV(LOGGER, mav);
+            setCompanyDtoListInMAV(mav);
             mav.addObject("computer", computerMapper.computerToComputerDto(computer));
         }
         
@@ -109,9 +108,9 @@ public class ComputerController {
     }
 
     @GetMapping("/edit")
-    public ModelAndView editGet(@RequestParam Map<String, String> parameters) throws ServletException, IOException {
+    public ModelAndView editGet(@RequestParam Map<String, String> parameters) throws ServletException {
         ModelAndView mav = new ModelAndView();        
-        setCompanyDtoListInMAV(LOGGER, mav);
+        setCompanyDtoListInMAV(mav);
         
         long id;
         Computer computer;
@@ -144,7 +143,7 @@ public class ComputerController {
     }
 
 
-    private void setCompanyDtoListInMAV(Logger logger, ModelAndView mav) {
+    private void setCompanyDtoListInMAV(ModelAndView mav) {
         List<Company> companyList;
         companyList = companyService.getList(0, (int)companyService.getNbFound());
         List<CompanyDto> companyDtoList = new ArrayList<>();
