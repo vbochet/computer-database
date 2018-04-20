@@ -170,9 +170,6 @@ public class ComputerDaoImpl implements ComputerDao {
     public void deleteByCompany(long companyId) {
         LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", DELETE_COMPANY_REQUEST, companyId);
         jdbcTemplate.update(DELETE_COMPANY_REQUEST, companyId);
-        throw new DataAccessException(null) {
-            private static final long serialVersionUID = 5905365942880896750L;
-        };
     }
 
     @Override
