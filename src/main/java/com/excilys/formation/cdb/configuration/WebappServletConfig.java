@@ -19,7 +19,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
                                "com.excilys.formation.cdb.dao",
                                "com.excilys.formation.cdb.mapper",
                                "com.excilys.formation.cdb.service",
-                               "com.excilys.formation.cdb.servlets"})
+                               "com.excilys.formation.cdb.validator"})
 public class WebappServletConfig implements WebMvcConfigurer {
     @Value("${jdbc.driver}")
     private String driverClassName;

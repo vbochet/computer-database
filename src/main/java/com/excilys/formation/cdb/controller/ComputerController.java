@@ -14,7 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +33,7 @@ import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.CompanyService;
 import com.excilys.formation.cdb.service.ComputerService;
+import com.excilys.formation.cdb.validator.ComputerDtoValidator;
 
 @Controller
 @Component("addComputerControllerBean")
@@ -40,17 +45,33 @@ public class ComputerController {
     private ComputerService computerService;
     @Autowired
     private ComputerMapper computerMapper;
+    @Autowired
+    private ComputerDtoValidator computerDtoValidator;
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerController.class);
 
+
+    @InitBinder
+    private void initBinder(WebDataBinder binder) {
+        binder.setValidator(computerDtoValidator);
+    }
+
+
     @PostMapping("/add")
-    public ModelAndView addPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) {
+    public ModelAndView addPost(@Validated @ModelAttribute("computerDto") ComputerDto computerDto, BindingResult bindingResult, Model model) {
         Computer computer;
+        ModelAndView mav = new ModelAndView();
+        if (bindingResult.hasErrors()) {
+            LOGGER.error("Error in ComputerDto fields, going back to add page");
+            mav.setViewName("addComputer");
+            mav.addObject("error", true);
+            mav.addObject("computer", computerDto);
+            return mav;
+        }
+
         computer = computerMapper.computerDtoToComputer(computerDto);
 
         Computer res = computerService.createComputer(computer);
-
-        ModelAndView mav = new ModelAndView();
 
         if (res != null) {
             mav.setViewName("computerAdded");
@@ -76,14 +97,23 @@ public class ComputerController {
     }
 
     @PostMapping("/edit")
-    public ModelAndView editPost(@ModelAttribute("computerDto") ComputerDto computerDto, Model model) {
+    public ModelAndView editPost(@Validated @ModelAttribute("computerDto") ComputerDto computerDto, BindingResult bindingResult, Model model) {
         Computer computer;
+        ModelAndView mav = new ModelAndView();
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.error("Error in ComputerDto fields, going back to edit page");
+            mav.setViewName("editComputer");
+            mav.addObject("error", true);
+            mav.addObject("computerDto", computerDto);
+            return mav;
+        }
+
         computer = computerMapper.computerDtoToComputer(computerDto);
         
         Computer res = computerService.updateComputer(computer);
 
 
-        ModelAndView mav = new ModelAndView();
 
         if (res != null) {
             mav.setViewName("computerAdded");
@@ -124,10 +154,8 @@ public class ComputerController {
         }
 
         ComputerDto computerDto = computerMapper.computerToComputerDto(computer);
-        CompanyDto companyDto = CompanyMapper.INSTANCE.companyToCompanyDto(computer.getCompany());
         
         mav.addObject("computerDto", computerDto);
-        mav.addObject("company", companyDto);
         mav.setViewName("editComputer");
 
         return mav;
