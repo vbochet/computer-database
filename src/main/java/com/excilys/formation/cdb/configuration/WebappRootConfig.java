@@ -23,7 +23,7 @@ import org.springframework.web.servlet.view.JstlView;
                                "com.excilys.formation.cdb.dao",
                                "com.excilys.formation.cdb.mapper",
                                "com.excilys.formation.cdb.service",
-                               "com.excilys.formation.cdb.servlets"})
+                               "com.excilys.formation.cdb.validator"})
 public class WebappRootConfig implements WebMvcConfigurer {
     @Bean
     public ReloadableResourceBundleMessageSource messageSource(){

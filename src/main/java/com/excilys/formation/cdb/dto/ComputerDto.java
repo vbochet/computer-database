@@ -1,18 +1,11 @@
 package com.excilys.formation.cdb.dto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import org.springframework.stereotype.Component;
 
 @Component("computerdto")
 public class ComputerDto {
 
     private long computerId;
-    @NotBlank
-    @NotNull
-    @Size(min=2, max=5)
     private String computerName;
     private String computerIntroduced;
     private String computerDiscontinued;
