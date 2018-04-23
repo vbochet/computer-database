@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.cdb.dto.ComputerDto;
-import com.excilys.formation.cdb.exceptions.MapperException;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.CompanyService;
@@ -43,7 +42,8 @@ public class ComputerMapper {
     
     public ComputerDto computerToComputerDto(Computer computer) {
         ComputerDto computerDto = new ComputerDto();
-        String intro = null, discont = null;
+        String intro = null;
+        String discont = null;
         String companyName = null;
         long companyId = -1;
         if (computer.getIntroduced() != null) {
@@ -68,9 +68,10 @@ public class ComputerMapper {
         return computerDto;
     }
 
-    public Computer computerDtoToComputer(ComputerDto computerDto) throws MapperException {
+    public Computer computerDtoToComputer(ComputerDto computerDto) {
         Computer computer = new Computer();
-        LocalDate intro = null, discont = null;
+        LocalDate intro = null;
+        LocalDate discont = null;
         
         try {
             intro = Date.valueOf(computerDto.getComputerIntroduced()).toLocalDate();

@@ -14,7 +14,6 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -34,20 +33,20 @@ public class ComputerDaoImpl implements ComputerDao {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
 
-    private final static String REQUEST_SELECT_FROM_JOIN = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ";
+    private static final String REQUEST_SELECT_FROM_JOIN = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ";
 
-    private final static String CREATE_REQUEST  = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
-    private final static String UPDATE_REQUEST  = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
-    private final static String DELETE_REQUEST  = "DELETE FROM computer WHERE id = ?;";
+    private static final String CREATE_REQUEST  = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
+    private static final String UPDATE_REQUEST  = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
+    private static final String DELETE_REQUEST  = "DELETE FROM computer WHERE id = ?;";
     private static final String DELETE_COMPANY_REQUEST  = "DELETE FROM computer WHERE company_id = ?;";
 
-    private final static String READ_REQUEST    = " WHERE computer.id = ?;";
-    private final static String LIST_REQUEST = " LIMIT ? OFFSET ?;";
+    private static final String READ_REQUEST    = " WHERE computer.id = ?;";
+    private static final String LIST_REQUEST = " LIMIT ? OFFSET ?;";
 
-    private final static String COUNT_REQUEST   = "SELECT COUNT(computer.id) FROM computer;";
-    private final static String COUNT_SEARCH_REQUEST   = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.name LIKE ? OR company.name LIKE ?;";
+    private static final String COUNT_REQUEST   = "SELECT COUNT(computer.id) FROM computer;";
+    private static final String COUNT_SEARCH_REQUEST   = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.name LIKE ? OR company.name LIKE ?;";
 
-    private final static String DESC = " DESC";
+    private static final String DESC = " DESC";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -76,7 +75,8 @@ public class ComputerDaoImpl implements ComputerDao {
         PreparedStatementCreator psc = new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                LocalDate intro, discont;
+                LocalDate intro;
+                LocalDate discont;
                 PreparedStatement preparedStatement = connection.prepareStatement(CREATE_REQUEST, Statement.RETURN_GENERATED_KEYS);
 
                 preparedStatement.setString(1, computer.getName());
@@ -170,9 +170,6 @@ public class ComputerDaoImpl implements ComputerDao {
     public void deleteByCompany(long companyId) {
         LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", DELETE_COMPANY_REQUEST, companyId);
         jdbcTemplate.update(DELETE_COMPANY_REQUEST, companyId);
-        throw new DataAccessException(null) {
-            private static final long serialVersionUID = 5905365942880896750L;
-        };
     }
 
     @Override
@@ -183,19 +180,8 @@ public class ComputerDaoImpl implements ComputerDao {
     }
 
     private List<Computer> executeListRequest(int offset, int nbToPrint, String order, boolean desc) {
-        String field;
-        StringBuilder req = new StringBuilder();
-
-        switch (ComputerOrderBy.parse(order)) {
-            case ID: field = ComputerOrderBy.ID.toString() + (desc ? DESC : ""); break;
-            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? DESC : ""); break;
-            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? DESC : ""); break;
-            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? DESC : ""); break;
-            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? DESC : ""); break;
-            default: field = ComputerOrderBy.ID.toString();
-        }
-
-        req.append(REQUEST_SELECT_FROM_JOIN).append("ORDER BY ").append(field).append(LIST_REQUEST);
+        String field = switchOrder(order, desc);
+        StringBuilder req = new StringBuilder().append(REQUEST_SELECT_FROM_JOIN).append("ORDER BY ").append(field).append(LIST_REQUEST);
         Object[] params = new Object[] {nbToPrint, offset};
 
         LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", req.toString(), params);
@@ -210,8 +196,16 @@ public class ComputerDaoImpl implements ComputerDao {
     }
 
     private List<Computer> executeListSearchRequest(int offset, int nbToPrint, String order, boolean desc, String search) {
+        String field = switchOrder(order, desc);
+        StringBuilder req = new StringBuilder().append(REQUEST_SELECT_FROM_JOIN).append(" WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY ").append(field).append(LIST_REQUEST);
+
+        Object[] params = new Object[] {search + "%", search + "%", nbToPrint, offset};
+        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", req.toString(), params);
+        return jdbcTemplate.query(req.toString(), params, rowComputerMapper);
+    }
+    
+    private String switchOrder(String order, boolean desc) {
         String field;
-        StringBuilder req = new StringBuilder();
 
         switch (ComputerOrderBy.parse(order)) {
             case ID: field = ComputerOrderBy.ID.toString() + (desc ? DESC : ""); break;
@@ -221,12 +215,8 @@ public class ComputerDaoImpl implements ComputerDao {
             case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? DESC : ""); break;
             default: field = ComputerOrderBy.ID.toString();
         }
-
-        req.append(REQUEST_SELECT_FROM_JOIN).append(" WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY ").append(field).append(LIST_REQUEST);
-
-        Object[] params = new Object[] {search + "%", search + "%", nbToPrint, offset};
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", req.toString(), params);
-        return jdbcTemplate.query(req.toString(), params, rowComputerMapper);
+        
+        return field;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.excilys.formation.cdb.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,7 +33,7 @@ public class DashboardController {
     static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
 
     @PostMapping("/dashboard")
-    public ModelAndView doPost(Locale locale, @RequestParam Map<String, String> parameters) throws ServletException, IOException {
+    public ModelAndView doPost(Locale locale, @RequestParam Map<String, String> parameters) throws ServletException {
         List<Long> ids = new ArrayList<>();
 
         String idsString = parameters.get("selection");
@@ -58,7 +57,7 @@ public class DashboardController {
     }
 
     @GetMapping("/dashboard")
-    public ModelAndView doGet(Locale locale, @RequestParam Map<String, String> parameters) throws ServletException, IOException {
+    public ModelAndView doGet(Locale locale, @RequestParam Map<String, String> parameters) {
         ComputerDtoPage page;
         page = new ComputerDtoPage(computerService, computerMapper);
 
