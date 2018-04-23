@@ -1,11 +1,15 @@
 package com.excilys.formation.cdb.dto;
 
+import org.springframework.stereotype.Component;
+
+@Component("computerdto")
 public class ComputerDto {
 
     private long computerId;
     private String computerName;
     private String computerIntroduced;
     private String computerDiscontinued;
+    private long computerCompanyId;
     private String computerCompanyName;
 
     public long getComputerId() {
@@ -36,10 +40,16 @@ public class ComputerDto {
         this.computerDiscontinued = computerDiscontinued;
     }
     
+    public long getComputerCompanyId() {
+        return computerCompanyId;
+    }
+    public void setComputerCompanyId(long computerCompanyId) {
+        this.computerCompanyId = computerCompanyId;
+    }
     public String getComputerCompanyName() {
         return computerCompanyName;
     }
-    public void setComputerCompany(String computerCompanyName) {
+    public void setComputerCompanyName(String computerCompanyName) {
         this.computerCompanyName = computerCompanyName;
     }
 

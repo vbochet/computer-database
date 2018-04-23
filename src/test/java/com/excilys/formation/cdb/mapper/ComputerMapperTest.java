@@ -16,14 +16,24 @@ import java.time.format.DateTimeFormatter;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.excilys.formation.cdb.configuration.TestConfig;
 import com.excilys.formation.cdb.dto.ComputerDto;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class})
 public class ComputerMapperTest {
 
     static int NB_COMPUTER_IN_DB = 25;
+    
+    @Autowired
+    ComputerMapper computerMapper;
 
     @BeforeClass
     public static void init() throws SQLException, ClassNotFoundException, IOException {
@@ -78,7 +88,7 @@ public class ComputerMapperTest {
 		doReturn(COMPANY.getName()).when(rs).getString("company_name");
 		
 		//when
-		computer = ComputerMapper.INSTANCE.resultSetToComputer(rs);
+		computer = computerMapper.resultSetToComputer(rs);
 		
 		//then
 		assertEquals(NAME, computer.getName());
@@ -97,7 +107,7 @@ public class ComputerMapperTest {
 		doReturn(null).when(rs).getString("company_name");
 		
 		//when
-		computer = ComputerMapper.INSTANCE.resultSetToComputer(rs);
+		computer = computerMapper.resultSetToComputer(rs);
 		
 		//then
 		assertEquals(NAME, computer.getName());
@@ -126,7 +136,7 @@ public class ComputerMapperTest {
 
         //when
         computer = new Computer(ID, NAME, DATE_1, DATE_2, COMPANY);
-        computerDto = ComputerMapper.INSTANCE.computerToComputerDto(computer);
+        computerDto = computerMapper.computerToComputerDto(computer);
 
         //then
         assertEquals(ID, computerDto.getComputerId());
@@ -138,7 +148,7 @@ public class ComputerMapperTest {
 
         //when
         computer = new Computer(NO_ID, null, null, null, null);
-        computerDto = ComputerMapper.INSTANCE.computerToComputerDto(computer);
+        computerDto = computerMapper.computerToComputerDto(computer);
 
         //then
         assertEquals(NO_ID, computerDto.getComputerId());

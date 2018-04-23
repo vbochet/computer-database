@@ -1,3 +1,5 @@
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ taglib tagdir = "/WEB-INF/tags" prefix = "t" %>
 
@@ -19,61 +21,71 @@
     </header>
     <section id="main">
         <div class="container">
+            <c:if test="${error}">
+            <div class="row">
+                <div class="alert alert-danger" role="alert">
+                    <spring:message code="edit_computer_error_message" />
+                </div>
+            </div>
+            </c:if>
             <div class="row">
                 <div class="col-xs-8 col-xs-offset-2 box">
                     <div class="label label-default pull-right">
-                        id: ${computer.computerId}
+                        id: ${computerDto.computerId}
                     </div>
-                    <h1>Edit Computer</h1>
+                    <h1><spring:message code="edit_computer" /></h1>
 
-                    <form action="<t:links target='editComputerPost' />" method="POST">
-                        <input type="hidden" value="${computer.computerId}" id="id" name="computerId" />
+                    <c:set var="formAction"><t:links target='editComputerPost' /></c:set>
+                    <form:form action="${formAction}" method="POST" modelAttribute="computerDto">
+                        <form:input path="computerId" type="hidden" value="${computerDto.computerId}" id="id" name="computerId" />
                         <fieldset>
                             <div class="form-group">
-                                <label for="computerName">Computer name</label>
-                                <input type="text" class="form-control" id="computerName" name="computerName" placeholder="Computer name" 
-		                                value="${computer.computerName}"
-		                                data-validation="custom"
-		                                data-validation-regexp="^([^\s<>]+(\s)*)+$"
-		                                data-validation-error-msg="This computer name is not allowed">
+                                <c:set var="cptNamePlaceholder"><spring:message code="computer_name" /></c:set>
+                                <c:set var="error_msg"><spring:message code="computer_name_not_allowed" /></c:set>
+                                <form:label path="computerName" for="computerName"><spring:message code="computer_name" /></form:label>
+                                <form:input path="computerName" type="text" class="form-control" id="computerName" name="computerName" placeholder="${cptNamePlaceholder}" 
+                                            value="${computerDto.computerName}"
+                                            data-validation="custom"
+                                            data-validation-regexp="^([^\s<>]+(\s)*)+$"
+                                            data-validation-error-msg="${error_msg}" />
                             </div>
                             <div class="form-group">
-                                <label for="introduced">Introduced date</label>
-                                <input type="date" class="form-control" id="introduced" name="introduced" placeholder="Introduced date" 
-                                		value="${computer.computerIntroduced}"
-                                        data-validation="date" 
-                                        data-validation-format="yyyy-mm-dd"
-                                        data-validation-depends-on="discontinued" >
+                                <form:label path="computerIntroduced" for="introduced"><spring:message code="computer_introduced" /></form:label>
+                                <form:input path="computerIntroduced" type="date" class="form-control" id="introduced" name="introduced" 
+                                            value="${computerDto.computerIntroduced}"
+                                            data-validation="date" 
+                                            data-validation-format="yyyy-mm-dd"
+                                            data-validation-depends-on="discontinued" />
                             </div>
                             <div class="form-group">
-                                <label for="discontinued">Discontinued date</label>
-                                <input type="date" class="form-control" id="discontinued" name="discontinued" placeholder="Discontinued date" 
-                                		value="${computer.computerDiscontinued}"
-                                        data-validation="date"
-                                        data-validation-format="yyyy-mm-dd"
-                                        data-validation-optional="true" >
+                                <form:label path="computerDiscontinued" for="discontinued"><spring:message code="computer_discontinued" /></form:label>
+                                <form:input path="computerDiscontinued" type="date" class="form-control" id="discontinued" name="discontinued" 
+                                            value="${computerDto.computerDiscontinued}"
+                                            data-validation="date"
+                                            data-validation-format="yyyy-mm-dd"
+                                            data-validation-optional="true" />
                             </div>
                             <div class="form-group">
-                                <label for="companyId">Company</label>
-                                <select class="form-control" id="companyId" name="companyId">
+                                <form:label path="computerCompanyId" for="companyId"><spring:message code="company" /></form:label>
+                                <form:select path="computerCompanyId" class="form-control" id="companyId" name="companyId">
                                     <option value="0">--</option>
                                     <c:forEach items="${companyList}" var="companyl">
-	                                    <c:if test="${companyl.companyId != company.companyId}">
-	                                    <option value="${companyl.companyId}">${companyl.companyName}</option>
-	                                    </c:if>
-	                                    <c:if test="${companyl.companyId == company.companyId}">
-	                                    <option value="${companyl.companyId}" selected>${companyl.companyName}</option>
-	                                    </c:if>
+                                        <c:if test="${companyl.companyId != computerDto.computerCompanyId}">
+                                        <option value="${companyl.companyId}">${companyl.companyName}</option>
+                                        </c:if>
+                                        <c:if test="${companyl.companyId == computerDto.computerCompanyId}">
+                                        <option value="${companyl.companyId}" selected>${companyl.companyName}</option>
+                                        </c:if>
                                     </c:forEach>
-                                </select>
-                            </div>            
+                                </form:select>
+                            </div>
                         </fieldset>
                         <div class="actions pull-right">
-                            <input type="submit" value="Edit" class="btn btn-primary">
-                            or
-                            <a href="<c:url value="/"/>dashboard" class="btn btn-default">Cancel</a>
+                            <input type="submit" value="<spring:message code="edit" />" class="btn btn-primary">
+                            <spring:message code="or" />
+                            <a href="<c:url value="/"/>dashboard" class="btn btn-default"><spring:message code="cancel" /></a>
                         </div>
-                    </form>
+                    </form:form>
                 </div>
             </div>
         </div>
@@ -81,9 +93,9 @@
 <script src="<t:links target='js' append='jquery.min.js' />"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
 <script>
- $.validate({
- 	  modules : 'date, logic'
- 	});
+    $.validate({
+        modules : 'date, logic'
+    });
 </script>
     
 </body>

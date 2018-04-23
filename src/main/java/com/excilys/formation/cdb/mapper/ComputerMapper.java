@@ -4,17 +4,23 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.excilys.formation.cdb.dto.ComputerDto;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
+import com.excilys.formation.cdb.service.CompanyService;
 
-public enum ComputerMapper {
+@Component
+public class ComputerMapper {
 
-    INSTANCE;
+    @Autowired
+    CompanyService companyService;
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerMapper.class);
 
@@ -36,8 +42,10 @@ public enum ComputerMapper {
     
     public ComputerDto computerToComputerDto(Computer computer) {
         ComputerDto computerDto = new ComputerDto();
-        String intro = null, discont = null;
+        String intro = null;
+        String discont = null;
         String companyName = null;
+        long companyId = -1;
         if (computer.getIntroduced() != null) {
             intro = computer.getIntroduced().toString();
         }
@@ -45,6 +53,7 @@ public enum ComputerMapper {
             discont = computer.getDiscontinued().toString();
         }
         if (computer.getCompany() != null) {
+            companyId = computer.getCompany().getId();
             companyName = computer.getCompany().getName();
         }
         
@@ -53,9 +62,41 @@ public enum ComputerMapper {
         computerDto.setComputerName(computer.getName());
         computerDto.setComputerIntroduced(intro);
         computerDto.setComputerDiscontinued(discont);
-        computerDto.setComputerCompany(companyName);
+        computerDto.setComputerCompanyId(companyId);
+        computerDto.setComputerCompanyName(companyName);
 
         return computerDto;
     }
 
+    public Computer computerDtoToComputer(ComputerDto computerDto) {
+        Computer computer = new Computer();
+        LocalDate intro = null;
+        LocalDate discont = null;
+        
+        try {
+            intro = Date.valueOf(computerDto.getComputerIntroduced()).toLocalDate();
+        } catch (IllegalArgumentException e) {
+            // do nothing
+        }
+        
+        try {
+            discont = Date.valueOf(computerDto.getComputerDiscontinued()).toLocalDate();
+        } catch (IllegalArgumentException e) {
+            // do nothing
+        }
+
+        computer.setId(computerDto.getComputerId());
+        computer.setName(computerDto.getComputerName());
+        computer.setIntroduced(intro);
+        computer.setDiscontinued(discont);
+        Optional<Company> optCompany;
+        optCompany = companyService.getById(computerDto.getComputerCompanyId());
+        if (optCompany.isPresent()) {
+            computer.setCompany(optCompany.get());
+        } else {
+            computer.setCompany(null);
+        }
+
+        return computer;
+}
 }

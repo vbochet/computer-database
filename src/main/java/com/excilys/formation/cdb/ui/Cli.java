@@ -1,17 +1,16 @@
 package com.excilys.formation.cdb.ui;
 
-import java.text.ParseException;
 import java.util.InputMismatchException;
 import java.util.Optional;
 import java.util.Scanner;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.excilys.formation.cdb.exceptions.PageException;
-import com.excilys.formation.cdb.exceptions.ServiceException;
+import com.excilys.formation.cdb.configuration.CliConfig;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.paginator.CompanyPage;
@@ -29,8 +28,8 @@ public class Cli {
 
     static Logger LOGGER = LoggerFactory.getLogger(Cli.class);
 
-    public static void main(String[] args) throws ServiceException, PageException {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("cli-context.xml");
+    public static void main(String[] args) {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(CliConfig.class);
         Cli cli = context.getBean(Cli.class);
         LOGGER.debug("Starting Computer-Database command line interface");
 
@@ -91,10 +90,6 @@ public class Cli {
                 String input = scanner.nextLine();
                 LOGGER.error("Input error: Unexpected value \"{}\" received", input);
                 stop = true;
-            } catch (ParseException e) {
-                e.printStackTrace();
-                LOGGER.error("Input error: Bad date format (expected yyyy-mm-dd)");
-                stop = true;
             }
         }
 
@@ -127,7 +122,7 @@ public class Cli {
         System.out.println(sb.toString());
     }
 
-    private void caseListComputer(Scanner scanner) throws ServiceException, PageException {
+    private void caseListComputer(Scanner scanner) {
         LOGGER.debug("User choice: List computers");
         ComputerPage page;
         page = new ComputerPage();
@@ -147,7 +142,7 @@ public class Cli {
         LOGGER.debug("End of computer listing");
     }
 
-    private void caseListCompany(Scanner scanner) throws PageException, ServiceException {
+    private void caseListCompany(Scanner scanner) {
         LOGGER.debug("User choice: List companies");
         CompanyPage page = new CompanyPage();
         page.setCompanyService(companyService);
@@ -166,9 +161,10 @@ public class Cli {
         LOGGER.debug("End of company listing");
     }
 
-    private boolean getAction(Scanner scanner, Page page) throws PageException {
+    private boolean getAction(Scanner scanner, Page page) {
         System.out.println("Type 'n' to go to next page, 'p' to go to previous page, 'g 42' to go to page 42, and 'q' to quit.");
-        boolean loop = true, ret = true;
+        boolean loop = true;
+        boolean ret = true;
         String action;
         while(loop) {
             action = scanner.next();
@@ -203,7 +199,7 @@ public class Cli {
         return ret;
     }
 
-    private void caseShowComputer(Scanner scanner) throws ServiceException {
+    private void caseShowComputer(Scanner scanner) {
         LOGGER.debug("User choice: Show computer info");
         long id;
         Optional<Computer> optComputer = Optional.empty();
@@ -220,9 +216,12 @@ public class Cli {
         LOGGER.debug("End of computer info");
     }
 
-    private void caseCreateComputer(Scanner scanner) throws ParseException, ServiceException {
+    private void caseCreateComputer(Scanner scanner) {
         LOGGER.debug("User choice: Create new computer");
-        String name, intro, discont, companyIdStr = null;
+        String name;
+        String intro;
+        String discont;
+        String companyIdStr = null;
         long companyId;
         boolean loop = true;
         Computer computer = new Computer();
@@ -273,7 +272,7 @@ public class Cli {
         LOGGER.debug("End of computer creation");
     }
 
-    private void caseUpdateComputer(Scanner scanner) throws ParseException, ServiceException {
+    private void caseUpdateComputer(Scanner scanner) {
         LOGGER.debug("User choice: Update computer");
         long id;
         Computer computer;
@@ -301,7 +300,8 @@ public class Cli {
     }
 
     private void updateComputerName(Scanner scanner, Computer computer) {
-        String answer = "", name;
+        String answer = "";
+        String name;
         System.out.println("Current name: [" + computer.getName() + "].");
 
         answer = chooseUpdate(scanner, "name");
@@ -313,7 +313,8 @@ public class Cli {
     }
 
     private void updateComputerIntroduced(Scanner scanner, Computer computer) {
-        String answer = "", intro;
+        String answer = "";
+        String intro;
         System.out.println("Current introduction date: [" + computer.getIntroduced() + "].");
 
         answer = chooseUpdate(scanner, "introduction date");
@@ -327,7 +328,8 @@ public class Cli {
     }
 
     private void updateComputerDiscontinued(Scanner scanner, Computer computer) {
-        String answer = "", discont;
+        String answer = "";
+        String discont;
         System.out.println("Current discontinuation date: [" + computer.getDiscontinued() + "].");
 
         answer = chooseUpdate(scanner, "discontinuation date");
@@ -340,8 +342,9 @@ public class Cli {
         }
     }
 
-    private void updateComputerCompany(Scanner scanner, Computer computer) throws ServiceException {
-        String answer = "", companyIdStr = null;
+    private void updateComputerCompany(Scanner scanner, Computer computer) {
+        String answer = "";
+        String companyIdStr = null;
         boolean loop = true;
         long companyId;
         Company company = null;
@@ -380,7 +383,7 @@ public class Cli {
         return answer;
     }
 
-    private void caseDeleteComputer(Scanner scanner) throws ServiceException {
+    private void caseDeleteComputer(Scanner scanner) {
         LOGGER.debug("User choice: Delete computer");
         long id;
 
@@ -397,7 +400,7 @@ public class Cli {
         LOGGER.debug("End of computer deletion");
     }
 
-    private void caseDeleteCompany(Scanner scanner) throws ServiceException {
+    private void caseDeleteCompany(Scanner scanner) {
         LOGGER.debug("User choice: Delete company");
         long id;
 

@@ -22,13 +22,4 @@ public enum CompanyMapper {
         
         return companyDto;
     }
-
-    public Company companyDtoToCompany(CompanyDto companyDto) {
-        Company company = new Company();
-        
-        company.setId(companyDto.getCompanyId());
-        company.setName(companyDto.getCompanyName());
-        
-        return company;
-    }
 }

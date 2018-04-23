@@ -59,36 +59,4 @@ public class CompanyMapperTest {
         assertEquals(null, companyDto.getCompanyName());
     }
 
-
-    @Test
-    public void companyDtoToCompanyTest() throws SQLException {
-        //given
-        final int ID = 42;
-        final int NO_ID = 0;
-        final String NAME = "toto";
-        Company company;
-        CompanyDto companyDto;
-
-        //when
-        companyDto = new CompanyDto();
-        companyDto.setCompanyId(ID);
-        companyDto.setCompanyName(NAME);
-        company = CompanyMapper.INSTANCE.companyDtoToCompany(companyDto);
-
-        //then
-        assertEquals(ID, company.getId());
-        assertEquals(NAME, company.getName());
-
-
-        //when
-        companyDto = new CompanyDto();
-        companyDto.setCompanyId(NO_ID);
-        companyDto.setCompanyName(null);
-        company = CompanyMapper.INSTANCE.companyDtoToCompany(companyDto);
-
-        //then
-        assertEquals(NO_ID, company.getId());
-        assertEquals(null, company.getName());
-    }
-
 }

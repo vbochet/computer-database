@@ -1,3 +1,4 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ taglib tagdir = "/WEB-INF/tags" prefix = "t" %>
 
@@ -15,7 +16,18 @@
 <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="<t:links target='dashboard' />"> Application - Computer Database </a>
+        <a class="navbar-brand" href="<t:links target='dashboard' />"> Application - Computer Database </a>
+        
+	    <div class="collapse navbar-collapse" id="navbarNav">
+	        <ul class="navbar-nav">
+	            <li class="nav-item">
+		            <a class="navbar" href="?lang=en"> English </a>
+	            </li>
+	            <li class="nav-item">
+		            <a class="navbar" href="?lang=fr"> Français </a>
+	            </li>
+	      </ul>
+        </div>
         </div>
     </header>
 
@@ -23,23 +35,23 @@
         <div class="container">
 			<c:if test = "${deletionSuccess}">
             <div class="alert alert-success">
-                Computer(s) were deleted successfully
+                <spring:message code="computers_deletion_successful" />
             </div>
             </c:if>
             <h1 id="homeTitle">
-                ${page.nbTotal} Computers found
+                ${page.nbTotal} <spring:message code="computers_found" />
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
                     <form id="searchForm" action="<t:links target='dashboardSearch' pagenb='${page.currentPage}' displayBy='${page.nbPerPage}' orderBy='${page.orderBy}' orderDesc='${page.orderDesc}' />" method="GET" class="form-inline">
-                        <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" />
-                        <input type="submit" id="searchsubmit" value="Filter by name"
+                        <input type="search" id="searchbox" name="search" class="form-control" placeholder="<spring:message code="search_name" />" />
+                        <input type="submit" id="searchsubmit" value="<spring:message code="filter" />"
                         class="btn btn-primary" />
                     </form>
                 </div>
                 <div class="pull-right">
-                    <a class="btn btn-success" id="addComputer" href="<t:links target='addComputer' />">Add Computer</a> 
-                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Delete</a>
+                    <a class="btn btn-success" id="addComputer" href="<t:links target='addComputer' />"><spring:message code="add_computer" /></a> 
+                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message code="delete" /></a>
                 </div>
             </div>
         </div>
@@ -63,16 +75,16 @@
                             </span>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='name' orderDesc='${page.orderBy == "name" && !page.orderDesc}' search='${page.search}' />">Computer name</a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='name' orderDesc='${page.orderBy == "name" && !page.orderDesc}' search='${page.search}' />"><spring:message code="computer_name" /></a>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='introduced' orderDesc='${page.orderBy == "introduced" && !page.orderDesc}' search='${page.search}' />">Introduced date</a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='introduced' orderDesc='${page.orderBy == "introduced" && !page.orderDesc}' search='${page.search}' />"><spring:message code="computer_introduced" /></a>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='discontinued' orderDesc='${page.orderBy == "discontinued" && !page.orderDesc}' search='${page.search}' />">Discontinued date</a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='discontinued' orderDesc='${page.orderBy == "discontinued" && !page.orderDesc}' search='${page.search}' />"><spring:message code="computer_discontinued" /></a>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='company_name' orderDesc='${page.orderBy == "company_name" && !page.orderDesc}' search='${page.search}' />">Company</a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='company_name' orderDesc='${page.orderBy == "company_name" && !page.orderDesc}' search='${page.search}' />"><spring:message code="company" /></a>
                         </th>
 
                     </tr>
