@@ -6,12 +6,21 @@
 
     <groupId>com.excilys.formation.cdb</groupId>
     <artifactId>computer-database</artifactId>
-    <version>4.5.6-RELEASE</version>
+    <version>4.6.2-SNAPSHOT</version>
 
-    <packaging>war</packaging>
+    <packaging>pom</packaging>
 
     <name>computer-database</name>
     <url>https://github.com/vbochet/computer-database</url>
+
+    <modules>
+        <module>computer-database-core</module>
+        <module>computer-database-persistence</module>
+        <module>computer-database-service</module>
+        <module>computer-database-binding</module>
+        <module>computer-database-webapp</module>
+        <module>computer-database-console</module>
+    </modules>
 
     <properties>
         <!-- sets the projects encoding to UTF-8 -->
@@ -62,14 +71,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>${maven-war.version}</version>
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
             <!-- Enables launching the CLI via command line using Maven -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -87,6 +88,7 @@
                 </configuration>
             </plugin>
 
+            <!-- For deployment to Tomcat with Maven -->
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
@@ -99,6 +101,8 @@
             </plugin>
         </plugins>
     </build>
+
+    
     
     <reporting>
         <plugins>
@@ -140,27 +144,9 @@
 
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <version>${spring.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <version>${spring.version}</version>
-         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
@@ -168,11 +154,6 @@
             <version>${spring.version}</version>
          </dependency>
 
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>${javax-validation.version}</version>
-        </dependency>
         <!-- tests -->
         <dependency>
             <groupId>junit</groupId>
@@ -206,50 +187,5 @@
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-
-        <!-- mysql -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${myqsl-jdbc.version}</version>
-        </dependency>
-        
-        <!-- webapp -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax-servlet.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.servlet.jsp.jstl</groupId>
-            <artifactId>jstl-api</artifactId>
-            <version>${jstl.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.taglibs</groupId>
-            <artifactId>taglibs-standard-impl</artifactId>
-            <version>${apache-taglibs.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>taglibs</groupId>
-            <artifactId>c</artifactId>
-            <version>${taglibs-c.version}</version>
-            <scope>runtime</scope>
-            <type>tld</type>
-        </dependency>
-
-        <dependency>
-            <groupId>taglibs</groupId>
-            <artifactId>fmt</artifactId>
-            <version>${taglibs-fmt.version}</version>
-            <scope>runtime</scope>
-            <type>tld</type>
-        </dependency>
-
     </dependencies>
 </project>
