@@ -18,12 +18,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"com.excilys.formation.cdb.configuration",
-                               "com.excilys.formation.cdb.controller",
-                               "com.excilys.formation.cdb.dao",
-                               "com.excilys.formation.cdb.mapper",
-                               "com.excilys.formation.cdb.service",
-                               "com.excilys.formation.cdb.validator"})
+@ComponentScan(basePackages = {"com.excilys.formation.cdb.configuration"})
 public class WebappRootConfig implements WebMvcConfigurer {
     @Bean
     public ReloadableResourceBundleMessageSource messageSource(){
