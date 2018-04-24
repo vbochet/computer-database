@@ -68,6 +68,7 @@ public class ComputerController {
             mav.setViewName("addComputer");
             mav.addObject("error", true);
             mav.addObject("computer", computerDto);
+            setCompanyDtoListInMAV(mav);
             return mav;
         }
 
@@ -82,6 +83,7 @@ public class ComputerController {
             mav.setViewName("addComputer");
             mav.addObject("error", true);
             mav.addObject("computer", computerMapper.computerToComputerDto(computer));
+            setCompanyDtoListInMAV(mav);
         }
         
         return mav;
@@ -108,6 +110,7 @@ public class ComputerController {
             mav.setViewName("editComputer");
             mav.addObject("error", true);
             mav.addObject("computerDto", computerDto);
+            setCompanyDtoListInMAV(mav);
             return mav;
         }
 
@@ -123,8 +126,8 @@ public class ComputerController {
         } else {
             mav.setViewName("editComputer");
             mav.addObject("error", true);
-            setCompanyDtoListInMAV(mav);
             mav.addObject("computer", computerMapper.computerToComputerDto(computer));
+            setCompanyDtoListInMAV(mav);
         }
         
         return mav;
