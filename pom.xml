@@ -36,6 +36,7 @@
         <apache-commons.version>3.7</apache-commons.version>
         <spring.version>5.0.5.RELEASE</spring.version>
         <javax-validation.version>2.0.0.Final</javax-validation.version>
+        <hibernate.version>5.2.16.Final</hibernate.version>
 
         <!-- test plugins versions -->
         <junit.version>4.12</junit.version>
@@ -68,6 +69,11 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+
+			        <compilerArguments>
+			            <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+			        </compilerArguments>
+			                    
                 </configuration>
             </plugin>
 
@@ -171,6 +177,19 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring.version}</version>
+            </dependency>
+
+            <!-- Hibrenate -->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-jpamodelgen</artifactId>
+                <version>${hibernate.version}</version>
             </dependency>
 
             <!-- mysql -->

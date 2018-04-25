@@ -2,14 +2,35 @@ package com.excilys.formation.cdb.model;
 
 import java.time.LocalDate;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.GenericGenerator;
+
+@Entity
+@Table(name = "computer")
 public class Computer {
 
+    @Id
+    @GeneratedValue(generator="increment")
+    @GenericGenerator(name="increment", strategy = "increment")
+    @Column(name = "id")
     private long id;
+    @Column(name = "name", length = 255)
     private String name;
+    @Column(name = "name", nullable = true)
     private LocalDate introduced;
+    @Column(name = "name", nullable = true)
     private LocalDate discontinued;
+
+    @ManyToOne
     private Company company;
 
 
@@ -32,10 +53,12 @@ public class Computer {
         return name;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
     public LocalDate getIntroduced() {
         return introduced;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
     public LocalDate getDiscontinued() {
         return discontinued;
     }

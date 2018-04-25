@@ -1,10 +1,25 @@
 package com.excilys.formation.cdb.model;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.GenericGenerator;
+
+@Entity
+@Table(name = "company")
 public class Company {
 
+    @Id
+    @GeneratedValue(generator="increment")
+    @GenericGenerator(name="increment", strategy = "increment")
+    @Column(name = "id")
     private long id;
+
+    @Column(name = "name", length = 255)
     private String name;
 
 
