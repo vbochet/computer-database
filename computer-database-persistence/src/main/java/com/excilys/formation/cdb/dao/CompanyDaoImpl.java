@@ -3,8 +3,14 @@ package com.excilys.formation.cdb.dao;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceUnit;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -15,6 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.model.Company;
+import com.excilys.formation.cdb.model.Company_;
 
 @Repository("companyDaoBean")
 public class CompanyDaoImpl implements CompanyDao {
@@ -29,10 +36,14 @@ public class CompanyDaoImpl implements CompanyDao {
     private JdbcTemplate jdbcTemplate;
 
     private EntityManagerFactory entityManagerFactory;
+    private EntityManager entityManager;
+    private CriteriaBuilder criteriaBuilder;
 
     @PersistenceUnit
     public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
+        this.entityManager = entityManagerFactory.createEntityManager();
+        this.criteriaBuilder = entityManagerFactory.getCriteriaBuilder();
     }
 
     @Autowired
@@ -45,11 +56,14 @@ public class CompanyDaoImpl implements CompanyDao {
     public List<Company> list(int offset, int nbToPrint) {
         LOGGER.debug("Listing companies from {} ({} per page)", offset, nbToPrint);
 
-        String query = LIST_REQUEST;
-        Object[] params = new Object[] {nbToPrint, offset};
-
-        LOGGER.debug("Execution of the SQL query {} with parameter(s) {}", query, params);
-        return jdbcTemplate.query(query, params, new CompanyMapper());
+        CriteriaQuery<Company> criteria = criteriaBuilder.createQuery(Company.class);
+        Root<Company> companyRoot = criteria.from(Company.class);
+        criteria.select(companyRoot);
+        List<Company> companies = entityManager.createQuery(criteria)
+                                                .setFirstResult(offset)
+                                                .setMaxResults(nbToPrint)
+                                                .getResultList();
+        return companies;
     }
 
     @Override
@@ -58,14 +72,12 @@ public class CompanyDaoImpl implements CompanyDao {
 
         Optional<Company> optCompany = Optional.empty();
 
-        String query = READ_REQUEST;
-        Object[] params = new Object[] {companyId};
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", query, params);
-        List<Company> companyList = jdbcTemplate.query(query, params, new CompanyMapper());
-        if (companyList.size() == 1) {
-            optCompany = Optional.of(companyList.get(0));
-        }
-
+        CriteriaQuery<Company> criteria = criteriaBuilder.createQuery(Company.class);
+        Root<Company> companyRoot = criteria.from(Company.class);
+        criteria.select(companyRoot);
+        criteria.where(criteriaBuilder.equal(companyRoot.get(Company_.id), companyId));
+        optCompany = Optional.of(entityManager.createQuery(criteria).getSingleResult());
+        
         return optCompany;
     }
 
@@ -75,13 +87,11 @@ public class CompanyDaoImpl implements CompanyDao {
 
         Optional<Company> optCompany = Optional.empty();
 
-        String query = FIND_BY_NAME_REQUEST;
-        Object[] params = new Object[] {companyName};
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", query, params);
-        List<Company> companyList = jdbcTemplate.query(query, params, new CompanyMapper());
-        if (companyList.size() == 1) {
-            optCompany = Optional.of(companyList.get(0));
-        }
+        CriteriaQuery<Company> criteria = criteriaBuilder.createQuery(Company.class);
+        Root<Company> companyRoot = criteria.from(Company.class);
+        criteria.select(companyRoot);
+        criteria.where(criteriaBuilder.equal(companyRoot.get(Company_.name), companyName));
+        optCompany = Optional.of(entityManager.createQuery(criteria).getSingleResult());
 
         return optCompany;
     }
@@ -98,7 +108,11 @@ public class CompanyDaoImpl implements CompanyDao {
     public long count() {
         LOGGER.debug("Counting companies");
 
-        LOGGER.debug("Execution of the SQL query \"{}\"", COUNT_REQUEST);
-        return jdbcTemplate.queryForObject(COUNT_REQUEST, Long.class).longValue();
+        CriteriaQuery<Company> criteria = criteriaBuilder.createQuery(Company.class);
+        Root<Company> companyRoot = criteria.from(Company.class);
+        criteria.select(companyRoot);
+        List<Company> companies = entityManager.createQuery(criteria).getResultList();
+        
+        return companies.size();
     }
 }
