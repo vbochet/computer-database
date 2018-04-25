@@ -3,6 +3,8 @@ package com.excilys.formation.cdb.dao;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -25,6 +27,13 @@ public class CompanyDaoImpl implements CompanyDao {
     private static final String COUNT_REQUEST  = "SELECT COUNT(company.id) FROM company;";
 
     private JdbcTemplate jdbcTemplate;
+
+    private EntityManagerFactory entityManagerFactory;
+
+    @PersistenceUnit
+    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
+    }
 
     @Autowired
     public CompanyDaoImpl(DataSource dataSource) {
