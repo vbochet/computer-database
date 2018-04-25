@@ -39,8 +39,8 @@ public class ComputerDaoImplTest {
     @AfterClass
     public static void destroy() throws SQLException, ClassNotFoundException, IOException {
         try (Connection connection = getConnection(); Statement statement = connection.createStatement();) {
-            statement.executeUpdate("DROP TABLE company");
             statement.executeUpdate("DROP TABLE computer");
+            statement.executeUpdate("DROP TABLE company");
             connection.commit();
         }
     }
