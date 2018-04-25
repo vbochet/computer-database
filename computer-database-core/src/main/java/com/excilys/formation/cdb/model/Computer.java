@@ -25,9 +25,9 @@ public class Computer {
     private long id;
     @Column(name = "name", length = 255)
     private String name;
-    @Column(name = "name", nullable = true)
+    @Column(name = "introduced", nullable = true)
     private LocalDate introduced;
-    @Column(name = "name", nullable = true)
+    @Column(name = "discontinued", nullable = true)
     private LocalDate discontinued;
 
     @ManyToOne
