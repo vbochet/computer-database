@@ -7,26 +7,22 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Company_;
+import com.excilys.formation.cdb.model.Computer;
+import com.excilys.formation.cdb.model.Computer_;
 
 @Repository("companyDaoBean")
 public class CompanyDaoImpl implements CompanyDao {
     static final Logger LOGGER = LoggerFactory.getLogger(CompanyDaoImpl.class);
-    
-    private static final String DELETE_COMPANY_REQUEST  = "DELETE FROM company WHERE id = ?;";
-
-    private JdbcTemplate jdbcTemplate;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -86,8 +82,15 @@ public class CompanyDaoImpl implements CompanyDao {
     public void deleteById(long companyId) {
         LOGGER.debug("Deleting company n°{}", companyId);
 
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", DELETE_COMPANY_REQUEST, companyId);
-        jdbcTemplate.update(DELETE_COMPANY_REQUEST, companyId);
+        CriteriaDelete<Computer> deleteComputerQuery = criteriaBuilder.createCriteriaDelete(Computer.class);
+        Root<Computer> rootComputer = deleteComputerQuery.from(Computer.class);
+        deleteComputerQuery.where(criteriaBuilder.equal(rootComputer.get(Computer_.company), companyId));
+        entityManager.createQuery(deleteComputerQuery).executeUpdate();
+
+        CriteriaDelete<Company> deleteCompanyQuery = criteriaBuilder.createCriteriaDelete(Company.class);
+        Root<Company> rootCompany = deleteCompanyQuery.from(Company.class);
+        deleteCompanyQuery.where(criteriaBuilder.equal(rootCompany.get(Company_.id), companyId));
+        entityManager.createQuery(deleteCompanyQuery).executeUpdate();
     }
 
     @Override
