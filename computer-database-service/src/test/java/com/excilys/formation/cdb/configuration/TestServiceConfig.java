@@ -2,23 +2,24 @@ package com.excilys.formation.cdb.configuration;
 
 import java.util.Properties;
 
-import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
 @Configuration
 @PropertySource("classpath:db.properties")
-@ComponentScan({"com.excilys.formation.cdb.dao"})
-public class PersistenceConfig {
+@ComponentScan({"com.excilys.formation.cdb.dao",
+                "com.excilys.formation.cdb.mapper",
+                "com.excilys.formation.cdb.service",
+                "com.excilys.formation.cdb.ui"})
+public class TestServiceConfig {
 
     @Value("${jdbc.driver}")
     private String driverClassName;
@@ -33,25 +34,25 @@ public class PersistenceConfig {
     private String password;
 
     @Bean
-    public DriverManagerDataSource dataSource() {
+    public DataSource dataSource() {
         DriverManagerDataSource dmds = new DriverManagerDataSource(url, username, password);
         dmds.setDriverClassName(driverClassName);
         return dmds;
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DriverManagerDataSource dataSource) {
-        LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
-        emf.setDataSource(dataSource);
-        emf.setPackagesToScan("com.excilys.formation.cdb.model");
-        emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-
-        return emf;
+    public DataSourceTransactionManager txManager() {
+        return new DataSourceTransactionManager(dataSource());
     }
-    
+
     @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
-        return new JpaTransactionManager(emf);
+    public LocalSessionFactoryBean hibernateSessionFactory(DataSource dataSource) {
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        sessionFactory.setDataSource(dataSource);
+        sessionFactory.setPackagesToScan(new String[] { "com.excilys.formation.cdb.model" });
+        sessionFactory.setHibernateProperties(additionalProperties());
+
+        return sessionFactory;
     }
 
     Properties additionalProperties() {
@@ -60,5 +61,5 @@ public class PersistenceConfig {
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL57InnoDBDialect");
         return properties;
     }
-
+    
 }
