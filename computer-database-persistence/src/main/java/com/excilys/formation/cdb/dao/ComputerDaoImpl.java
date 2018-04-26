@@ -9,6 +9,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -26,12 +32,22 @@ import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
+import com.excilys.formation.cdb.model.Computer_;
 
 @Repository("computerDaoBean")
 @EnableTransactionManagement
 public class ComputerDaoImpl implements ComputerDao {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
+
+    private EntityManager entityManager;
+    private CriteriaBuilder criteriaBuilder;
+
+    @PersistenceUnit
+    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+        this.entityManager = entityManagerFactory.createEntityManager();
+        this.criteriaBuilder = entityManagerFactory.getCriteriaBuilder();
+    }
 
     private static final String REQUEST_SELECT_FROM_JOIN = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ";
 
@@ -112,18 +128,16 @@ public class ComputerDaoImpl implements ComputerDao {
     }
 
     @Override
-    public Optional<Computer> read(long id) {
-        LOGGER.debug("Showing info from computer n°{}", id);
+    public Optional<Computer> read(long computerId) {
+        LOGGER.debug("Showing info from computer n°{}", computerId);
 
         Optional<Computer> optComputer = Optional.empty();
 
-        String query = REQUEST_SELECT_FROM_JOIN + READ_REQUEST;
-        Object[] params = new Object[] {id};
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", query, params);
-        List<Computer> computerList = jdbcTemplate.query(query, params, computerMapper);
-        if (computerList.size() == 1) {
-            optComputer = Optional.of(computerList.get(0));
-        }
+        CriteriaQuery<Computer> readQuery = criteriaBuilder.createQuery(Computer.class);
+        Root<Computer> computerRoot = readQuery.from(Computer.class);
+        readQuery.select(computerRoot);
+        readQuery.where(criteriaBuilder.equal(computerRoot.get(Computer_.id), computerId));
+        optComputer = Optional.of(entityManager.createQuery(readQuery).getSingleResult());
 
         return optComputer;
     }
