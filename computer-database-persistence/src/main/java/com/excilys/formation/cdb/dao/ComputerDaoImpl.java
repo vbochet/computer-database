@@ -1,18 +1,13 @@
 package com.excilys.formation.cdb.dao;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -23,97 +18,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.excilys.formation.cdb.exceptions.DaoException;
-import com.excilys.formation.cdb.model.Company;
+import com.excilys.formation.cdb.model.Company_;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.model.Computer_;
 
 @Repository("computerDaoBean")
-@EnableTransactionManagement
 public class ComputerDaoImpl implements ComputerDao {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerDaoImpl.class);
 
+    @PersistenceContext
     private EntityManager entityManager;
     private CriteriaBuilder criteriaBuilder;
 
-    @PersistenceUnit
-    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-        this.entityManager = entityManagerFactory.createEntityManager();
-        this.criteriaBuilder = entityManagerFactory.getCriteriaBuilder();
-    }
-
-    private static final String CREATE_REQUEST  = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
-    private static final String UPDATE_REQUEST  = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
-    private static final String DELETE_REQUEST  = "DELETE FROM computer WHERE id = ?;";
-    private static final String DELETE_COMPANY_REQUEST  = "DELETE FROM computer WHERE company_id = ?;";
-
-
-    private JdbcTemplate jdbcTemplate;
-    
-    @Autowired
-    public ComputerDaoImpl(DataSource dataSource) {
-        super();
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    @PostConstruct
+    public void init() {
+        criteriaBuilder = entityManager.getCriteriaBuilder();
     }
 
     @Override
     public Computer create(Computer computer) {
         LOGGER.debug("Creating computer {}", computer);
 
-        executeCreateRequest(computer);
+        entityManager.persist(computer);
+        entityManager.flush();
 
         return computer;
-    }
-
-    private void executeCreateRequest(Computer computer) {
-        Company company = computer.getCompany();
-        KeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-
-        PreparedStatementCreator psc = new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                LocalDate intro;
-                LocalDate discont;
-                PreparedStatement preparedStatement = connection.prepareStatement(CREATE_REQUEST, Statement.RETURN_GENERATED_KEYS);
-
-                preparedStatement.setString(1, computer.getName());
-
-                intro = computer.getIntroduced();
-                if (intro == null) {
-                    preparedStatement.setNull(2, java.sql.Types.DATE);
-                } else {
-                    preparedStatement.setDate(2, Date.valueOf(intro));
-                }
-
-                discont = computer.getDiscontinued();
-                if (discont == null) {
-                    preparedStatement.setNull(3, java.sql.Types.DATE);
-                } else {
-                    preparedStatement.setDate(3, Date.valueOf(discont));
-                }
-
-                if (company == null) {
-                    preparedStatement.setNull(4, java.sql.Types.BIGINT);
-                } else {
-                    preparedStatement.setLong(4, company.getId());
-                }
-
-                return preparedStatement;
-            }
-        };
-
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameters [{}, {}, {}, {}]", CREATE_REQUEST, computer.getName(), computer.getIntroduced(), computer.getDiscontinued(), company == null ? null : company.getId());
-        jdbcTemplate.update(psc, generatedKeyHolder);
-        
-        computer.setId(generatedKeyHolder.getKey().longValue());
     }
 
     @Override
@@ -135,44 +67,38 @@ public class ComputerDaoImpl implements ComputerDao {
     public Computer update(Computer computer) {
         LOGGER.debug("Updating computer {}", computer);
 
-        executeUpdateRequest(computer);
+        entityManager.merge(computer);
 
         return computer;
     }
 
-    private void executeUpdateRequest(Computer computer) {
-        Company company = computer.getCompany();
-        Long companyId = company == null ? null : company.getId();
+    @Override
+    public void delete(long computerId) {
+        LOGGER.debug("Deleting computer n°{}", computerId);
 
-        String query = UPDATE_REQUEST;
-        Object[] params = new Object[] {computer.getName(), computer.getIntroduced(), computer.getDiscontinued(), companyId, computer.getId()};
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", query, params);
-        jdbcTemplate.update(query, params);
+        CriteriaDelete<Computer> deleteQuery = criteriaBuilder.createCriteriaDelete(Computer.class);
+        Root<Computer> computerRoot = deleteQuery.from(Computer.class);
+        deleteQuery.where(criteriaBuilder.equal(computerRoot.get(Computer_.id), computerId));
+        entityManager.createQuery(deleteQuery).executeUpdate();
     }
 
     @Override
-    public void delete(long id) {
-        LOGGER.debug("Deleting computer n°{}", id);
-
-        jdbcTemplate.update(DELETE_REQUEST, id);
-    }
-
-    @Override
-    @Transactional(rollbackFor=DaoException.class)
     public void deleteMany(List<Long> ids) {
         LOGGER.debug("Deleting computers n°{}", ids);
 
-        for (long id : ids) {
-            LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", DELETE_REQUEST, id);
-            jdbcTemplate.update(DELETE_REQUEST, id);
-            LOGGER.debug("Deletion of computer n°{} successful", id);
-        }
+        CriteriaDelete<Computer> deleteQuery = criteriaBuilder.createCriteriaDelete(Computer.class);
+        Root<Computer> rootComputer = deleteQuery.from(Computer.class);
+        deleteQuery.where(rootComputer.get(Computer_.id).in(ids));
+        entityManager.createQuery(deleteQuery).executeUpdate();
     }
 
     @Override
     public void deleteByCompany(long companyId) {
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", DELETE_COMPANY_REQUEST, companyId);
-        jdbcTemplate.update(DELETE_COMPANY_REQUEST, companyId);
+        LOGGER.debug("Deleting computers with company n°{}", companyId);
+        CriteriaDelete<Computer> deleteQuery = criteriaBuilder.createCriteriaDelete(Computer.class);
+        Root<Computer> computerRoot = deleteQuery.from(Computer.class);
+        deleteQuery.where(criteriaBuilder.equal(computerRoot.get(Computer_.company).get(Company_.id), companyId));
+        entityManager.createQuery(deleteQuery).executeUpdate();
     }
 
     @Override
