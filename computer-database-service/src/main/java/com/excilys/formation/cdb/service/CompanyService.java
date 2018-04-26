@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.cdb.dao.CompanyDao;
 import com.excilys.formation.cdb.dao.ComputerDao;
+import com.excilys.formation.cdb.exceptions.ServiceException;
 import com.excilys.formation.cdb.model.Company;
 
 @Service("companyServiceBean")
@@ -51,7 +52,7 @@ public class CompanyService {
         return ret;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = ServiceException.class)
     public boolean deleteById(long id) {
         if (id > 0) {
             computerDao.deleteByCompany(id);
