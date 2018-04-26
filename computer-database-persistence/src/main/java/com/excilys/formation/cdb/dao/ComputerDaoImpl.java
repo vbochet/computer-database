@@ -14,6 +14,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.sql.DataSource;
 
@@ -29,7 +31,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.cdb.exceptions.DaoException;
-import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.model.Computer_;
@@ -49,25 +50,13 @@ public class ComputerDaoImpl implements ComputerDao {
         this.criteriaBuilder = entityManagerFactory.getCriteriaBuilder();
     }
 
-    private static final String REQUEST_SELECT_FROM_JOIN = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id, company.name as company_name FROM computer LEFT JOIN company ON company.id=computer.company_id ";
-
     private static final String CREATE_REQUEST  = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?, ?, ?, ?);";
     private static final String UPDATE_REQUEST  = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
     private static final String DELETE_REQUEST  = "DELETE FROM computer WHERE id = ?;";
     private static final String DELETE_COMPANY_REQUEST  = "DELETE FROM computer WHERE company_id = ?;";
 
-    private static final String READ_REQUEST    = " WHERE computer.id = ?;";
-    private static final String LIST_REQUEST = " LIMIT ? OFFSET ?;";
-
-    private static final String COUNT_REQUEST   = "SELECT COUNT(computer.id) FROM computer;";
-    private static final String COUNT_SEARCH_REQUEST   = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company.id=computer.company_id WHERE computer.name LIKE ? OR company.name LIKE ?;";
-
-    private static final String DESC = " DESC";
 
     private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private ComputerMapper computerMapper;
     
     @Autowired
     public ComputerDaoImpl(DataSource dataSource) {
@@ -190,63 +179,83 @@ public class ComputerDaoImpl implements ComputerDao {
     public List<Computer> list(int offset, int nbToPrint, String order, boolean desc) {
         LOGGER.debug("Listing computers from {} ({} per page) ordered by {}", offset, nbToPrint, order);
 
-        return executeListRequest(offset, nbToPrint, order, desc);
-    }
+        CriteriaQuery<Computer> listQuery = criteriaBuilder.createQuery(Computer.class);
+        Root<Computer> computerRoot = listQuery.from(Computer.class);
+        listQuery.select(computerRoot);
+        listQuery.orderBy(switchOrder(order, desc, computerRoot));
+        List<Computer> computers = entityManager.createQuery(listQuery)
+                                                .setFirstResult(offset)
+                                                .setMaxResults(nbToPrint)
+                                                .getResultList();
 
-    private List<Computer> executeListRequest(int offset, int nbToPrint, String order, boolean desc) {
-        String field = switchOrder(order, desc);
-        StringBuilder req = new StringBuilder().append(REQUEST_SELECT_FROM_JOIN).append("ORDER BY ").append(field).append(LIST_REQUEST);
-        Object[] params = new Object[] {nbToPrint, offset};
-
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", req.toString(), params);
-        return jdbcTemplate.query(req.toString(), params, computerMapper);
+        return computers;
     }
 
     @Override
     public List<Computer> listSearch(int offset, int nbToPrint, String order, boolean desc, String search) {
         LOGGER.debug("Listing search result from search \"{}\" beginning at {} ({} per page) ordered by {}", search, offset, nbToPrint, order);
 
-        return executeListSearchRequest(offset, nbToPrint, order, desc, search);
-    }
+        CriteriaQuery<Computer> listQuery = criteriaBuilder.createQuery(Computer.class);
+        Root<Computer> computerRoot = listQuery.from(Computer.class);
+        listQuery.select(computerRoot);
+        listQuery.orderBy(switchOrder(order, desc, computerRoot));
+        Predicate computerNameCondition = criteriaBuilder.like(computerRoot.get("name"), "%" + search + "%");
+        Predicate companyNameCondition = criteriaBuilder.like(computerRoot.get("company").get("name"), "%" + search + "%");
+        listQuery.where(criteriaBuilder.or(computerNameCondition, companyNameCondition));
+        List<Computer> computers = entityManager.createQuery(listQuery)
+                                                .setFirstResult(offset)
+                                                .setMaxResults(nbToPrint)
+                                                .getResultList();
 
-    private List<Computer> executeListSearchRequest(int offset, int nbToPrint, String order, boolean desc, String search) {
-        String field = switchOrder(order, desc);
-        StringBuilder req = new StringBuilder().append(REQUEST_SELECT_FROM_JOIN).append(" WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY ").append(field).append(LIST_REQUEST);
-
-        Object[] params = new Object[] {search + "%", search + "%", nbToPrint, offset};
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", req.toString(), params);
-        return jdbcTemplate.query(req.toString(), params, computerMapper);
+        return computers;
     }
     
-    private String switchOrder(String order, boolean desc) {
+    private Order switchOrder(String order, boolean desc, Root<Computer> computerRoot) {
         String field;
+        Order condition;
 
         switch (ComputerOrderBy.parse(order)) {
-            case ID: field = ComputerOrderBy.ID.toString() + (desc ? DESC : ""); break;
-            case NAME: field = ComputerOrderBy.NAME.toString() + (desc ? DESC : ""); break;
-            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString() + (desc ? DESC : ""); break;
-            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString() + (desc ? DESC : ""); break;
-            case COMPANY_NAME: field = ComputerOrderBy.COMPANY_NAME.toString() + (desc ? DESC : ""); break;
+            case ID: field = ComputerOrderBy.ID.toString(); break;
+            case NAME: field = ComputerOrderBy.NAME.toString(); break;
+            case INTRODUCED: field = ComputerOrderBy.INTRODUCED.toString(); break;
+            case DISCONTINUED: field = ComputerOrderBy.DISCONTINUED.toString(); break;
+            case COMPANY: field = ComputerOrderBy.COMPANY.toString(); break;
             default: field = ComputerOrderBy.ID.toString();
         }
-        
-        return field;
+
+        if (field.equals(ComputerOrderBy.COMPANY.toString())) {
+            condition = desc ? criteriaBuilder.desc(computerRoot.get(field).get("name")) : criteriaBuilder.asc(computerRoot.get(field).get("name"));
+        }
+        else {
+        	condition = desc ? criteriaBuilder.desc(computerRoot.get(field)) : criteriaBuilder.asc(computerRoot.get(field));
+        }
+
+        return condition;
     }
 
     @Override
     public long count() {
         LOGGER.debug("Counting computers");
 
-        LOGGER.debug("Execution of the SQL query \"{}\"", COUNT_REQUEST);
-        return jdbcTemplate.queryForObject(COUNT_REQUEST, Long.class).longValue();
+        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+        countQuery.select(criteriaBuilder.count(countQuery.from(Computer.class)));
+        Long count = entityManager.createQuery(countQuery).getSingleResult();
+
+        return count;
     }
 
     @Override
     public long countSearch(String search) {
         LOGGER.debug("Counting search results");
 
-        Object[] params = new Object[] {search + "%", search + "%"};
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s)", COUNT_REQUEST, params);
-        return jdbcTemplate.queryForObject(COUNT_SEARCH_REQUEST, params, Long.class).longValue();
+        CriteriaQuery<Long> countSearchQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Computer> computerRoot = countSearchQuery.from(Computer.class);
+        countSearchQuery.select(criteriaBuilder.count(computerRoot));
+        Predicate computerNameCondition = criteriaBuilder.like(computerRoot.get("name"), "%" + search + "%");
+        Predicate companyNameCondition = criteriaBuilder.like(computerRoot.get("company").get("name"), "%" + search + "%");
+        countSearchQuery.where(criteriaBuilder.or(computerNameCondition, companyNameCondition));
+        Long count = entityManager.createQuery(countSearchQuery).getSingleResult();
+
+        return count;
     }
 }

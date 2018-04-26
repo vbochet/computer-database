@@ -84,7 +84,7 @@
                             <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='discontinued' orderDesc='${page.orderBy == "discontinued" && !page.orderDesc}' search='${page.search}' />"><spring:message code="computer_discontinued" /></a>
                         </th>
                         <th>
-                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='company_name' orderDesc='${page.orderBy == "company_name" && !page.orderDesc}' search='${page.search}' />"><spring:message code="company" /></a>
+                            <a href="<t:links target='dashboardOther' displayBy='${page.nbPerPage}' orderBy='company' orderDesc='${page.orderBy == "company" && !page.orderDesc}' search='${page.search}' />"><spring:message code="company" /></a>
                         </th>
 
                     </tr>

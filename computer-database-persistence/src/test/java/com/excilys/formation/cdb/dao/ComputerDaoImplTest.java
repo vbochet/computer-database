@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
 
+import javax.persistence.NoResultException;
+
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +68,6 @@ public class ComputerDaoImplTest {
     public void listTest() throws DaoException {
         assertEquals(10, computerDaoImpl.list(0, 10, "id", false).size());
         assertEquals(NB_COMPUTER_IN_DB, computerDaoImpl.list(0, NB_COMPUTER_IN_DB, "id", false).size());
-        assertEquals(NB_COMPUTER_IN_DB, computerDaoImpl.list(0, 0, "id", false).size());
     }
 
     @Test
@@ -117,13 +118,12 @@ public class ComputerDaoImplTest {
         computerDaoImpl.update(computer);
     }
 
-    @Test
+    @Test(expected = NoResultException.class)
     public void deleteTest() throws DaoException {
         computerDaoImpl.delete(5);
         NB_COMPUTER_IN_DB++;
         
         Optional<Computer> oc = computerDaoImpl.read(5);
-        assertEquals(Optional.empty(), oc);
     }
 
     @Test

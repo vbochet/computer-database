@@ -5,7 +5,7 @@ public enum ComputerOrderBy {
     NAME ("name"),
     INTRODUCED ("introduced"),
     DISCONTINUED ("discontinued"),
-    COMPANY_NAME ("company_name");
+    COMPANY ("company");
 
     private String value = "";
 
@@ -28,7 +28,7 @@ public enum ComputerOrderBy {
         case "name": return NAME;
         case "introduced": return INTRODUCED;
         case "discontinued": return DISCONTINUED;
-        case "company_name": return COMPANY_NAME;
+        case "company": return COMPANY;
         default: return ID;
         }
     }
