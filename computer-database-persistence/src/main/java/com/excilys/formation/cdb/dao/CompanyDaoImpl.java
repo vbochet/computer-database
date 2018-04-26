@@ -3,15 +3,12 @@ package com.excilys.formation.cdb.dao;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,19 +28,13 @@ public class CompanyDaoImpl implements CompanyDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    @PersistenceContext
     private EntityManager entityManager;
     private CriteriaBuilder criteriaBuilder;
 
-    @PersistenceUnit
-    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-        this.entityManager = entityManagerFactory.createEntityManager();
-        this.criteriaBuilder = entityManagerFactory.getCriteriaBuilder();
-    }
-
-    @Autowired
-    public CompanyDaoImpl(DataSource dataSource) {
-        super();
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    @PostConstruct
+    public void init() {
+        criteriaBuilder = entityManager.getCriteriaBuilder();
     }
 
     @Override
