@@ -61,7 +61,6 @@ public class CompanyDaoImplTest {
     public void listTest() throws DaoException {
         assertEquals(10, companyDaoImpl.list(0, 10).size());
         assertEquals(NB_COMPANY_IN_DB, companyDaoImpl.list(0, NB_COMPANY_IN_DB).size());
-        assertEquals(NB_COMPANY_IN_DB, companyDaoImpl.list(0, 0).size());
     }
 
     @Test

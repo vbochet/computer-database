@@ -3,44 +3,49 @@ package com.excilys.formation.cdb.dao;
 import java.util.List;
 import java.util.Optional;
 
-import javax.sql.DataSource;
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.excilys.formation.cdb.mapper.CompanyMapper;
 import com.excilys.formation.cdb.model.Company;
+import com.excilys.formation.cdb.model.Company_;
+import com.excilys.formation.cdb.model.Computer;
+import com.excilys.formation.cdb.model.Computer_;
 
 @Repository("companyDaoBean")
 public class CompanyDaoImpl implements CompanyDao {
     static final Logger LOGGER = LoggerFactory.getLogger(CompanyDaoImpl.class);
-    
-    private static final String LIST_REQUEST = "SELECT id, name FROM company LIMIT ? OFFSET ?;";
-    private static final String READ_REQUEST = "SELECT id, name FROM company WHERE id = ?;";
-    private static final String FIND_BY_NAME_REQUEST = "SELECT id, name FROM company WHERE name = ?;";
-    private static final String DELETE_COMPANY_REQUEST  = "DELETE FROM company WHERE id = ?;";
-    private static final String COUNT_REQUEST  = "SELECT COUNT(company.id) FROM company;";
 
-    private JdbcTemplate jdbcTemplate;
+    @PersistenceContext
+    private EntityManager entityManager;
+    private CriteriaBuilder criteriaBuilder;
 
-    @Autowired
-    public CompanyDaoImpl(DataSource dataSource) {
-        super();
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    @PostConstruct
+    public void init() {
+        criteriaBuilder = entityManager.getCriteriaBuilder();
     }
 
     @Override
     public List<Company> list(int offset, int nbToPrint) {
         LOGGER.debug("Listing companies from {} ({} per page)", offset, nbToPrint);
 
-        String query = LIST_REQUEST;
-        Object[] params = new Object[] {nbToPrint, offset};
+        CriteriaQuery<Company> listQuery = criteriaBuilder.createQuery(Company.class);
+        Root<Company> companyRoot = listQuery.from(Company.class);
+        listQuery.select(companyRoot);
+        List<Company> companies = entityManager.createQuery(listQuery)
+                                               .setFirstResult(offset)
+                                               .setMaxResults(nbToPrint)
+                                               .getResultList();
 
-        LOGGER.debug("Execution of the SQL query {} with parameter(s) {}", query, params);
-        return jdbcTemplate.query(query, params, new CompanyMapper());
+        return companies;
     }
 
     @Override
@@ -49,14 +54,12 @@ public class CompanyDaoImpl implements CompanyDao {
 
         Optional<Company> optCompany = Optional.empty();
 
-        String query = READ_REQUEST;
-        Object[] params = new Object[] {companyId};
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", query, params);
-        List<Company> companyList = jdbcTemplate.query(query, params, new CompanyMapper());
-        if (companyList.size() == 1) {
-            optCompany = Optional.of(companyList.get(0));
-        }
-
+        CriteriaQuery<Company> readQuery = criteriaBuilder.createQuery(Company.class);
+        Root<Company> companyRoot = readQuery.from(Company.class);
+        readQuery.select(companyRoot);
+        readQuery.where(criteriaBuilder.equal(companyRoot.get(Company_.id), companyId));
+        optCompany = Optional.of(entityManager.createQuery(readQuery).getSingleResult());
+        
         return optCompany;
     }
 
@@ -66,13 +69,11 @@ public class CompanyDaoImpl implements CompanyDao {
 
         Optional<Company> optCompany = Optional.empty();
 
-        String query = FIND_BY_NAME_REQUEST;
-        Object[] params = new Object[] {companyName};
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", query, params);
-        List<Company> companyList = jdbcTemplate.query(query, params, new CompanyMapper());
-        if (companyList.size() == 1) {
-            optCompany = Optional.of(companyList.get(0));
-        }
+        CriteriaQuery<Company> findByNameQuery = criteriaBuilder.createQuery(Company.class);
+        Root<Company> companyRoot = findByNameQuery.from(Company.class);
+        findByNameQuery.select(companyRoot);
+        findByNameQuery.where(criteriaBuilder.equal(companyRoot.get(Company_.name), companyName));
+        optCompany = Optional.of(entityManager.createQuery(findByNameQuery).getSingleResult());
 
         return optCompany;
     }
@@ -81,15 +82,25 @@ public class CompanyDaoImpl implements CompanyDao {
     public void deleteById(long companyId) {
         LOGGER.debug("Deleting company n°{}", companyId);
 
-        LOGGER.debug("Execution of the SQL query \"{}\" with parameter(s) {}", DELETE_COMPANY_REQUEST, companyId);
-        jdbcTemplate.update(DELETE_COMPANY_REQUEST, companyId);
+        CriteriaDelete<Computer> deleteComputerQuery = criteriaBuilder.createCriteriaDelete(Computer.class);
+        Root<Computer> rootComputer = deleteComputerQuery.from(Computer.class);
+        deleteComputerQuery.where(criteriaBuilder.equal(rootComputer.get(Computer_.company), companyId));
+        entityManager.createQuery(deleteComputerQuery).executeUpdate();
+
+        CriteriaDelete<Company> deleteCompanyQuery = criteriaBuilder.createCriteriaDelete(Company.class);
+        Root<Company> rootCompany = deleteCompanyQuery.from(Company.class);
+        deleteCompanyQuery.where(criteriaBuilder.equal(rootCompany.get(Company_.id), companyId));
+        entityManager.createQuery(deleteCompanyQuery).executeUpdate();
     }
 
     @Override
     public long count() {
         LOGGER.debug("Counting companies");
+        
+        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+        countQuery.select(criteriaBuilder.count(countQuery.from(Company.class)));
+        Long count = entityManager.createQuery(countQuery).getSingleResult();
 
-        LOGGER.debug("Execution of the SQL query \"{}\"", COUNT_REQUEST);
-        return jdbcTemplate.queryForObject(COUNT_REQUEST, Long.class).longValue();
+        return count;
     }
 }

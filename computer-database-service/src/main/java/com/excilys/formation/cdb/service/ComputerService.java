@@ -6,16 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.excilys.formation.cdb.dao.ComputerDao;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.validator.ComputerValidator;
 
 @Service("computerServiceBean")
+@EnableTransactionManagement
 public class ComputerService {
     @Autowired
     private ComputerDao computerDao;
@@ -54,6 +58,7 @@ public class ComputerService {
         return computerDao.countSearch(search);
     }
 
+    @Transactional
     public boolean deleteById(long id) {
         if (id > 0) {
             computerDao.delete(id);
@@ -99,6 +104,7 @@ public class ComputerService {
         return true;
     }
 
+    @Transactional
     public Computer createComputer(Computer computer) {
         if (!ComputerValidator.INSTANCE.validateComputer(computer)) {
             return null;
@@ -107,6 +113,7 @@ public class ComputerService {
         return computerDao.create(computer);
     }
 
+    @Transactional
     public Computer updateComputer(Computer computer) {
         if (!ComputerValidator.INSTANCE.validateComputer(computer)) {
             return null;
@@ -115,6 +122,7 @@ public class ComputerService {
         return computerDao.update(computer);
     }
 
+    @Transactional
     public boolean deleteManyById(List<Long> ids) {
         boolean elementsValid = true;
         for(Long id : ids) {

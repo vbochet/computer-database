@@ -3,13 +3,16 @@ package com.excilys.formation.cdb.configuration;
 import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -17,8 +20,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @PropertySource("classpath:db.properties")
-@ComponentScan({"com.excilys.formation.cdb.dao"})
-public class PersistenceConfig {
+@ComponentScan({"com.excilys.formation.cdb.dao",
+                "com.excilys.formation.cdb.mapper",
+                "com.excilys.formation.cdb.service",
+                "com.excilys.formation.cdb.ui"})
+public class TestServiceConfig {
 
     @Value("${jdbc.driver}")
     private String driverClassName;
@@ -60,5 +66,5 @@ public class PersistenceConfig {
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL57InnoDBDialect");
         return properties;
     }
-
+    
 }

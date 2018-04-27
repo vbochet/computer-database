@@ -1,33 +1,36 @@
-package com.excilys.formation.cdb.dao;
+package com.excilys.formation.cdb.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Optional;
 
-import org.junit.*;
+import javax.persistence.NoResultException;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.excilys.formation.cdb.configuration.TestPersistenceConfig;
+import com.excilys.formation.cdb.configuration.TestServiceConfig;
 import com.excilys.formation.cdb.exceptions.DaoException;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestPersistenceConfig.class})
-public class ComputerDaoImplTest {
+@ContextConfiguration(classes = {TestServiceConfig.class})
+public class ComputerServiceTest {
     
     static int NB_COMPUTER_IN_DB = 25;
 
     @Autowired
-    ComputerDao computerDaoImpl;
+    ComputerService computerService;
     
     @BeforeClass
     public static void init() throws SQLException, ClassNotFoundException, IOException {
@@ -39,8 +42,8 @@ public class ComputerDaoImplTest {
     @AfterClass
     public static void destroy() throws SQLException, ClassNotFoundException, IOException {
         try (Connection connection = getConnection(); Statement statement = connection.createStatement();) {
-            statement.executeUpdate("DROP TABLE company");
             statement.executeUpdate("DROP TABLE computer");
+            statement.executeUpdate("DROP TABLE company");
             connection.commit();
         }
     }
@@ -64,18 +67,17 @@ public class ComputerDaoImplTest {
 
     @Test
     public void listTest() throws DaoException {
-        assertEquals(10, computerDaoImpl.list(0, 10, "id", false).size());
-        assertEquals(NB_COMPUTER_IN_DB, computerDaoImpl.list(0, NB_COMPUTER_IN_DB, "id", false).size());
-        assertEquals(NB_COMPUTER_IN_DB, computerDaoImpl.list(0, 0, "id", false).size());
+        assertEquals(10, computerService.getList(0, 10, "id", false).size());
+        assertEquals(NB_COMPUTER_IN_DB, computerService.getList(0, NB_COMPUTER_IN_DB, "id", false).size());
     }
 
     @Test
     public void readTest() throws DaoException {
         Computer computerExpected = null;
         Computer computerRead = null;
-        for(int i = 0; i < NB_COMPUTER_IN_DB; i++) {
+        for(int i = 1; i < NB_COMPUTER_IN_DB; i++) {
             computerExpected = new Computer(i, "computer "+i, null, null, new Company(i, "company "+i));
-            computerRead = computerDaoImpl.read(i).get();
+            computerRead = computerService.getById(i).get();
 
             assertEquals(computerExpected.getId(), computerRead.getId());
             assertEquals(computerExpected.getName(), computerRead.getName());
@@ -88,10 +90,10 @@ public class ComputerDaoImplTest {
 
     @Test
     public void createTest() throws DaoException {
-        Computer computer = new Computer(420000, "computer 420000", null, null, new Company(1, "company 1"));
-        Computer computerCreated = computerDaoImpl.create(computer);
+        Computer computer = new Computer(0, "computer 420000", null, null, new Company(1, "company 1"));
+        Computer computerCreated = computerService.createComputer(computer);
 
-        assertEquals(computer.getId(), computerCreated.getId());
+        assertEquals(NB_COMPUTER_IN_DB, computerCreated.getId());
         assertEquals(computer.getName(), computerCreated.getName());
         assertEquals(computer.getIntroduced(), computerCreated.getIntroduced());
         assertEquals(computer.getDiscontinued(), computerCreated.getDiscontinued());
@@ -104,7 +106,7 @@ public class ComputerDaoImplTest {
     @Test
     public void updateTest() throws DaoException {
         Computer computer = new Computer(1, "computer 100", null, null, new Company(10, "company 10"));
-        Computer computerUpdated = computerDaoImpl.update(computer);
+        Computer computerUpdated = computerService.updateComputer(computer);
 
         assertEquals(computer.getId(), computerUpdated.getId());
         assertEquals(computer.getName(), computerUpdated.getName());
@@ -114,21 +116,20 @@ public class ComputerDaoImplTest {
         assertEquals(computer.getCompany().getName(), computerUpdated.getCompany().getName());
 
         computer = new Computer(1, "computer 1", null, null, new Company(1, "company 1"));
-        computerDaoImpl.update(computer);
+        computerService.updateComputer(computer);
     }
 
-    @Test
+    @Test(expected = NoResultException.class)
     public void deleteTest() throws DaoException {
-        computerDaoImpl.delete(5);
+    	computerService.deleteById(5);
         NB_COMPUTER_IN_DB++;
         
-        Optional<Computer> oc = computerDaoImpl.read(5);
-        assertEquals(Optional.empty(), oc);
+        computerService.getById(5);
     }
 
     @Test
     public void countTest() throws DaoException {
-        assertEquals(NB_COMPUTER_IN_DB, computerDaoImpl.count());
+        assertEquals(NB_COMPUTER_IN_DB, computerService.getNbFound());
     }
 
 }
