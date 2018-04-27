@@ -93,7 +93,7 @@ public class ComputerServiceTest {
         Computer computer = new Computer(0, "computer 420000", null, null, new Company(1, "company 1"));
         Computer computerCreated = computerService.createComputer(computer);
 
-        assertEquals(NB_COMPUTER_IN_DB+1, computerCreated.getId());
+        assertEquals(NB_COMPUTER_IN_DB, computerCreated.getId());
         assertEquals(computer.getName(), computerCreated.getName());
         assertEquals(computer.getIntroduced(), computerCreated.getIntroduced());
         assertEquals(computer.getDiscontinued(), computerCreated.getDiscontinued());
