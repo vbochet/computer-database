@@ -35,6 +35,7 @@
         <checkstyle.version>3.0.0</checkstyle.version>
         <apache-commons.version>3.7</apache-commons.version>
         <spring.version>5.0.5.RELEASE</spring.version>
+        <spring-security.version>5.0.4.RELEASE</spring-security.version>
         <javax-validation.version>2.0.0.Final</javax-validation.version>
         <hibernate.version>5.2.16.Final</hibernate.version>
         <jpa2.version>1.0.2.Final</jpa2.version>
@@ -168,6 +169,24 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${spring-security.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-web</artifactId>
+                <version>${spring-security.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-config</artifactId>
+                <version>${spring-security.version}</version>
             </dependency>
     </dependencies>
 
