@@ -23,6 +23,8 @@ public class AuthController {
         Locale currentLocale = LocaleContextHolder.getLocale();
         mav.addObject("locale", currentLocale);
 
+        mav.addObject("error", parameters.get("error"));
+        mav.addObject("logout", parameters.get("logout"));
 
         return mav;
 	}

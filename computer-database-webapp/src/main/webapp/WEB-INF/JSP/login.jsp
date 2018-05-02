@@ -31,12 +31,20 @@
         <div class="container" style="margin-top: 10px;">
             <h2>Please login to access the platform</h2>
 
-			<c:if test="${not empty error}">
-				<div class="error">${error}</div>
-			</c:if>
-			<c:if test="${not empty msg}">
-				<div class="msg">${msg}</div>
-			</c:if>
+        	<c:if test="${error != null}">
+        	<div class="row">
+        		<div class="alert alert-danger" role="alert">
+				    <spring:message code="error_msg" />
+				</div>
+        	</div>
+        	</c:if>
+        	<c:if test="${logout != null}">
+        	<div class="row">
+        		<div class="alert alert-info" role="alert">
+				    <spring:message code="logout_msg" />
+				</div>
+        	</div>
+        	</c:if>
 
 			<form name='loginForm' action="<c:url value='/j_spring_security_check' />" method='POST'>
 				<table>
