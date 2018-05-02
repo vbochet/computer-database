@@ -8,24 +8,19 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.User.UserBuilder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
 
+@SuppressWarnings("deprecation")
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
 
-    @SuppressWarnings("deprecation")
 	@Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        // ensure the passwords are encoded properly
-        UserBuilder users = User.withDefaultPasswordEncoder();
-        auth
-            .jdbcAuthentication()
+        auth.jdbcAuthentication()
                 .dataSource(dataSource)
                 .usersByUsernameQuery("select users.username as username, users.password as password, users.enabled as enabled \n" + 
                 		"  from users where users.username=?")
@@ -36,7 +31,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(NoOpPasswordEncoder.getInstance());
     }
 
-    @Override
+	@Bean
+	public DigestAuthenticationEntryPoint digestEntryPoint ()
+	{
+	    DigestAuthenticationEntryPoint digestAuthenticationEntryPoint = new DigestAuthenticationEntryPoint();
+	    digestAuthenticationEntryPoint.setKey("cdb");
+	    digestAuthenticationEntryPoint.setRealmName("computer-database");
+	    return digestAuthenticationEntryPoint;
+	}
+
+    public DigestAuthenticationFilter digestAuthenticationFilter (DigestAuthenticationEntryPoint digestAuthenticationEntryPoint) throws Exception
+    {
+        DigestAuthenticationFilter digestAuthenticationFilter = new DigestAuthenticationFilter();
+        digestAuthenticationFilter.setAuthenticationEntryPoint(digestEntryPoint());
+        digestAuthenticationFilter.setUserDetailsService(userDetailsServiceBean());
+        return digestAuthenticationFilter;
+    }
+
+	@Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/login*")
@@ -63,6 +75,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .exceptionHandling()
                 .accessDeniedPage("/403")
                 .and()
-            .csrf();
+            .csrf()
+                .and()
+            .addFilter(digestAuthenticationFilter(digestEntryPoint()));;
     }
 }
