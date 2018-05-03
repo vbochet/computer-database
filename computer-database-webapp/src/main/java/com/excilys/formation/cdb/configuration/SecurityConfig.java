@@ -22,12 +22,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication()
                 .dataSource(dataSource)
-                .usersByUsernameQuery("select users.username as username, users.password as password, users.enabled as enabled \n" + 
-                		"  from users where users.username=?")
-                .authoritiesByUsernameQuery("SELECT users.username as username, user_roles.role as role \n" + 
-                		"        FROM users \n" + 
-                		"        INNER JOIN user_roles ON users.username = user_roles.username \n" + 
-                		"        WHERE users.username = ?")
+                .usersByUsernameQuery("SELECT users.username as username, users.password as password, users.enabled as enabled \n" +
+                                      "FROM users WHERE users.username=?")
+                .authoritiesByUsernameQuery("SELECT users.username as username, users.role as role \n" +
+                                            "FROM users WHERE users.username = ?")
                 .passwordEncoder(NoOpPasswordEncoder.getInstance());
     }
 
@@ -53,12 +51,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/login*")
                     .anonymous()
-                .antMatchers("/resources/**", "/403", "/404", "/500")
+                .antMatchers("/static/**", "/403", "/404", "/500")
                     .permitAll()
                 .antMatchers("/computer/**")
-                    .access("hasRole('ROLE_ADMIN')")
+                    .hasRole("ADMIN")
                 .antMatchers("/dashboard/**")
-                    .access("hasRole('ROLE_USER')")
+                    .hasAnyRole("USER", "ADMIN")
+                .anyRequest()
+                    .authenticated()
                 .and()
             .formLogin()
                 .loginPage("/login")
@@ -71,9 +71,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .logout()
                 .logoutSuccessUrl("/login?logout")
                 .logoutUrl("/logout")
-                .and()
-            .exceptionHandling()
-                .accessDeniedPage("/403")
                 .and()
             .csrf()
                 .and()
