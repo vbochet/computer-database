@@ -35,7 +35,7 @@ public class AdminController {
         user.setEnabled(true);
         userService.createUser(user);
 
-        return addGet(parameters);
+        return viewAll(parameters);
     }
 
     @GetMapping("/add")

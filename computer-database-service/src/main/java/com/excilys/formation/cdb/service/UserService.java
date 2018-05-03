@@ -1,48 +1,15 @@
 package com.excilys.formation.cdb.service;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.excilys.formation.cdb.dao.UserDao;
 import com.excilys.formation.cdb.model.User;
 
-@Service("userServiceBean")
-@EnableTransactionManagement
-public class UserService implements UserDetailsService {
-    @Autowired
-    private UserDao userDao;
+public interface UserService extends UserDetailsService {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+	User createUser(User user);
 
-	@Override
-	public User loadUserByUsername(String username) throws UsernameNotFoundException {
-		LOGGER.debug("Loading information concerning user {}", username);
-        Optional<User> optUser = userDao.getByUsername(username);
-        if (optUser.isPresent()) {
-    		LOGGER.debug("User {} found", username);
-        	return optUser.get();
-        } else {
-    		LOGGER.debug("User {} not found", username);
-        	throw new UsernameNotFoundException(username);
-        }
-	}
-
-	public User createUser(User user) {
-		LOGGER.debug("Creating user {}", user);
-		return userDao.create(user);
-	}
-
-	public List<User> listUsers() {
-		LOGGER.debug("Retrieving user list");
-		return userDao.list();
-	}
+	List<User> listUsers();
 
 }

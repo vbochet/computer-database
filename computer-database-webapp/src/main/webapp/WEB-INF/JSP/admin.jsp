@@ -33,7 +33,7 @@
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-right">
-                    <a class="btn btn-success" id="addUser" href="<t:links target='addUser' />">Add a new user account</a> 
+                    <a class="btn btn-success" id="addUser" href="add">Add a new user account</a>
                     <a class="btn btn-default" id="deleteUser" href="#" onclick="$.fn.toggleEditMode();">Delete users</a>
                 </div>
             </div>

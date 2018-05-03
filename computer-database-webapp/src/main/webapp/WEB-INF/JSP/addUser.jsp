@@ -25,57 +25,35 @@
         	<c:if test="${error}">
         	<div class="row">
         		<div class="alert alert-danger" role="alert">
-				    <spring:message code="add_computer_error_message" />
+				    An error occurred, the new user could not be created
 				</div>
         	</div>
         	</c:if>
             <div class="row">
                 <div class="col-xs-8 col-xs-offset-2 box">
-                    <h1><spring:message code="add_computer" /></h1>
-                    <c:set var="formAction"><t:links target='addComputer' /></c:set>
-                    <form:form action="${formAction}" method="POST" id="add-form" modelAttribute="computerDto">
+                    <h1>Create a new user</h1>
+                    <form:form action="" method="POST">
                         <fieldset>
                             <div class="form-group">
-                            	<c:set var="cptName"><c:if test="${error}">${computer.computerName}</c:if></c:set>
-                            	<c:set var="cptNamePlaceholder"><spring:message code="computer_name" /></c:set>
-                            	<c:set var="error_msg"><spring:message code="computer_name_not_allowed" /></c:set>
-                                <form:label path="computerName" for="computerName"><spring:message code="computer_name" /></form:label>
-                                <form:input path="computerName" type="text" class="form-control" id="computerName" name="computerName" placeholder="${cptNamePlaceholder }"
-                                        value="${cptName}"
-                                        data-validation="custom"
-                                        data-validation-regexp="^([^\s<>]+(\s)*)+$"
-                                        data-validation-error-msg="${error_msg}" />
+                                <label for="username">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" placeholder="Username" />
                             </div>
                             <div class="form-group">
-                                <form:label path="computerIntroduced" for="introduced"><spring:message code="computer_introduced" /></form:label>
-                                <form:input path="computerIntroduced" type="date" class="form-control" id="introduced" name="introduced" placeholder="Introduced date"
-                                        value='<c:if test="${error}">${computer.computerIntroduced}</c:if>'
-                                        data-validation="date" 
-                                        data-validation-format="yyyy-mm-dd"
-                                        data-validation-depends-on="discontinued" />
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" />
                             </div>
                             <div class="form-group">
-                                <form:label path="computerDiscontinued" for="discontinued"><spring:message code="computer_discontinued" /></form:label>
-                                <form:input path="computerDiscontinued" type="date" class="form-control" id="discontinued" name="discontinued" placeholder="Discontinued date"
-                                        value='<c:if test="${error}">${computer.computerDiscontinued}</c:if>'
-                                        data-validation="date"
-                                        data-validation-format="yyyy-mm-dd"
-                                        data-validation-optional="true" />
-                            </div>
-                            <div class="form-group">
-                                <form:label path="computerCompanyId" for="companyId"><spring:message code="company" /></form:label>
-                                <form:select path="computerCompanyId" class="form-control" id="companyId" name="companyId" >
-                                    <option value="0">--</option>
-                                    <c:forEach items="${companyList}" var="company">
-                                    <option value="${company.companyId}">${company.companyName}</option>
-                                    </c:forEach>
-                                </form:select>
+                                <label for="role">Role</label>
+                                <select class="form-control" id="role" name="role" >
+                                    <option value="ROLE_USER">USER</option>
+                                    <option value="ROLE_ADMIN">ADMIN</option>
+                                </select>
                             </div>                  
                         </fieldset>
                         <div class="actions pull-right">
-                            <input type="submit" value="<spring:message code="add" />" class="btn btn-primary">
-                            <spring:message code="or" />
-                            <a href="<t:links target='dashboard' />" class="btn btn-default"><spring:message code="cancel" /></a>
+                            <input type="submit" value="Save" class="btn btn-primary">
+                            or
+                            <a href="/computer-database/admin/" class="btn btn-default">Cancel</a>
                         </div>
                     </form:form>
                 </div>
@@ -84,12 +62,6 @@
     </section>
 <script src="<t:links target='js' append='jquery.min.js' />"></script>
 <script src="<t:links target='js' append='bootstrap.min.js' />"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
-<script>
- $.validate({
- 	  modules : 'date, logic'
- 	});
-</script>
 
 </body>
 </html>
