@@ -1,7 +1,5 @@
 package com.excilys.formation.cdb.configuration;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -86,6 +84,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
             .csrf()
                 .and()
-            .addFilter(digestAuthenticationFilter(digestEntryPoint()));;
+            .addFilter(digestAuthenticationFilter(digestEntryPoint()));
     }
 }
