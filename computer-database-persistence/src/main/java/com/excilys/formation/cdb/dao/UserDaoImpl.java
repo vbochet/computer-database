@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.User;
 import com.excilys.formation.cdb.model.User_;
 
@@ -31,18 +32,18 @@ public class UserDaoImpl implements UserDao {
         criteriaBuilder = entityManager.getCriteriaBuilder();
     }
 
-	@Override
-	public User create(User user) {
+    @Override
+    public User create(User user) {
         LOGGER.debug("Creating user {}", user);
 
         entityManager.persist(user);
         entityManager.flush();
 
         return user;
-	}
+    }
 
-	@Override
-	public Optional<User> getByUsername(String username) {
+    @Override
+    public Optional<User> getByUsername(String username) {
         LOGGER.debug("Showing info from user {}", username);
 
         Optional<User> optUser = Optional.empty();
@@ -54,24 +55,31 @@ public class UserDaoImpl implements UserDao {
         optUser = Optional.of(entityManager.createQuery(readQuery).getSingleResult());
 
         return optUser;
-	}
+    }
 
-	@Override
-	public User update(User user) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public User update(User user) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public void delete(String username) {
-		// TODO Auto-generated method stub
+    @Override
+    public void delete(String username) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public List<User> list() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<User> list() {
+        LOGGER.debug("Listing users");
+
+        CriteriaQuery<User> listQuery = criteriaBuilder.createQuery(User.class);
+        Root<User> userRoot = listQuery.from(User.class);
+        listQuery.select(userRoot);
+        List<User> users = entityManager.createQuery(listQuery)
+                                        .getResultList();
+
+        return users;
+    }
 
 }

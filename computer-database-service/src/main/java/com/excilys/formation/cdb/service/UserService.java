@@ -1,5 +1,6 @@
 package com.excilys.formation.cdb.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -32,6 +33,16 @@ public class UserService implements UserDetailsService {
     		LOGGER.debug("User {} not found", username);
         	throw new UsernameNotFoundException(username);
         }
+	}
+
+	public User createUser(User user) {
+		LOGGER.debug("Creating user {}", user);
+		return userDao.create(user);
+	}
+
+	public List<User> listUsers() {
+		LOGGER.debug("Retrieving user list");
+		return userDao.list();
 	}
 
 }
