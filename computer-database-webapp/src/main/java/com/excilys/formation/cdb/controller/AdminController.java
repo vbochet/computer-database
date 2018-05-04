@@ -88,4 +88,12 @@ public class AdminController {
 
         return mav;
     }
+
+    @GetMapping("/delete")
+    public ModelAndView deleteGet(@RequestParam Map<String, String> parameters) {
+        String username = parameters.get("username");
+        userService.deleteUser(username);
+
+        return viewAll(parameters);
+    }
 }

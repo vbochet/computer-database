@@ -51,6 +51,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
+	public void deleteUser(String username) {
+		LOGGER.debug("Deleting user {}", username);
+		userDao.delete(username);
+	}
+
+	@Override
 	public List<User> listUsers() {
 		LOGGER.debug("Retrieving user list");
 		return userDao.list();
