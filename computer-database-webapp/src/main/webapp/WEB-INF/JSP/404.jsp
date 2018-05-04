@@ -26,10 +26,11 @@
                 <br/>
 				<br/>
 				<!-- stacktrace -->
-				<c:forEach var = "trace" 
-                  items = "${pageContext.exception.stackTrace}">
-                  ${trace}<br/>
-               </c:forEach>
+				${exception.message}
+				<br/>
+				<c:forEach var = "trace" items = "${exception.stackTrace}">
+                   ${trace}<br/>
+                </c:forEach>
             </div>
         </div>
     </section>

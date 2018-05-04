@@ -1,3 +1,4 @@
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ taglib tagdir = "/WEB-INF/tags" prefix = "t" %>
@@ -26,7 +27,12 @@
 	            <li class="nav-item">
 		            <a class="navbar" href="?lang=fr"> Français </a>
 	            </li>
-	      </ul>
+	            <li>
+	                <form:form action="${pageContext.request.contextPath}/logout" method="POST">
+                        <input type="submit" value="<spring:message code="logout" />" />
+                    </form:form>
+                </li>
+            </ul>
         </div>
         </div>
     </header>
@@ -56,9 +62,9 @@
             </div>
         </div>
 
-        <form id="deleteForm" action="#" method="POST">
+        <form:form id="deleteForm" action="#" method="POST">
             <input type="hidden" name="selection" value="">
-        </form>
+        </form:form>
 
         <div class="container" style="margin-top: 10px;">
             <table class="table table-striped table-bordered">
