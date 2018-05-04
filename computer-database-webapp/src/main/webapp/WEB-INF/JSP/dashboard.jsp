@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <form:form id="deleteForm" action="#" method="POST">
+        <form:form id="deleteForm" action="computer/delete" method="POST">
             <input type="hidden" name="selection" value="">
         </form:form>
 

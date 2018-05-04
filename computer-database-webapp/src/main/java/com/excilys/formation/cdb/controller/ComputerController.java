@@ -2,6 +2,7 @@ package com.excilys.formation.cdb.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -166,6 +167,29 @@ public class ComputerController {
         return mav;
     }
 
+    @PostMapping("/delete")
+    public ModelAndView doPost(Locale locale, @RequestParam Map<String, String> parameters) throws ServletException {
+        List<Long> ids = new ArrayList<>();
+
+        String idsString = parameters.get("selection");
+        LOGGER.debug("Ids received for deletion: {}", idsString);
+
+        String[] idsList = idsString.split(",");
+        for (String idString : idsList) {
+            try {
+                ids.add(Long.valueOf(idString));
+            } catch (NumberFormatException e) {
+                String errorMsg = "Error: invalid computer id. Deletion cancelled";
+                LOGGER.error(errorMsg, e);
+                throw(new ServletException(errorMsg, e));
+            }
+        }
+
+        computerService.deleteManyById(ids);
+        parameters.put("deletionSuccess", "true");
+
+        return new ModelAndView("redirect:../dashboard");
+    }
 
     private void setCompanyDtoListInMAV(ModelAndView mav) {
         List<Company> companyList;
