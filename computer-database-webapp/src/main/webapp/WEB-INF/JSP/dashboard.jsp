@@ -62,9 +62,9 @@
             </div>
         </div>
 
-        <form id="deleteForm" action="#" method="POST">
+        <form:form id="deleteForm" action="#" method="POST">
             <input type="hidden" name="selection" value="">
-        </form>
+        </form:form>
 
         <div class="container" style="margin-top: 10px;">
             <table class="table table-striped table-bordered">
