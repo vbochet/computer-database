@@ -1,11 +1,7 @@
 package com.excilys.formation.cdb.controller;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.servlet.ServletException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +10,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -31,30 +26,6 @@ public class DashboardController {
     private ComputerMapper computerMapper;
 
     static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
-
-    @PostMapping("/dashboard")
-    public ModelAndView doPost(Locale locale, @RequestParam Map<String, String> parameters) throws ServletException {
-        List<Long> ids = new ArrayList<>();
-
-        String idsString = parameters.get("selection");
-        LOGGER.debug("Ids received for deletion: {}", idsString);
-
-        String[] idsList = idsString.split(",");
-        for (String idString : idsList) {
-            try {
-                ids.add(Long.valueOf(idString));
-            } catch (NumberFormatException e) {
-                String errorMsg = "Error: invalid computer id. Deletion cancelled";
-                LOGGER.error(errorMsg, e);
-                throw(new ServletException(errorMsg, e));
-            }
-        }
-
-        computerService.deleteManyById(ids);
-        parameters.put("deletionSuccess", "true");
-
-        return doGet(locale, parameters);
-    }
 
     @GetMapping("/dashboard")
     public ModelAndView doGet(Locale locale, @RequestParam Map<String, String> parameters) {

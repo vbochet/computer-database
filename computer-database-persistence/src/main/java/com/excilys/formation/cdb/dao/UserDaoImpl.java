@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -15,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.cdb.model.Company;
+import com.excilys.formation.cdb.model.Computer;
+import com.excilys.formation.cdb.model.Computer_;
 import com.excilys.formation.cdb.model.User;
 import com.excilys.formation.cdb.model.User_;
 
@@ -67,8 +70,12 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void delete(String username) {
-        // TODO Auto-generated method stub
+        LOGGER.debug("Deleting user {}", username);
 
+        CriteriaDelete<User> deleteQuery = criteriaBuilder.createCriteriaDelete(User.class);
+        Root<User> userRoot = deleteQuery.from(User.class);
+        deleteQuery.where(criteriaBuilder.equal(userRoot.get(User_.username), username));
+        entityManager.createQuery(deleteQuery).executeUpdate();
     }
 
     @Override

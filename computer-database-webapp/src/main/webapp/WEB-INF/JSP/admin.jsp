@@ -39,10 +39,6 @@
             </div>
         </div>
 
-        <form id="deleteForm" action="#" method="POST">
-            <input type="hidden" name="selection" value="">
-        </form>
-
         <div class="container" style="margin-top: 10px;">
             <table class="table table-striped table-bordered">
                 <thead>
@@ -50,11 +46,8 @@
                         <!-- Variable declarations for passing labels as parameters -->
 
                         <th class="editMode" style="width: 60px; height: 22px;">
-                            <input type="checkbox" id="selectall" /> 
                             <span style="vertical-align: top;">
-                                 -  <a href="#" id="deleteSelected" onclick="$.fn.deleteSelected();">
-                                        <i class="fa fa-trash-o fa-lg"></i>
-                                    </a>
+                                <i class="fa fa-trash-o fa-lg"></i>
                             </span>
                         </th>
                         <th>
@@ -78,7 +71,7 @@
                     <c:forEach var="user" items="${usersList}">
                     <tr>
                         <td class="editMode">
-                            <input type="checkbox" name="cb" class="cb" value="${user.username}">
+                            <a href="delete?username=${user.username}"><i class="fa fa-trash-o fa-lg"></i></a>
                         </td>
                         <td>
                             <a href="edit?username=${user.username}">${user.username}</a>
