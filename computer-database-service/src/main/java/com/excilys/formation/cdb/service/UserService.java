@@ -9,6 +9,7 @@ import com.excilys.formation.cdb.model.User;
 public interface UserService extends UserDetailsService {
 
 	User createUser(User user);
+	User updateUser(User user);
 
 	List<User> listUsers();
 

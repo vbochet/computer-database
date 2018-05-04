@@ -44,6 +44,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
+	public User updateUser(User user) {
+		LOGGER.debug("Updating user {}", user);
+		return userDao.update(user);
+	}
+
+	@Override
 	public List<User> listUsers() {
 		LOGGER.debug("Retrieving user list");
 		return userDao.list();

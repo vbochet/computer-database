@@ -59,8 +59,10 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User update(User user) {
-        // TODO Auto-generated method stub
-        return null;
+        LOGGER.debug("Updating computer {}", user);
+        entityManager.merge(user);
+
+        return user;
     }
 
     @Override

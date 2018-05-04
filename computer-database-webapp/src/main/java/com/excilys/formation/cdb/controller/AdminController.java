@@ -2,9 +2,13 @@ package com.excilys.formation.cdb.controller;
 
 import java.util.Map;
 
+import javax.servlet.ServletException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,11 +29,19 @@ public class AdminController {
 
     static final Logger LOGGER = LoggerFactory.getLogger(AdminController.class);
 
+    @GetMapping("/")
+    public ModelAndView viewAll(@RequestParam Map<String, String> parameters) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("admin");
+        mav.addObject("usersList", userService.listUsers());
+        return mav;
+    }
+
     @PostMapping("/add")
     public ModelAndView addPost(@RequestParam Map<String, String> parameters) {
-    	String username = parameters.get("username");
-    	String password = parameters.get("password");
-    	String role     = parameters.get("role");
+        String username = parameters.get("username");
+        String password = parameters.get("password");
+        String role     = parameters.get("role");
 
         User user = new User(username, role, password);
         user.setEnabled(true);
@@ -45,11 +57,35 @@ public class AdminController {
         return mav;
     }
 
-    @GetMapping("/")
-    public ModelAndView viewAll(@RequestParam Map<String, String> parameters) {
+    @PostMapping("/edit")
+    public ModelAndView editPost(@RequestParam Map<String, String> parameters) {
+        String username = parameters.get("username");
+        String password = parameters.get("password");
+        String role     = parameters.get("role");
+        boolean enabled = Boolean.getBoolean(parameters.get("enabled"));
+
+        User user = new User(username, role, password);
+        user.setEnabled(enabled);
+        userService.updateUser(user);
+
+        return viewAll(parameters);
+    }
+
+    @GetMapping("/edit")
+    public ModelAndView editGet(@RequestParam Map<String, String> parameters) throws ServletException {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("admin");
-        mav.addObject("usersList", userService.listUsers());
+        UserDetails userDetails;
+        try {
+            userDetails = userService.loadUserByUsername(parameters.get("username"));
+        } catch (UsernameNotFoundException e) {
+            LOGGER.error("No user with username {}", parameters.get("username"));
+            mav.setViewName("404");
+            return mav;
+        }
+
+        mav.addObject("userDetails", userDetails);
+        mav.setViewName("editUser");
+
         return mav;
     }
 }

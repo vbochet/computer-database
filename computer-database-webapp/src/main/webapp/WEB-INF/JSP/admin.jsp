@@ -81,7 +81,7 @@
                             <input type="checkbox" name="cb" class="cb" value="${user.username}">
                         </td>
                         <td>
-                            <a href="#" onclick="">${user.username}</a>
+                            <a href="edit?username=${user.username}">${user.username}</a>
                         </td>
                         <td>${user.password}</td>
                         <td>${user.enabled}</td>
