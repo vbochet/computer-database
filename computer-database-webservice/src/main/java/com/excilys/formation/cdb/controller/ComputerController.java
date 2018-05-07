@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -98,5 +99,15 @@ public class ComputerController {
 	   ComputerDto computerDto = computerMapper.computerToComputerDto(computerService.createComputer(computer));
 	   
        return new ResponseEntity<>(computerDto,HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<ComputerDto> deleteComputerById(@PathVariable long id) {
+        if (computerService.deleteById(id)) {
+        	return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            LOGGER.error("No computer matching id {}", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
