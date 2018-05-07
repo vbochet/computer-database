@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -99,6 +100,38 @@ public class ComputerController {
        ComputerDto computerDto = computerMapper.computerToComputerDto(computerService.createComputer(computer));
 
        return new ResponseEntity<>(computerDto,HttpStatus.CREATED);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<ComputerDto> editComputer(@PathVariable long id, @RequestParam String name, @RequestParam String introduced, @RequestParam String discontinued, @RequestParam String companyId) {
+        LocalDate introducedLD = null;
+        LocalDate discontinuedLD = null;
+        Optional<Company> companyOpt;
+        Company company;
+
+        try {
+            introducedLD = introduced.isEmpty() ?  null : LocalDate.parse(introduced);
+            discontinuedLD = discontinued.isEmpty() ?  null : LocalDate.parse(discontinued);
+            if (companyId.isEmpty()) {
+                company = null;
+            }
+            else {
+                companyOpt = companyService.getById(Long.parseLong(companyId));
+                if(!companyOpt.isPresent()) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+                else {
+                    company = companyOpt.get();
+                }
+            }
+        } catch (DateTimeParseException | NumberFormatException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+       Computer computer = new Computer(id, name, introducedLD, discontinuedLD, company);
+       ComputerDto computerDto = computerMapper.computerToComputerDto(computerService.updateComputer(computer));
+
+       return new ResponseEntity<>(computerDto,HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{id}")
