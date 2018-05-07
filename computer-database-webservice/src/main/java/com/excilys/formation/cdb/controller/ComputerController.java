@@ -1,5 +1,7 @@
 package com.excilys.formation.cdb.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -32,6 +34,18 @@ public class ComputerController {
     CompanyMapper companyMapper;
 
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerController.class);
+
+    @GetMapping(value = "")
+    public ResponseEntity<List<ComputerDto>> getComputerList() {
+        List<Computer> computerList = computerService.getList(0, (int)computerService.getNbFound(), "id", false);
+        List<ComputerDto> computerDtoList = new ArrayList<>();
+
+        for(Computer computer : computerList) {
+            computerDtoList.add(computerMapper.computerToComputerDto(computer));
+        }
+
+        return new ResponseEntity<>(computerDtoList, HttpStatus.OK);
+    }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<ComputerDto> getComputerById(@PathVariable long id) {
