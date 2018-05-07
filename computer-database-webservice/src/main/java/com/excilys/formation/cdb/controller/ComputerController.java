@@ -77,34 +77,34 @@ public class ComputerController {
         Company company;
 
         try {
-        	introducedLD = introduced.isEmpty() ?  null : LocalDate.parse(introduced);
-        	discontinuedLD = discontinued.isEmpty() ?  null : LocalDate.parse(discontinued);
-        	if (companyId.isEmpty()) {
-        		company = null;
-        	}
-        	else {
-        		companyOpt = companyService.getById(Long.parseLong(companyId));
-            	if(!companyOpt.isPresent()) {
+            introducedLD = introduced.isEmpty() ?  null : LocalDate.parse(introduced);
+            discontinuedLD = discontinued.isEmpty() ?  null : LocalDate.parse(discontinued);
+            if (companyId.isEmpty()) {
+                company = null;
+            }
+            else {
+                companyOpt = companyService.getById(Long.parseLong(companyId));
+                if(!companyOpt.isPresent()) {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            	}
-            	else {
-            		company = companyOpt.get();
-            	}
-        	}
+                }
+                else {
+                    company = companyOpt.get();
+                }
+            }
         } catch (DateTimeParseException | NumberFormatException e) {
-        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-	   Computer computer = new Computer(0, name, introducedLD, discontinuedLD, company);
-	   ComputerDto computerDto = computerMapper.computerToComputerDto(computerService.createComputer(computer));
-	   
+       Computer computer = new Computer(0, name, introducedLD, discontinuedLD, company);
+       ComputerDto computerDto = computerMapper.computerToComputerDto(computerService.createComputer(computer));
+
        return new ResponseEntity<>(computerDto,HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<ComputerDto> deleteComputerById(@PathVariable long id) {
         if (computerService.deleteById(id)) {
-        	return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             LOGGER.error("No computer matching id {}", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
