@@ -138,21 +138,20 @@ public class Cli {
 
     private void caseListComputer(Scanner scanner) {
         LOGGER.debug("User choice: List computers");
-        ComputerPage page;
-        page = new ComputerPage();
-        page.setComputerService(computerService);
-        page.setNbTotal(computerService.getNbFound());
+
         int nbToPrint = getNbToPrint(scanner);
-        page.setNbPerPage(nbToPrint);
+        int offset = getOffset(scanner);
         LOGGER.debug("(print {} computers per page)", nbToPrint);
 
-        System.out.println(page.getContent());
-        System.out.println("\n");
+        WebTarget computerWebTarget = this.computerWebTarget.queryParam("limit",nbToPrint).queryParam("offset",offset);
+        Invocation.Builder invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.get(Response.class);
+        List<ComputerDto> result = response.readEntity(new GenericType<List<ComputerDto>>() {});
 
-        while (getAction(scanner, page)) {
-            System.out.println(page.getContent());
-            System.out.println("\n");
+        for(ComputerDto dto : result) {
+          System.out.println(dto.toString());
         }
+
         LOGGER.debug("End of computer listing");
     }
 
@@ -443,6 +442,23 @@ public class Cli {
         }
 
         return nbToPrint;
+    }
+
+    private int getOffset(Scanner scanner) {
+        int offset = 0;
+        boolean stop = false;
+
+        while (!stop) {
+            try {
+                System.out.print("Indicate the index from which display the computers: ");
+                offset = scanner.nextInt();
+                stop = true;
+            } catch (InputMismatchException e) {
+                scanner.nextLine();
+            }
+        }
+
+        return offset;
     }
 
     private long getId(Scanner scanner) {
