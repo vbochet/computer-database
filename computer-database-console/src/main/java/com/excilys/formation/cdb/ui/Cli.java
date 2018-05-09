@@ -7,8 +7,10 @@ import java.util.Scanner;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Component;
 import com.excilys.formation.cdb.configuration.CliConfig;
 import com.excilys.formation.cdb.dto.CompanyDto;
 import com.excilys.formation.cdb.dto.ComputerDto;
+import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.CompanyService;
@@ -33,6 +36,8 @@ public class Cli {
     private CompanyService companyService;
     @Autowired
     private ComputerService computerService;
+    @Autowired
+    private ComputerMapper computerMapper;
 
     static Logger LOGGER = LoggerFactory.getLogger(Cli.class);
 
@@ -237,8 +242,16 @@ public class Cli {
                 LOGGER.error("Input error: Unexpected value \"{}\" received", companyIdStr);
             }
         }
-        computer = computerService.createComputer(computer);
-        System.out.println(computer);
+
+        ComputerDto computerDto = computerMapper.computerToComputerDto(computer);
+        WebTarget computerWebTarget = this.computerWebTarget.queryParam("name",computerDto.getComputerName())
+                .queryParam("introduced",computerDto.getComputerIntroduced() == null ? "" : computerDto.getComputerIntroduced())
+                .queryParam("discontinued",computerDto.getComputerDiscontinued() == null ? "" : computerDto.getComputerDiscontinued())
+                .queryParam("companyId",computerDto.getComputerCompanyId());
+        Invocation.Builder invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
+        ComputerDto response = invocationBuilder.post(Entity.entity(new Form(),MediaType.APPLICATION_FORM_URLENCODED_TYPE), ComputerDto.class);
+
+        System.out.println(response.toString());
         LOGGER.debug("End of computer creation");
     }
 
