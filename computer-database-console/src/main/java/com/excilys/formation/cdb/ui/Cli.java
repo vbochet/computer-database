@@ -386,13 +386,13 @@ public class Cli {
         id = getId(scanner);
         LOGGER.debug("Computer's id: {}", id);
 
-        if (computerService.deleteById(id)) {
-            System.out.println("Computer n°" + id + " has been successfully deleted");
-            LOGGER.debug("Computer {} has been deleted", id);
-        } else {
-            System.out.println("A problem occured. Computer n°" + id + " couldn't be deleted");
-            LOGGER.warn("Computer {} couldn't be deleted", id);
-        }
+        WebTarget computerWebTarget = this.computerWebTarget.path(String.valueOf(id));
+        Invocation.Builder invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.delete(Response.class);
+
+        System.out.println("Computer n°" + id + " has been successfully deleted");
+        LOGGER.debug("Computer {} has been deleted", id);
+
         LOGGER.debug("End of computer deletion");
     }
 
