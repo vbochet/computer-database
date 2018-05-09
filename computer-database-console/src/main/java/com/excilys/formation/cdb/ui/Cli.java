@@ -1,8 +1,17 @@
 package com.excilys.formation.cdb.ui;
 
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +20,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.cdb.configuration.CliConfig;
+import com.excilys.formation.cdb.dto.ComputerDto;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.paginator.CompanyPage;
@@ -27,6 +37,10 @@ public class Cli {
     private ComputerService computerService;
 
     static Logger LOGGER = LoggerFactory.getLogger(Cli.class);
+
+    private Client client = ClientBuilder.newClient();
+    private WebTarget computerWebTarget = client.target("http://localhost:8080/computer-database-webservice/api/computer");
+    private WebTarget companyWebTarget = client.target("http://localhost:8080/computer-database-webservice/api/company");
 
     public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(CliConfig.class);
@@ -201,18 +215,15 @@ public class Cli {
 
     private void caseShowComputer(Scanner scanner) {
         LOGGER.debug("User choice: Show computer info");
-        long id;
-        Optional<Computer> optComputer = Optional.empty();
-
-        id = getId(scanner);
+        long id = getId(scanner);
         LOGGER.debug("Computer's id: {}", id);
 
-        optComputer = computerService.getById(id);
-        if (optComputer.isPresent()) {
-            System.out.println(optComputer.get().toString());
-        } else {
-            System.out.println("null");
-        }
+        WebTarget computerWebTarget = this.computerWebTarget.path(String.valueOf(id));
+        Invocation.Builder invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
+        ComputerDto response = invocationBuilder.get(ComputerDto.class);
+
+        System.out.println(response.toString());
+
         LOGGER.debug("End of computer info");
     }
 
