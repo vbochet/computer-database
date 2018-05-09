@@ -259,17 +259,22 @@ public class Cli {
         LOGGER.debug("User choice: Update computer");
         long id;
         Computer computer;
-        Optional<Computer> optComputer;
+        WebTarget computerWebTarget;
+        Invocation.Builder invocationBuilder;
+        ComputerDto response;
 
         id = getId(scanner);
         LOGGER.debug("Computer's id: {}", id);
-        optComputer = computerService.getById(id);
-        if (!optComputer.isPresent()) {
+        computerWebTarget = this.computerWebTarget.path(String.valueOf(id));
+        invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
+        response = invocationBuilder.get(ComputerDto.class);
+
+        if (response == null) {
             System.out.println("No computer matching this id");
             LOGGER.warn("No computer matching id {}", id);
             return;
         } else {
-            computer = optComputer.get();
+            computer = computerMapper.computerDtoToComputer(response);
         }
 
         updateComputerName(scanner, computer);
@@ -277,8 +282,16 @@ public class Cli {
         updateComputerDiscontinued(scanner, computer);
         updateComputerCompany(scanner, computer);
 
-        computer = computerService.updateComputer(computer);
-        System.out.println(computer);
+
+        ComputerDto computerDto = computerMapper.computerToComputerDto(computer);
+        computerWebTarget = this.computerWebTarget.path(String.valueOf(id)).queryParam("name",computerDto.getComputerName())
+                .queryParam("introduced",computerDto.getComputerIntroduced() == null ? "" : computerDto.getComputerIntroduced())
+                .queryParam("discontinued",computerDto.getComputerDiscontinued() == null ? "" : computerDto.getComputerDiscontinued())
+                .queryParam("companyId",computerDto.getComputerCompanyId());
+        invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
+        response = invocationBuilder.put(Entity.entity(new Form(),MediaType.APPLICATION_FORM_URLENCODED_TYPE), ComputerDto.class);
+
+        System.out.println(response.toString());
         LOGGER.debug("End of computer update");
     }
 
