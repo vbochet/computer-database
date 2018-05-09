@@ -19,4 +19,16 @@ public class CompanyDto {
         this.companyName = companyName;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("COMPANY\n");
+        sb.append("  id: ");
+        sb.append(this.getCompanyId());
+        sb.append("\n  name: ");
+        sb.append(this.getCompanyName());
+        sb.append("\n");
+        return sb.toString();
+    }
+
 }
