@@ -41,6 +41,7 @@
         <hibernate.version>5.2.16.Final</hibernate.version>
         <jpa2.version>1.0.2.Final</jpa2.version>
         <jackson.version>2.9.5</jackson.version>
+        <jersey.version>2.25</jersey.version>
 
         <!-- test plugins versions -->
         <junit.version>4.12</junit.version>
@@ -281,6 +282,19 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+            
+            <!-- Jersey -->
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.version}</version>
             </dependency>
 
             <!-- mysql -->
