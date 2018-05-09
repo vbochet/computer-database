@@ -45,8 +45,10 @@ public class ComputerController {
     static final Logger LOGGER = LoggerFactory.getLogger(ComputerController.class);
 
     @GetMapping(value = "")
-    public ResponseEntity<List<ComputerDto>> getComputerList() {
-        List<Computer> computerList = computerService.getList(0, (int)computerService.getNbFound(), "id", false);
+    public ResponseEntity<List<ComputerDto>> getComputerList(@RequestParam Optional<Integer> limit, @RequestParam Optional<Integer> offset) {
+        int limit_ = limit.isPresent() ? limit.get() : (int)computerService.getNbFound();
+        int offset_ = offset.isPresent() ? offset.get() : 0;
+        List<Computer> computerList = computerService.getList(offset_, limit_, "id", false);
         List<ComputerDto> computerDtoList = new ArrayList<>();
 
         for(Computer computer : computerList) {
