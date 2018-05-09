@@ -403,14 +403,13 @@ public class Cli {
         id = getId(scanner);
         LOGGER.debug("Company's id: {}", id);
 
-        if (companyService.deleteById(id)) {
-            System.out.println("Company n°" + id + " and its related computers have been successfully deleted");
-            LOGGER.debug("Company {} and its related computers have been deleted", id);
-        } else {
-            System.out.println("A problem occured. Company n°" + id + " or one of its computers couldn't be deleted");
-            LOGGER.warn("Company {} or one of its computers couldn't be deleted", id);
-        }
-        LOGGER.debug("End of computer deletion");
+        WebTarget companyWebTarget = this.companyWebTarget.path(String.valueOf(id));
+        Invocation.Builder invocationBuilder = companyWebTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.delete(Response.class);
+
+        System.out.println("Company n°" + id + " and its related computers have been successfully deleted");
+        LOGGER.debug("Company {} and its related computers have been deleted", id);
+        LOGGER.debug("End of company deletion");
     }
 
     private int getNbToPrint(Scanner scanner) {
