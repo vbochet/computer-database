@@ -20,12 +20,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.cdb.configuration.CliConfig;
+import com.excilys.formation.cdb.dto.CompanyDto;
 import com.excilys.formation.cdb.dto.ComputerDto;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
-import com.excilys.formation.cdb.paginator.CompanyPage;
-import com.excilys.formation.cdb.paginator.ComputerPage;
-import com.excilys.formation.cdb.paginator.Page;
 import com.excilys.formation.cdb.service.CompanyService;
 import com.excilys.formation.cdb.service.ComputerService;
 
@@ -141,7 +139,7 @@ public class Cli {
 
         int nbToPrint = getNbToPrint(scanner);
         int offset = getOffset(scanner);
-        LOGGER.debug("(print {} computers per page)", nbToPrint);
+        LOGGER.debug("(print {} computers from id {})", nbToPrint, offset);
 
         WebTarget computerWebTarget = this.computerWebTarget.queryParam("limit",nbToPrint).queryParam("offset",offset);
         Invocation.Builder invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
@@ -157,59 +155,21 @@ public class Cli {
 
     private void caseListCompany(Scanner scanner) {
         LOGGER.debug("User choice: List companies");
-        CompanyPage page = new CompanyPage();
-        page.setCompanyService(companyService);
-        page.setNbTotal(companyService.getNbFound());
+
         int nbToPrint = getNbToPrint(scanner);
-        page.setNbPerPage(nbToPrint);
-        LOGGER.debug("(print {} companies per page)", nbToPrint);
+        int offset = getOffset(scanner);
+        LOGGER.debug("(print {} companies from id {})", nbToPrint, offset);
 
-        System.out.println(page.getContent());
-        System.out.println("\n");
+        WebTarget companyWebTarget = this.companyWebTarget.queryParam("limit",nbToPrint).queryParam("offset",offset);
+        Invocation.Builder invocationBuilder = companyWebTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.get(Response.class);
+        List<CompanyDto> result = response.readEntity(new GenericType<List<CompanyDto>>() {});
 
-        while (getAction(scanner, page)) {
-            System.out.println(page.getContent());
-            System.out.println("\n");
+        for(CompanyDto dto : result) {
+          System.out.println(dto.toString());
         }
+
         LOGGER.debug("End of company listing");
-    }
-
-    private boolean getAction(Scanner scanner, Page page) {
-        System.out.println("Type 'n' to go to next page, 'p' to go to previous page, 'g 42' to go to page 42, and 'q' to quit.");
-        boolean loop = true;
-        boolean ret = true;
-        String action;
-        while(loop) {
-            action = scanner.next();
-            switch(action) {
-                case "n":
-                    page.next();
-                    loop = false;
-                    break;
-                case "p":
-                    page.prev();
-                    loop = false;
-                    break;
-                case "g":
-                    String nbInput = scanner.next();
-                    try {
-                        int nb = Integer.parseInt(nbInput);
-                        page.setCurrentPage(nb);
-                        loop = false;
-                    } catch(NumberFormatException e) {
-                        scanner.nextLine();
-                    }
-                    break;
-                case "q":
-                    loop = false;
-                    ret = false;
-                    break;
-                default:
-                    scanner.nextLine();
-            }
-        }
-
-        return ret;
     }
 
     private void caseShowComputer(Scanner scanner) {
@@ -450,7 +410,7 @@ public class Cli {
 
         while (!stop) {
             try {
-                System.out.print("Indicate the index from which display the computers: ");
+                System.out.print("Indicate the index from which display elements: ");
                 offset = scanner.nextInt();
                 stop = true;
             } catch (InputMismatchException e) {
