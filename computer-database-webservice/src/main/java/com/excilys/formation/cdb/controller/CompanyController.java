@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.excilys.formation.cdb.dto.CompanyDto;
@@ -33,8 +34,10 @@ public class CompanyController {
     static final Logger LOGGER = LoggerFactory.getLogger(CompanyController.class);
 
     @GetMapping(value = "")
-    public ResponseEntity<List<CompanyDto>> getCompanyList() {
-        List<Company> companyList = companyService.getList(0, (int)companyService.getNbFound());
+    public ResponseEntity<List<CompanyDto>> getCompanyList(@RequestParam Optional<Integer> limit, @RequestParam Optional<Integer> offset) {
+        int limit_ = limit.isPresent() ? limit.get() : (int)companyService.getNbFound();
+        int offset_ = offset.isPresent() ? offset.get() : 0;
+        List<Company> companyList = companyService.getList(offset_, limit_);
         List<CompanyDto> companyDtoList = new ArrayList<>();
 
         for(Company company : companyList) {
