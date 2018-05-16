@@ -53,4 +53,25 @@ public class ComputerDto {
         this.computerCompanyName = computerCompanyName;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("COMPUTER\n");
+        sb.append("  id: ");
+        sb.append(this.getComputerId());
+        sb.append("\n  name: ");
+        sb.append(this.getComputerName());
+        sb.append("\n  introduced: ");
+        sb.append(this.getComputerIntroduced());
+        sb.append("\n  discontinued: ");
+        sb.append(this.getComputerDiscontinued());
+        sb.append("\n  company: ");
+        sb.append("\n    id: ");
+        sb.append(this.getComputerCompanyId());
+        sb.append("\n    name: ");
+        sb.append(this.getComputerCompanyName());
+        sb.append("\n");
+        return sb.toString();
+    }
+
 }

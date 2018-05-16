@@ -8,8 +8,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.persistence.NoResultException;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -119,7 +117,7 @@ public class ComputerServiceTest {
         computerService.updateComputer(computer);
     }
 
-    @Test(expected = NoResultException.class)
+    @Test
     public void deleteTest() throws DaoException {
     	computerService.deleteById(5);
         NB_COMPUTER_IN_DB++;

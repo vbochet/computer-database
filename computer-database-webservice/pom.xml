@@ -8,10 +8,10 @@
         <artifactId>computer-database</artifactId>
         <version>4.7.1-SNAPSHOT</version>
     </parent>
-    <artifactId>computer-database-webapp</artifactId>
+    <artifactId>computer-database-webservice</artifactId>
     <packaging>war</packaging>
 
-    <name>computer-database webapp module</name>
+    <name>computer-database webservice module</name>
 
     <build>
         <plugins>
@@ -44,36 +44,15 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
 
-        <!-- webapp -->
+        <!-- Jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.servlet.jsp.jstl</groupId>
-            <artifactId>jstl-api</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.taglibs</groupId>
-            <artifactId>taglibs-standard-impl</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>taglibs</groupId>
-            <artifactId>c</artifactId>
-            <scope>runtime</scope>
-            <type>tld</type>
-        </dependency>
-
-        <dependency>
-            <groupId>taglibs</groupId>
-            <artifactId>fmt</artifactId>
-            <scope>runtime</scope>
-            <type>tld</type>
         </dependency>
     </dependencies>
 </project>
