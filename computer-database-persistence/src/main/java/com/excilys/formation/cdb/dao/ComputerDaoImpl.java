@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -55,7 +56,11 @@ public class ComputerDaoImpl implements ComputerDao {
         Root<Computer> computerRoot = readQuery.from(Computer.class);
         readQuery.select(computerRoot);
         readQuery.where(criteriaBuilder.equal(computerRoot.get(Computer_.id), computerId));
-        optComputer = Optional.of(entityManager.createQuery(readQuery).getSingleResult());
+        try {
+            optComputer = Optional.of(entityManager.createQuery(readQuery).getSingleResult());
+        } catch (NoResultException e) {
+        	optComputer = Optional.empty();
+        }
 
         return optComputer;
     }

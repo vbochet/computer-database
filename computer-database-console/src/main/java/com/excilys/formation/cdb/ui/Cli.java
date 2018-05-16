@@ -1,8 +1,19 @@
 package com.excilys.formation.cdb.ui;
 
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +22,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.cdb.configuration.CliConfig;
+import com.excilys.formation.cdb.dto.CompanyDto;
+import com.excilys.formation.cdb.dto.ComputerDto;
+import com.excilys.formation.cdb.mapper.ComputerMapper;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
-import com.excilys.formation.cdb.paginator.CompanyPage;
-import com.excilys.formation.cdb.paginator.ComputerPage;
-import com.excilys.formation.cdb.paginator.Page;
 import com.excilys.formation.cdb.service.CompanyService;
 import com.excilys.formation.cdb.service.ComputerService;
 
@@ -25,8 +36,14 @@ public class Cli {
     private CompanyService companyService;
     @Autowired
     private ComputerService computerService;
+    @Autowired
+    private ComputerMapper computerMapper;
 
     static Logger LOGGER = LoggerFactory.getLogger(Cli.class);
+
+    private Client client = ClientBuilder.newClient();
+    private WebTarget computerWebTarget = client.target("http://localhost:8080/computer-database-webservice/api/computer");
+    private WebTarget companyWebTarget = client.target("http://localhost:8080/computer-database-webservice/api/company");
 
     public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(CliConfig.class);
@@ -124,95 +141,53 @@ public class Cli {
 
     private void caseListComputer(Scanner scanner) {
         LOGGER.debug("User choice: List computers");
-        ComputerPage page;
-        page = new ComputerPage();
-        page.setComputerService(computerService);
-        page.setNbTotal(computerService.getNbFound());
+
         int nbToPrint = getNbToPrint(scanner);
-        page.setNbPerPage(nbToPrint);
-        LOGGER.debug("(print {} computers per page)", nbToPrint);
+        int offset = getOffset(scanner);
+        LOGGER.debug("(print {} computers from id {})", nbToPrint, offset);
 
-        System.out.println(page.getContent());
-        System.out.println("\n");
+        WebTarget computerWebTarget = this.computerWebTarget.queryParam("limit",nbToPrint).queryParam("offset",offset);
+        Invocation.Builder invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.get(Response.class);
+        List<ComputerDto> result = response.readEntity(new GenericType<List<ComputerDto>>() {});
 
-        while (getAction(scanner, page)) {
-            System.out.println(page.getContent());
-            System.out.println("\n");
+        for(ComputerDto dto : result) {
+          System.out.println(dto.toString());
         }
+
         LOGGER.debug("End of computer listing");
     }
 
     private void caseListCompany(Scanner scanner) {
         LOGGER.debug("User choice: List companies");
-        CompanyPage page = new CompanyPage();
-        page.setCompanyService(companyService);
-        page.setNbTotal(companyService.getNbFound());
+
         int nbToPrint = getNbToPrint(scanner);
-        page.setNbPerPage(nbToPrint);
-        LOGGER.debug("(print {} companies per page)", nbToPrint);
+        int offset = getOffset(scanner);
+        LOGGER.debug("(print {} companies from id {})", nbToPrint, offset);
 
-        System.out.println(page.getContent());
-        System.out.println("\n");
+        WebTarget companyWebTarget = this.companyWebTarget.queryParam("limit",nbToPrint).queryParam("offset",offset);
+        Invocation.Builder invocationBuilder = companyWebTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.get(Response.class);
+        List<CompanyDto> result = response.readEntity(new GenericType<List<CompanyDto>>() {});
 
-        while (getAction(scanner, page)) {
-            System.out.println(page.getContent());
-            System.out.println("\n");
+        for(CompanyDto dto : result) {
+          System.out.println(dto.toString());
         }
+
         LOGGER.debug("End of company listing");
-    }
-
-    private boolean getAction(Scanner scanner, Page page) {
-        System.out.println("Type 'n' to go to next page, 'p' to go to previous page, 'g 42' to go to page 42, and 'q' to quit.");
-        boolean loop = true;
-        boolean ret = true;
-        String action;
-        while(loop) {
-            action = scanner.next();
-            switch(action) {
-                case "n":
-                    page.next();
-                    loop = false;
-                    break;
-                case "p":
-                    page.prev();
-                    loop = false;
-                    break;
-                case "g":
-                    String nbInput = scanner.next();
-                    try {
-                        int nb = Integer.parseInt(nbInput);
-                        page.setCurrentPage(nb);
-                        loop = false;
-                    } catch(NumberFormatException e) {
-                        scanner.nextLine();
-                    }
-                    break;
-                case "q":
-                    loop = false;
-                    ret = false;
-                    break;
-                default:
-                    scanner.nextLine();
-            }
-        }
-
-        return ret;
     }
 
     private void caseShowComputer(Scanner scanner) {
         LOGGER.debug("User choice: Show computer info");
-        long id;
-        Optional<Computer> optComputer = Optional.empty();
-
-        id = getId(scanner);
+        long id = getId(scanner);
         LOGGER.debug("Computer's id: {}", id);
 
-        optComputer = computerService.getById(id);
-        if (optComputer.isPresent()) {
-            System.out.println(optComputer.get().toString());
-        } else {
-            System.out.println("null");
-        }
+        WebTarget computerWebTarget = this.computerWebTarget.path(String.valueOf(id));
+        Invocation.Builder invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
+        ComputerDto response = invocationBuilder.get(ComputerDto.class);
+
+        System.out.println(response.toString());
+
         LOGGER.debug("End of computer info");
     }
 
@@ -267,8 +242,16 @@ public class Cli {
                 LOGGER.error("Input error: Unexpected value \"{}\" received", companyIdStr);
             }
         }
-        computer = computerService.createComputer(computer);
-        System.out.println(computer);
+
+        ComputerDto computerDto = computerMapper.computerToComputerDto(computer);
+        WebTarget computerWebTarget = this.computerWebTarget.queryParam("name",computerDto.getComputerName())
+                .queryParam("introduced",computerDto.getComputerIntroduced() == null ? "" : computerDto.getComputerIntroduced())
+                .queryParam("discontinued",computerDto.getComputerDiscontinued() == null ? "" : computerDto.getComputerDiscontinued())
+                .queryParam("companyId",computerDto.getComputerCompanyId());
+        Invocation.Builder invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
+        ComputerDto response = invocationBuilder.post(Entity.entity(new Form(),MediaType.APPLICATION_FORM_URLENCODED_TYPE), ComputerDto.class);
+
+        System.out.println(response.toString());
         LOGGER.debug("End of computer creation");
     }
 
@@ -276,17 +259,22 @@ public class Cli {
         LOGGER.debug("User choice: Update computer");
         long id;
         Computer computer;
-        Optional<Computer> optComputer;
+        WebTarget computerWebTarget;
+        Invocation.Builder invocationBuilder;
+        ComputerDto response;
 
         id = getId(scanner);
         LOGGER.debug("Computer's id: {}", id);
-        optComputer = computerService.getById(id);
-        if (!optComputer.isPresent()) {
+        computerWebTarget = this.computerWebTarget.path(String.valueOf(id));
+        invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
+        response = invocationBuilder.get(ComputerDto.class);
+
+        if (response == null) {
             System.out.println("No computer matching this id");
             LOGGER.warn("No computer matching id {}", id);
             return;
         } else {
-            computer = optComputer.get();
+            computer = computerMapper.computerDtoToComputer(response);
         }
 
         updateComputerName(scanner, computer);
@@ -294,8 +282,16 @@ public class Cli {
         updateComputerDiscontinued(scanner, computer);
         updateComputerCompany(scanner, computer);
 
-        computer = computerService.updateComputer(computer);
-        System.out.println(computer);
+
+        ComputerDto computerDto = computerMapper.computerToComputerDto(computer);
+        computerWebTarget = this.computerWebTarget.path(String.valueOf(id)).queryParam("name",computerDto.getComputerName())
+                .queryParam("introduced",computerDto.getComputerIntroduced() == null ? "" : computerDto.getComputerIntroduced())
+                .queryParam("discontinued",computerDto.getComputerDiscontinued() == null ? "" : computerDto.getComputerDiscontinued())
+                .queryParam("companyId",computerDto.getComputerCompanyId());
+        invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
+        response = invocationBuilder.put(Entity.entity(new Form(),MediaType.APPLICATION_FORM_URLENCODED_TYPE), ComputerDto.class);
+
+        System.out.println(response.toString());
         LOGGER.debug("End of computer update");
     }
 
@@ -390,13 +386,13 @@ public class Cli {
         id = getId(scanner);
         LOGGER.debug("Computer's id: {}", id);
 
-        if (computerService.deleteById(id)) {
-            System.out.println("Computer n°" + id + " has been successfully deleted");
-            LOGGER.debug("Computer {} has been deleted", id);
-        } else {
-            System.out.println("A problem occured. Computer n°" + id + " couldn't be deleted");
-            LOGGER.warn("Computer {} couldn't be deleted", id);
-        }
+        WebTarget computerWebTarget = this.computerWebTarget.path(String.valueOf(id));
+        Invocation.Builder invocationBuilder = computerWebTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.delete(Response.class);
+
+        System.out.println("Computer n°" + id + " has been successfully deleted");
+        LOGGER.debug("Computer {} has been deleted", id);
+
         LOGGER.debug("End of computer deletion");
     }
 
@@ -407,14 +403,13 @@ public class Cli {
         id = getId(scanner);
         LOGGER.debug("Company's id: {}", id);
 
-        if (companyService.deleteById(id)) {
-            System.out.println("Company n°" + id + " and its related computers have been successfully deleted");
-            LOGGER.debug("Company {} and its related computers have been deleted", id);
-        } else {
-            System.out.println("A problem occured. Company n°" + id + " or one of its computers couldn't be deleted");
-            LOGGER.warn("Company {} or one of its computers couldn't be deleted", id);
-        }
-        LOGGER.debug("End of computer deletion");
+        WebTarget companyWebTarget = this.companyWebTarget.path(String.valueOf(id));
+        Invocation.Builder invocationBuilder = companyWebTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.delete(Response.class);
+
+        System.out.println("Company n°" + id + " and its related computers have been successfully deleted");
+        LOGGER.debug("Company {} and its related computers have been deleted", id);
+        LOGGER.debug("End of company deletion");
     }
 
     private int getNbToPrint(Scanner scanner) {
@@ -432,6 +427,23 @@ public class Cli {
         }
 
         return nbToPrint;
+    }
+
+    private int getOffset(Scanner scanner) {
+        int offset = 0;
+        boolean stop = false;
+
+        while (!stop) {
+            try {
+                System.out.print("Indicate the index from which display elements: ");
+                offset = scanner.nextInt();
+                stop = true;
+            } catch (InputMismatchException e) {
+                scanner.nextLine();
+            }
+        }
+
+        return offset;
     }
 
     private long getId(Scanner scanner) {
