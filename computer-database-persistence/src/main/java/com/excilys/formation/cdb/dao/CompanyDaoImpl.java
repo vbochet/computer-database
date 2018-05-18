@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -49,6 +50,16 @@ public class CompanyDaoImpl implements CompanyDao {
     }
 
     @Override
+    public Company create(Company company) {
+        LOGGER.debug("Creating company {}", company);
+
+        entityManager.persist(company);
+        entityManager.flush();
+
+        return company;
+    }
+
+    @Override
     public Optional<Company> read(long companyId) {
         LOGGER.debug("Showing info from company n°{}", companyId);
 
@@ -58,7 +69,11 @@ public class CompanyDaoImpl implements CompanyDao {
         Root<Company> companyRoot = readQuery.from(Company.class);
         readQuery.select(companyRoot);
         readQuery.where(criteriaBuilder.equal(companyRoot.get(Company_.id), companyId));
-        optCompany = Optional.of(entityManager.createQuery(readQuery).getSingleResult());
+        try {
+            optCompany = Optional.of(entityManager.createQuery(readQuery).getSingleResult());
+        } catch (NoResultException e) {
+            // don't change optCompany value
+        }
         
         return optCompany;
     }
@@ -73,9 +88,22 @@ public class CompanyDaoImpl implements CompanyDao {
         Root<Company> companyRoot = findByNameQuery.from(Company.class);
         findByNameQuery.select(companyRoot);
         findByNameQuery.where(criteriaBuilder.equal(companyRoot.get(Company_.name), companyName));
-        optCompany = Optional.of(entityManager.createQuery(findByNameQuery).getSingleResult());
+        try {
+            optCompany = Optional.of(entityManager.createQuery(findByNameQuery).getSingleResult());
+        } catch (NoResultException e) {
+            // don't change optCompany value
+        }
 
         return optCompany;
+    }
+
+    @Override
+    public Company update(Company company) {
+        LOGGER.debug("Updating company {}", company);
+
+        entityManager.merge(company);
+
+        return company;
     }
 
     @Override
