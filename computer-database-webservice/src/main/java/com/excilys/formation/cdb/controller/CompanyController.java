@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,10 +65,25 @@ public class CompanyController {
 
     @PostMapping(value = "")
     public ResponseEntity<CompanyDto> addCompany(@RequestParam String name) {
-       Company company = new Company(0, name);
-       CompanyDto companyDto = companyMapper.companyToCompanyDto(companyService.createCompany(company));
+        Company company = new Company(0, name);
+        CompanyDto companyDto = companyMapper.companyToCompanyDto(companyService.createCompany(company));
 
-       return new ResponseEntity<>(companyDto,HttpStatus.CREATED);
+        return new ResponseEntity<>(companyDto,HttpStatus.CREATED);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<CompanyDto> editCompany(@PathVariable long id, @RequestParam String name) {
+        Optional<Company> optCpt = companyService.getById(id);
+
+        if (optCpt.isPresent()) {
+            Company company = new Company(id, name);
+            CompanyDto companyDto = companyMapper.companyToCompanyDto(companyService.updateCompany(company));
+
+            return new ResponseEntity<>(companyDto,HttpStatus.OK);
+        } else {
+            LOGGER.error("No company matching id {}", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping(value = "/{id}")

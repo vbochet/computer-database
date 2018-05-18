@@ -11,6 +11,7 @@ public interface CompanyDao {
 	Company create(Company company);
     Optional<Company> read(long companyId);
     Optional<Company> findByName(String companyName);
+	Company update(Company company);
     public long count();
     void deleteById(long companyId);
 }
