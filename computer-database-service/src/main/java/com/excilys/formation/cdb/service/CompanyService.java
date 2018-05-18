@@ -66,4 +66,13 @@ public class CompanyService {
     public long getNbFound() {
         return companyDao.count();
     }
+
+    @Transactional(rollbackFor = ServiceException.class)
+	public Company createCompany(Company company) {
+        if (company != null && company.getName() != null && !company.getName().isEmpty()) {
+            return companyDao.create(company);
+        }
+        return null;
+
+	}
 }

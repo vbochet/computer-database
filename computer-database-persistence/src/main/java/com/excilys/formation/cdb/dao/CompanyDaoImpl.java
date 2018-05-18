@@ -48,6 +48,16 @@ public class CompanyDaoImpl implements CompanyDao {
         return companies;
     }
 
+	@Override
+	public Company create(Company company) {
+        LOGGER.debug("Creating company {}", company);
+
+        entityManager.persist(company);
+        entityManager.flush();
+
+        return company;
+	}
+
     @Override
     public Optional<Company> read(long companyId) {
         LOGGER.debug("Showing info from company n°{}", companyId);
