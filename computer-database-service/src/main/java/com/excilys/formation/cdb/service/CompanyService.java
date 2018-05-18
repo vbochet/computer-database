@@ -66,4 +66,20 @@ public class CompanyService {
     public long getNbFound() {
         return companyDao.count();
     }
+
+    @Transactional
+	public Company createCompany(Company company) {
+        if (company != null && company.getName() != null && !company.getName().isEmpty()) {
+            return companyDao.create(company);
+        }
+        return null;
+	}
+
+    @Transactional
+    public Company updateCompany(Company company) {
+        if (company != null && company.getName() != null && !company.getName().isEmpty()) {
+            return companyDao.update(company);
+        }
+		return null;
+    }
 }
